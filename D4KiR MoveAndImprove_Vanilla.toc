@@ -1,0 +1,64 @@
+## Interface: 11403
+## Version: 2022.08.19-13:40 Release
+## Title: D4KiR |cffffffff• |cff9090ffM|cffffffffove |cff9090ffA|cffffffffnd |cff9090ffI|cffffffffmprove
+## Notes: MAI
+## Author: D4KiR
+## DefaultState: enabled
+## SavedVariables: MAITAB
+## SavedVariablesPerCharacter: MAITABPC
+## X-Curse-Project-ID: 405674
+## X-Wago-ID: Mj6jd5GR
+
+# External Libs
+libs\LibStub\LibStub.lua
+libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
+libs\LibDBIcon-1.0\embeds.xml
+libs\LibDBIcon-1.0\LibDBIcon-1.0\lib.xml
+
+locale/enUS.lua
+locale/deDE.lua
+locale/esES.lua
+locale/esMX.lua
+locale/frFR.lua
+locale/itIT.lua
+locale/koKR.lua
+locale/ptBR.lua
+locale/ruRU.lua
+locale/zhCN.lua
+locale/zhTW.lua
+libs/LIB_lang.lua
+libs/realms.lua
+libs/LIB_ranges.lua
+
+settings.lua
+
+Bindings.xml
+
+elements/skills.lua
+elements/actionbuttons.lua
+elements/arenaenemyframes.lua
+elements/bagbar.lua
+elements/bossframe.lua
+elements/buffframe.lua
+elements/castingbarframe.lua
+elements/chatframe.lua
+elements/durabilityframe.lua
+elements/extraactionbutton.lua
+elements/focusframe.lua
+elements/fpsframe.lua
+elements/gametooltip.lua
+elements/gv.lua
+elements/microbuttons.lua
+elements/minimap.lua
+elements/mirrortimer1.lua
+elements/objectivetrackerframe.lua
+elements/petframe.lua
+elements/pingframe.lua
+elements/playerframe.lua
+elements/stancebar.lua
+elements/statusbar.lua
+elements/targetframe.lua
+elements/worldmap.lua
+elements/zoneabilityframe.lua
+
+core.lua
