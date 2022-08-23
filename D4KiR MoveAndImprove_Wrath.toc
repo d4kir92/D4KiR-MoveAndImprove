@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: 2022.08.23-15:10 Release
+## Version: 1.0.0-release
 ## Title: D4KiR |cffffffff• |cff9090ffM|cffffffffove |cff9090ffA|cffffffffnd |cff9090ffI|cffffffffmprove
 ## Notes: MAI
 ## Author: D4KiR
