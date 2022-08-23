@@ -1,1 +1,3 @@
 package-as: D4KiR MoveAndImprove
+ignore:
+  - README.md
