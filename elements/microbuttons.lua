@@ -128,7 +128,9 @@ function MAISetupMAIMicroButtons()
 			end)
 			MicroButtonAndBagsBar:SetScale(0.0001)
 			
-			MicroButtonAndBagsBar.MicroBagBar:SetTexture(nil)
+			if MicroButtonAndBagsBar.MicroBagBar then
+				MicroButtonAndBagsBar.MicroBagBar:SetTexture(nil)
+			end
 		end
 	end
 	if MainMenuBarPerformanceBarFrame then
