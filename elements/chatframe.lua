@@ -158,7 +158,7 @@ function MAIChatAddItemIcons( msg, c )
 		if type == "item" then
 			itemTexture = GetItemIcon(id)
 			if itemTexture then
-				if true then
+				if MAIGV( "ChatFrame1" .. "chatitemicons", true ) and not MAIGV( "nochanges" ) then
 					msg = string.gsub(msg, "(|Z)", "|T" .. itemTexture .. ":0|t" .. "|X", 1)
 					msg = string.gsub(msg, "(|z)", "|x", 1)
 
@@ -175,22 +175,22 @@ function MAIChatAddItemIcons( msg, c )
 				local _, engClass, _, engRace, gender, name, realm = GetPlayerInfoByGUID( guid )
 				if engClass and engRace and gender and races[engRace .. gender] and classes[engClass] then
 					local res = ""
-					if true then
+					if MAIGV( "ChatFrame1" .. "chatraceicons", true ) and not MAIGV( "nochanges" ) then
 						res = res .. races[engRace .. gender]
 					end
-					if true then
+					if MAIGV( "ChatFrame1" .. "chatclassicons", true ) and not MAIGV( "nochanges" ) then
 						res = res .. classes[engClass]
 					end
 					local r, g, b, hex = 0, 0, 0, "FFFFFFFF"
 					if GetClassColor then
 						r, g, b, hex = GetClassColor(engClass)
 					end
-					if ( string.find( msg, name .. "-" .. realm, 1, true ) or string.find( msg, name, 1, true ) ) and MAIBUILD ~= "RETAIL" and true then
+					if ( string.find( msg, name .. "-" .. realm, 1, true ) or string.find( msg, name, 1, true ) ) and MAIBUILD ~= "RETAIL" and MAIGV( "ChatFrame1" .. "chatshortchannels", true ) then
 						msg = string.gsub(msg, "(|Z)", res .. "[|c" .. hex .. "|X", 1)
 						msg = string.gsub(msg, "(%[" .. name .. "%])", name, 1)
 						msg = string.gsub(msg, "(|z)", "|r]|x", 1)
 					else
-						if MAIBUILD ~= "RETAIL" and true then
+						if MAIBUILD ~= "RETAIL" and MAIGV( "ChatFrame1" .. "chatshortchannels", true ) then
 							msg = string.gsub(msg, "(|Z)", res .. "|c" .. hex .. "|X", 1)
 							msg = string.gsub(msg, "(|z)", "|r|x", 1)
 						else
@@ -274,7 +274,7 @@ function MAIUpdateChatChannels()
 					oldstrs[i] = _G[i]
 				end
 
-				if true then
+				if MAIGV("ChatFrame1" .. "chatshortchannels") and not MAIGV( "nochanges" ) then
 					if lang == "CHANNEL" then
 						_G[i] = "%s: "
 					else
@@ -290,7 +290,7 @@ end
 
 function ChatFrame_ResolvePrefixedChannelName( communityChannel )
 	local prefix, communityChannel = communityChannel:match("(%d+. )(.*)");
-	if true then
+	if MAIGV("ChatFrame1" .. "chatshortchannels") and not MAIGV( "nochanges" ) then
 		return MAIChatOnlyBig( communityChannel )
 	else
 		return prefix..ChatFrame_ResolveChannelName(communityChannel);
