@@ -113,6 +113,7 @@ function MAILang_enUS()
 		["share"] = "Share",
 		["showcountryflag"] = "Show Country Flag",
 		["showilvl"] = "Show Item Level",
+		["showitemquality"] = "Show Item Quality",
 		["skills"] = "Skills",
 		["snaptogrid"] = "Snap to Grid",
 		["spacing"] = "Spacing",

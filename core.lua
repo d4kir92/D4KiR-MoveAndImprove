@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.0.8"
+MAIVERSION = "1.1.0"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -384,17 +384,17 @@ function MAISetupUIWidgetTopCenterContainerFrame()
 	UIWidgetTopCenterContainerFrame.textHorde = UIWidgetTopCenterContainerFrame:CreateFontString(nil, "ARTWORK")
 	UIWidgetTopCenterContainerFrame.textHorde:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
 	UIWidgetTopCenterContainerFrame.textHorde:SetPoint("TOP", UIWidgetTopCenterContainerFrame, "TOP", 144, -10)
-	UIWidgetTopCenterContainerFrame.textHorde:SetText("")
+	UIWidgetTopCenterContainerFrame.textHorde:SetText( "" )
 
 	UIWidgetTopCenterContainerFrame.textAllia = UIWidgetTopCenterContainerFrame:CreateFontString(nil, "OVERLAY")
 	UIWidgetTopCenterContainerFrame.textAllia:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
 	UIWidgetTopCenterContainerFrame.textAllia:SetPoint("TOP", UIWidgetTopCenterContainerFrame, "TOP", -144, -10)
-	UIWidgetTopCenterContainerFrame.textAllia:SetText("")
+	UIWidgetTopCenterContainerFrame.textAllia:SetText( "" )
 
 	UIWidgetTopCenterContainerFrame.textSpiri = UIWidgetTopCenterContainerFrame:CreateFontString(nil, "OVERLAY")
 	UIWidgetTopCenterContainerFrame.textSpiri:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
 	UIWidgetTopCenterContainerFrame.textSpiri:SetPoint("TOP", UIWidgetTopCenterContainerFrame, "TOP", 0, 16)
-	UIWidgetTopCenterContainerFrame.textSpiri:SetText("")
+	UIWidgetTopCenterContainerFrame.textSpiri:SetText( "" )
 
 	function MAIThinkBG()
 		if UnitInBattleground("PLAYER") then
@@ -428,9 +428,9 @@ function MAISetupUIWidgetTopCenterContainerFrame()
 			end
 			C_Timer.After(0.1, MAIThinkBG)
 		else
-			UIWidgetTopCenterContainerFrame.textHorde:SetText("")
-			UIWidgetTopCenterContainerFrame.textAllia:SetText("")
-			UIWidgetTopCenterContainerFrame.textSpiri:SetText("")
+			UIWidgetTopCenterContainerFrame.textHorde:SetText( "" )
+			UIWidgetTopCenterContainerFrame.textAllia:SetText( "" )
+			UIWidgetTopCenterContainerFrame.textSpiri:SetText( "" )
 
 			C_Timer.After(1, MAIThinkBG)
 		end
@@ -1206,7 +1206,7 @@ function MAIGetElementList()
 	MAIAddElement(
 			{
 			["name"] = "MultiCastActionBarFrame",
-			["lstr"] = "MultiCastActionBarFrame",
+			["lstr"] = "TotemActionBar",
 			["setup"] = MAISetupMultiCastActionBarFrame
 		}
 	)
@@ -2700,8 +2700,42 @@ function MAISetupMAIMENU()
 		MAIMENU.frametransparency.text:SetTextColor( 0.4, 0.4, 0.4, 1 )
 	end
 
-	py = py - btnh - bbr
+	py = py - btnh
 	
+	if MAIGV( "showitemquality" ) == nil then
+		MAISV( "showitemquality", true )
+	end
+	MAIMENU.showitemquality = CreateFrame("CheckButton", "showitemquality", MAIMENU, "ChatConfigCheckButtonTemplate")
+	MAIMENU.showitemquality:SetSize(20, 20)
+	MAIMENU.showitemquality:SetPoint("TOPLEFT", bbr, py)
+	MAIMENU.showitemquality:SetChecked(MAIGV( "showitemquality" ) )
+	MAIMENU.showitemquality:SetScript("OnClick", function(self)
+		MAISV( "showitemquality", not MAIGV( "showitemquality" ) )
+	end)
+	local function MAIUpdate2()
+		self = MAIMENU.showitemquality
+		if MAIGV( "nochanges" ) then
+			self:SetChecked( false )
+		else
+			if self:GetChecked() ~= MAIGV( "showitemquality" ) then
+				self:SetChecked( MAIGV( "showitemquality" ) )
+			end
+		end
+		C_Timer.After( 0.1, MAIUpdate2 )
+	end
+	MAIUpdate2()
+	MAIMENU.showitemquality.text = MAIMENU.showitemquality:CreateFontString(nil, "ARTWORK")
+	MAIMENU.showitemquality.text:SetFont(STANDARD_TEXT_FONT, 10, "")
+	MAIMENU.showitemquality.text:SetPoint("LEFT", MAIMENU.showitemquality, "RIGHT", 0, 0)
+	MAIMENU.showitemquality.text:SetText(MAIGT("showitemquality"))
+	if MAIGV( "nochanges" ) then
+		MAIMENU.showitemquality:SetChecked( false )
+		MAIMENU.showitemquality:Disable()
+		MAIMENU.showitemquality.text:SetTextColor( 0.4, 0.4, 0.4, 1 )
+	end
+
+	py = py - btnh - bbr
+
 	MAIAddChatCheckBox( "chatshortchannels", true, bbr, py )
 	MAIAddChatCheckBox( "chatitemicons", true, bbr + btnw + sbr, py )
 
@@ -2883,7 +2917,7 @@ function MAISetupMAIMENU()
 	MAIGRID.texture = MAIGRID:CreateTexture(nil, "BACKGROUND")
 	MAIGRID.texture:SetDrawLayer("BACKGROUND", 0)
 	MAIGRID.texture:SetAllPoints(MAIGRID)
-	MAIGRID.texture:SetColorTexture(1, 1, 1, 0)
+	MAIGRID.texture:SetColorTexture( 1, 1, 1, 0 )
 
 	local co = 0
 	for y = -MAIMathR(GetScreenHeight() / 2, 0), -GetScreenHeight(), -4 do
@@ -3039,7 +3073,7 @@ function MAISetupMAIMENU()
 		if not MAIGV( "toggler" ) and MAIMENU:IsShown() then
 			MAIINFO.text:SetText(MAIGT("elements") .. ": " .. MAIGT("locked"))
 		else
-			MAIINFO.text:SetText("")
+			MAIINFO.text:SetText( "" )
 		end
 		
 		local tooltip = FrameStackTooltip;
@@ -5145,7 +5179,7 @@ function MAISetup()
 		PlayerSpeed.text:SetPoint("CENTER", PlayerSpeed, "CENTER", 0, 0)
 		PlayerSpeed.text:SetFont(STANDARD_TEXT_FONT, 10, "")
 		PlayerSpeed.text:SetShadowOffset(1, -1)
-		PlayerSpeed.text:SetText("")
+		PlayerSpeed.text:SetText( "" )
 		PlayerSpeed.text:SetTextColor(0.1, 1.0, 0.1)
 
 		function PlayerSpeed.Think()
@@ -5181,6 +5215,9 @@ function MAISetup()
 
 		if MAIGV( "PaperDollFrame" .. "showilvl" ) == nil then
 			MAISV( "PaperDollFrame" .. "showilvl", true )
+		end
+		if MAIGV( "showitemquality" ) == nil then
+			MAISV( "showitemquality", true )
 		end
 
 		PaperDollFrame.ilvl = PaperDollFrame:CreateFontString(nil, "ARTWORK")
@@ -5222,10 +5259,10 @@ function MAISetup()
 							if current ~= maximum then
 								SLOT.texth:SetText(string.format("%0.0f", current / maximum * 100) .. "%")
 							else
-								SLOT.texth:SetText("")
+								SLOT.texth:SetText( "" )
 							end
 						else
-							SLOT.texth:SetText("")
+							SLOT.texth:SetText( "" )
 						end
 						if ilvl and color then
 							if slot == "AmmoSlot" then
@@ -5241,30 +5278,39 @@ function MAISetup()
 								count = count + 1
 								sum = sum + ilvl
 							end
-							if MAIGV( "PaperDollFrame" .. "showilvl" ) and not MAIGV( "nochanges" ) then
-								SLOT.text:SetText(color.hex .. ilvl)
-								local alpha = MAIGlowAlpha
-								if color.r == 1 and color.g == 1 and color.b == 1 then
-									alpha = alpha - 0.2
+							if not MAIGV( "nochanges" ) then
+								if MAIGV( "PaperDollFrame" .. "showilvl" ) then
+									SLOT.text:SetText(color.hex .. ilvl)
+								else
+									SLOT.text:SetText( "" )
+									SLOT.texth:SetText( "" )
 								end
-								SLOT.border:SetVertexColor(color.r, color.g, color.b, alpha)
-								--SLOT.info:Show()
+
+								if MAIGV( "showitemquality", true ) then
+									local alpha = MAIGlowAlpha
+									if color.r == 1 and color.g == 1 and color.b == 1 then
+										alpha = alpha - 0.2
+									end
+									SLOT.border:SetVertexColor( color.r, color.g, color.b, alpha )
+								else
+									SLOT.border:SetVertexColor( 1, 1, 1, 0 )
+								end
 							else
-								SLOT.text:SetText("")
-								SLOT.texth:SetText("")
-								SLOT.border:SetVertexColor(1, 1, 1, 0)
+								SLOT.text:SetText( "" )
+								SLOT.texth:SetText( "" )
+								SLOT.border:SetVertexColor( 1, 1, 1, 0 )
 								--SLOT.info:Hide()
 							end
 						else
-							SLOT.text:SetText("")
-							SLOT.texth:SetText("")
-							SLOT.border:SetVertexColor(1, 1, 1, 0)
+							SLOT.text:SetText( "" )
+							SLOT.texth:SetText( "" )
+							SLOT.border:SetVertexColor( 1, 1, 1, 0 )
 							--SLOT.info:Hide()
 						end
 					else
-						SLOT.text:SetText("")
-						SLOT.texth:SetText("")
-						SLOT.border:SetVertexColor(1, 1, 1, 0)
+						SLOT.text:SetText( "" )
+						SLOT.texth:SetText( "" )
+						SLOT.border:SetVertexColor( 1, 1, 1, 0 )
 						--SLOT.info:Hide()
 					end
 				end
@@ -5284,7 +5330,7 @@ function MAISetup()
 				if MAIGV( "PaperDollFrame" .. "showilvl" ) and not MAIGV( "nochanges" ) then
 					PaperDollFrame.ilvl:SetText("|cFFFFFF00" .. ITEM_LEVEL_ABBR .. ": |r" .. MAIILVL)
 				else
-					PaperDollFrame.ilvl:SetText("")
+					PaperDollFrame.ilvl:SetText( "" )
 				end
 			else
 				PaperDollFrame.ilvl:SetText("|cFFFFFF00" .. ITEM_LEVEL_ABBR .. ": " .. "|cFFFF0000?")
@@ -5346,27 +5392,33 @@ function MAISetup()
 										count = count + 1
 										sum = sum + ilvl
 									end
-									if MAIGV( "PaperDollFrame" .. "showilvl" ) and not MAIGV( "nochanges" ) then
-										SLOT.text:SetText(color.hex .. ilvl)
-										local alpha = MAIGlowAlpha
-										if color.r == 1 and color.g == 1 and color.b == 1 then
-											alpha = alpha - 0.2
+									if not MAIGV( "nochanges" ) then
+										if MAIGV( "PaperDollFrame" .. "showilvl" ) then
+											SLOT.text:SetText(color.hex .. ilvl)
+										else
+
 										end
-										SLOT.border:SetVertexColor(color.r, color.g, color.b, alpha)
-										--SLOT.info:Show()
+										if MAIGV( "showitemqualtity", true ) then
+											local alpha = MAIGlowAlpha
+											if color.r == 1 and color.g == 1 and color.b == 1 then
+												alpha = alpha - 0.2
+											end
+											SLOT.border:SetVertexColor( color.r, color.g, color.b, alpha )
+										else
+											SLOT.border:SetVertexColor( 1, 1, 1, 0 )
+										end
 									else
-										SLOT.text:SetText("")
-										SLOT.border:SetVertexColor(1, 1, 1, 0)
-										--SLOT.info:Hide()
+										SLOT.text:SetText( "" )
+										SLOT.border:SetVertexColor( 1, 1, 1, 0 )
 									end
 								else
-									SLOT.text:SetText("")
-									SLOT.border:SetVertexColor(1, 1, 1, 0)
+									SLOT.text:SetText( "" )
+									SLOT.border:SetVertexColor( 1, 1, 1, 0 )
 									--SLOT.info:Hide()
 								end
 							else
-								SLOT.text:SetText("")
-								SLOT.border:SetVertexColor(1, 1, 1, 0)
+								SLOT.text:SetText( "" )
+								SLOT.border:SetVertexColor( 1, 1, 1, 0 )
 								--SLOT.info:Hide()
 							end
 						end
@@ -5387,7 +5439,7 @@ function MAISetup()
 						if MAIGV( "PaperDollFrame" .. "showilvl" ) and not MAIGV( "nochanges" ) then
 							InspectPaperDollFrame.ilvl:SetText("|cFFFFFF00" .. ITEM_LEVEL_ABBR .. ": |r" .. MAIILVLINSPECT)
 						else
-							InspectPaperDollFrame.ilvl:SetText("")
+							InspectPaperDollFrame.ilvl:SetText( "" )
 						end
 					else
 						InspectPaperDollFrame.ilvl:SetText("|cFFFFFF00" .. ITEM_LEVEL_ABBR .. ": " .. "|cFFFF0000?")
@@ -5428,27 +5480,27 @@ function MAISetup()
 							if tContains(MAIClassIDs, classID) or (classID == 15 and tContains(MAISubClassIDs15, subclassID)) then
 								SLOT.text:SetText(color.hex .. ilvl)
 							else
-								SLOT.text:SetText("")
+								SLOT.text:SetText( "" )
 							end
 							local alpha = MAIGlowAlpha
 							if color.r == 1 and color.g == 1 and color.b == 1 then
 								alpha = alpha - 0.2
 							end
-							SLOT.border:SetVertexColor(color.r, color.g, color.b, alpha)
+							SLOT.border:SetVertexColor( color.r, color.g, color.b, alpha )
 							--SLOT.info:Show()
 						else
-							SLOT.text:SetText("")
-							SLOT.border:SetVertexColor(1, 1, 1, 0)
+							SLOT.text:SetText( "" )
+							SLOT.border:SetVertexColor( 1, 1, 1, 0 )
 							--SLOT.info:Hide()
 						end
 					else
-						SLOT.text:SetText("")
-						SLOT.border:SetVertexColor(1, 1, 1, 0)
+						SLOT.text:SetText( "" )
+						SLOT.border:SetVertexColor( 1, 1, 1, 0 )
 						--SLOT.info:Hide()
 					end
 				else
-					SLOT.text:SetText("")
-					SLOT.border:SetVertexColor(1, 1, 1, 0)
+					SLOT.text:SetText( "" )
+					SLOT.border:SetVertexColor( 1, 1, 1, 0 )
 					--SLOT.info:Hide()
 				end
 			end
@@ -5637,7 +5689,7 @@ function MAISetup()
 				b.text = b:CreateFontString(nil, "ARTWORK")
 				b.text:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
 				b.text:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", 0, 0)
-				b.text:SetText("")
+				b.text:SetText( "" )
 
 				b.spellstate = false
 

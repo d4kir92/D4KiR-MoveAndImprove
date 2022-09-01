@@ -78,6 +78,7 @@ function MAILang_deDE()
 		["share"] = "Teilen",
 		["showcountryflag"] = "Landflagge anzeigen",
 		["showilvl"] = "Gegenstandslevel anzeigen",
+		["showitemquality"] = "Gegenstandsqualität anzeigen",
 		["skills"] = "Fertigkeiten",
 		["snaptogrid"] = "Am Raster einrasten",
 		["spacing"] = "Abstand",
