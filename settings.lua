@@ -23,6 +23,9 @@ function MAIGetMaxLevel()
 	if MAIBUILD == "TBC" then
 		maxlevel = 70
 	end
+	if MAIBUILD == "WRATH" then
+		maxlevel = 80
+	end
 	if GetMaxLevelForPlayerExpansion ~= nil then
 		maxlevel = GetMaxLevelForPlayerExpansion()
 	end
