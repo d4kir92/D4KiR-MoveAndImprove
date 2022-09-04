@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.1.1"
+MAIVERSION = "1.1.2"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -289,12 +289,8 @@ local ELENAMES = {}
 local NOTGOOD = {}
 local NOCHANGES = {}
 function MAIAddElement(tab)
-	--if _G[tab.name] == nil then
-		--print(tab.name)
-		--return
-	--else
-		tinsert(ELENAMES, tab.name)
-	--end
+	tinsert(ELENAMES, tab.name)
+
 	if tab.name == nil then
 		MAIERR("[MAIAddElement] FAILED: No Name specified")
 		return
@@ -6806,6 +6802,7 @@ function MAIUpdatePartyXPAPI()
 	end
 end
 
+local maidebugxpbar = false
 local maixpready = false
 local function OnEventXP(self, event, ...)
 	if MAILoaded then
@@ -6850,10 +6847,13 @@ local function OnEventXP(self, event, ...)
 					local PartyPortrait = _G["PartyMemberFrame" .. i .. "Portrait"]
 					local ManaBar = _G["PartyMemberFrame" .. i .. "ManaBar"]
 					local Portrait = _G["PartyMemberFrame" .. i .. "Portrait"]
-					if false then
+					if maidebugxpbar then
 						PartyFrame.Hide = PartyFrame.Show
 						PartyFrame:Show()
+						PartyFrame:GetParent().Hide = PartyFrame:GetParent().Show
+						PartyFrame:GetParent():Show()
 					end
+
 					for id = 1, 4 do
 						local debuff = _G["PartyMemberFrame" .. i .. "Debuff" .. id]
 						local parent = _G["PartyMemberFrame" .. i .. "Debuff" .. id - 1]
@@ -6861,13 +6861,24 @@ local function OnEventXP(self, event, ...)
 							parent = PartyFrame				
 						end
 						if debuff then
+							if maidebugxpbar then
+								debuff.Hide = debuff.Show
+								debuff:Show()
+							end
+
 							hooksecurefunc(debuff, "SetPoint", function(self)
 								if self.maisetpoint then return end
 								self.maisetpoint = true
 								
+								local xpbar = _G["PartyFrameXPBar" .. i]
+
 								self:ClearAllPoints()
 								if parent == PartyFrame then
-									self:SetPoint( "LEFT", parent, "RIGHT", -4, 0 )
+									local py = -6
+									if xpbar and xpbar:IsVisible() then
+										py = -18
+									end
+									self:SetPoint( "BOTTOMLEFT", parent, "BOTTOMRIGHT", -80, py )
 								else
 									self:SetPoint( "LEFT", parent, "RIGHT", 4, 0 )
 								end
@@ -6943,7 +6954,7 @@ local function OnEventXP(self, event, ...)
 						function PartyFrameXPBar.think()
 							if UnitExists("PARTY" .. i) and UnitLevel("PARTY" .. i) < MAIGetMaxLevel() then
 								PartyFrameXPBar:Show()
-
+								
 								local c = GetQuestDifficultyColor( UnitLevel("PARTY" .. i) )
 								PartyFrameXPBar.levelText:SetText( UnitLevel("PARTY" .. i) )
 								PartyFrameXPBar.levelText:SetTextColor( c.r, c.g, c.b, 1 )
@@ -6986,6 +6997,8 @@ local function OnEventXP(self, event, ...)
 							else
 								PartyFrameXPBar:Hide()
 							end
+							
+							_G["PartyMemberFrame" .. i .. "Debuff" .. 1]:SetPoint( _G["PartyMemberFrame" .. i .. "Debuff" .. 1]:GetPoint() )
 
 							C_Timer.After(0.1, PartyFrameXPBar.think)
 						end
@@ -7013,6 +7026,7 @@ local function OnEventXP(self, event, ...)
 		end
 	end
 end
+
 local frameXP = CreateFrame("Frame")
 frameXP:RegisterEvent("CHAT_MSG_ADDON")
 frameXP:RegisterEvent("PLAYER_ENTERING_WORLD")
