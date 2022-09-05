@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.1.2"
+MAIVERSION = "1.1.3"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -6864,6 +6864,14 @@ local function OnEventXP(self, event, ...)
 							if maidebugxpbar then
 								debuff.Hide = debuff.Show
 								debuff:Show()
+
+								if false then
+									local xpbar = _G["PartyFrameXPBar".. id]
+									if xpbar then
+										xpbar.Hide = xpbar.Show
+										xpbar:Show()
+									end
+								end
 							end
 
 							hooksecurefunc(debuff, "SetPoint", function(self)
@@ -6874,9 +6882,16 @@ local function OnEventXP(self, event, ...)
 
 								self:ClearAllPoints()
 								if parent == PartyFrame then
-									local py = -6
-									if xpbar and xpbar:IsVisible() then
-										py = -18
+									local py = 4
+									if DUFTAB then -- DUnitFrames
+										py = -6
+										if xpbar and xpbar:IsVisible() then
+											py = -18
+										end
+									else
+										if xpbar and xpbar:IsVisible() then
+											py = -8
+										end
 									end
 									self:SetPoint( "BOTTOMLEFT", parent, "BOTTOMRIGHT", -80, py )
 								else
