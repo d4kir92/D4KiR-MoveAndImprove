@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.1.4"
+MAIVERSION = "1.1.5"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -6602,7 +6602,7 @@ function MAISetup()
 		MAISkinFrame( "MerchantFrameInset.NineSlice", {  } )
 		MAISkinFrame( "MerchantBuyBackItem", {  } )
 		MAISkinFrame( "MerchantMoneyBg", {  } )
-		MAISkinFrame( "MerchantMoneyInset" )
+		MAISkinFrame( "MerchantMoneyInset", {  } )
 		MAISkinFrame( "MerchantFrameTab1", {  } )
 		MAISkinFrame( "MerchantFrameTab2", {  } )
 
