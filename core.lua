@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.1.3"
+MAIVERSION = "1.1.4"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -85,6 +85,16 @@ function MAICreateSlider(parent, name, key, vval, x, y, vmin, vmax, steps, form,
 	end)
 
 	return SL
+end
+
+function MAITextColor( r, g, b, a )
+	if r and g and b then
+		local sum = r + g + b
+		if sum > 1 then
+			return 0, 0, 0, 1
+		end
+	end
+	return 1, 1, 1, 1
 end
 
 function MAIAddChatCheckBox( name, value, x, y )
@@ -2533,7 +2543,7 @@ function MAISetupMAIMENU()
 		MAIMENU.UIColor:Disable()
 	end
 
-	local function MAIFrameColor( restore )
+	function MAIFrameColor( restore )
 		if currentlychanging == "MAIFrameColor" then
 			local newR, newG, newB, newA
 			if restore then
@@ -5017,18 +5027,26 @@ function MAISkinFrame( frameName, ids, retry, show )
 			local textures = { frame:GetRegions() }
 			if ids then
 				for i, texture in pairs( textures ) do
-					if show then
-						if texture.GetTexture then
-							MAIMSG("DEBUG: |cFFFFFF00" .. tostring( frameName ) .. " " .. tostring( i ) .. " " .. tostring( texture ) .. " " .. tostring( texture:GetTexture() ) )
+					if texture.SetTexture then
+						local skip = false
+						if texture:GetName() and strfind( texture:GetName(), "Portrait", 1, true ) then
+							skip = true
 						end
-					end
-					if tContains( ids, i ) then
-						texture:SetVertexColor(MAIGetFrameColor())
-						MAIRegisterFrameColor(texture)
+						if show then
+							if texture.GetTexture then
+								MAIMSG("DEBUG: |cFFFFFF00" .. tostring( frameName ) .. " " .. tostring( i ) .. " " .. tostring( texture ) .. " " .. tostring( texture:GetTexture() ) )
+							end
+						end
+						if not skip then
+							if not tContains( ids, i ) then
+								texture:SetVertexColor( MAIGetFrameColor() )
+								MAIRegisterFrameColor( texture )
+							end
+						end
 					end
 				end
 			else
-				--MAIMSG( "Missing [ids]: " .. tostring( frameName ) )
+				MAIMSG( "Missing [ids]: " .. tostring( frameName ) )
 			end
 		else
 			-- is only a texture
@@ -6221,350 +6239,397 @@ function MAISetup()
 
 	MAISetupLFG()
 
+	local texts = {
+		QuestInfoTitleHeader,
+		QuestInfoQuestType,
+		QuestInfoObjectivesHeader,
+		QuestInfoObjectivesText,
+		QuestInfoObjective1,
+		QuestInfoObjective2,
+		QuestInfoObjective3,
+		QuestInfoObjective4,
+		QuestInfoObjective5,
+		QuestInfoObjective6,
+		QuestInfoDescriptionHeader,
+		QuestInfoDescriptionText,
+		QuestInfoRewardsFrame.Header,
+		QuestInfoRewardsFrame.ItemChooseText,
+		QuestInfoRewardsFrame.ItemReceiveText,
+		QuestInfoRewardsFrameHonorReceiveText,
+		QuestInfoXPFrame.ReceiveText,
+		QuestProgressTitleText,
+		QuestProgressText,
+		QuestInfoRewardText,
+		GreetingText,
+		AvailableQuestsText,
+		CurrentQuestsText,
+		QuestProgressRequiredItemsText,
+		GossipGreetingText,
+		
+		GossipFrameGreetingPanel,
+		QuestTitleButton1,
+		QuestTitleButton2,
+		QuestTitleButton3,
+		QuestTitleButton4,
+		QuestTitleButton5,
+		QuestTitleButton6,
+		GossipTitleButton1,
+		GossipTitleButton2,
+		GossipTitleButton3,
+		GossipTitleButton4,
+		GossipTitleButton5,
+		GossipTitleButton6
+	}
+	for i, text in pairs( texts ) do
+		if text then
+			if text.GetRegions then
+				for i, tex in pairs( { text:GetRegions() } ) do
+					if tex.SetTextColor then
+						hooksecurefunc( tex, "SetTextColor", function( self, color )
+							if self.maisettextcolor then return end
+							self.maisettextcolor = true
+							self:SetTextColor( MAITextColor( MAIGetFrameColor() ) )
+							self.maisettextcolor = false
+						end )
+						tex:SetTextColor( 1, 1, 1, 1 )
+
+						hooksecurefunc( "MAIFrameColor", function()
+							tex:SetTextColor( 1, 1, 1, 1 )
+						end )
+					end
+				end
+				if text.SetTextColor then
+					hooksecurefunc( text, "SetTextColor", function( self, color )
+						if self.maisettextcolor then return end
+						self.maisettextcolor = true
+						self:SetTextColor( MAITextColor( MAIGetFrameColor() ) )
+						self.maisettextcolor = false
+					end )
+					text:SetTextColor( 1, 1, 1, 1 )
+
+					hooksecurefunc( "MAIFrameColor", function()
+						text:SetTextColor( 1, 1, 1, 1 )
+					end )
+				end
+			else
+				hooksecurefunc( text, "SetTextColor", function( self, color )
+					if self.maisettextcolor then return end
+					self.maisettextcolor = true
+					self:SetTextColor( MAITextColor( MAIGetFrameColor() ) )
+					self.maisettextcolor = false
+				end )
+				text:SetTextColor( 1, 1, 1, 1 )
+
+				hooksecurefunc( "MAIFrameColor", function()
+					text:SetTextColor( 1, 1, 1, 1 )
+				end )
+			end
+		end
+	end
+	
 	if MAIBUILD ~= "RETAIL" then
-		MAISkinFrame( "WorldMapFrame.BorderFrame", { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 } )
+		MAISkinFrame( "WorldMapFrame.BorderFrame", {  } )
 
-		MAISkinFrame( "PaperDollFrame", { 1, 2, 3, 4 } )
-		MAISkinFrame( "PetPaperDollFrame", { 1, 2, 3, 4 } )
-		MAISkinFrame( "CharacterFrameTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "CharacterFrameTab2", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "CharacterFrameTab3", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "CharacterFrameTab4", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "CharacterFrameTab5", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "ReputationFrame", { 1, 2, 3, 4 } )
-		MAISkinFrame( "ReputationListScrollFrame", { 1, 2, 3 } )
-		MAISkinFrame( "SkillFrame", { 1, 2, 3, 4,5,6 } )
-		MAISkinFrame( "SkillFrameExpandButtonFrame", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "SkillListScrollFrame", { 1, 2, 3 } )
-		MAISkinFrame( "SkillDetailScrollFrame", { 1, 2, 3 } )
-		MAISkinFrame( "HonorFrame", { 1, 2, 3, 4, 6, 7, 8, 9, 10 } )
-		MAISkinFrame( "PVPFrame", { 1, 2, 3, 4, 5 } ) -- TBC
+		MAISkinFrame( "PaperDollFrame", {  } )
+		MAISkinFrame( "PetPaperDollFrame", {  } )
+		MAISkinFrame( "CharacterFrameTab1", {  } )
+		MAISkinFrame( "CharacterFrameTab2", {  } )
+		MAISkinFrame( "CharacterFrameTab3", {  } )
+		MAISkinFrame( "CharacterFrameTab4", {  } )
+		MAISkinFrame( "CharacterFrameTab5", {  } )
+		MAISkinFrame( "ReputationFrame", {  } )
+		MAISkinFrame( "ReputationListScrollFrame", {  } )
+		MAISkinFrame( "SkillFrame", {  } )
+		MAISkinFrame( "SkillFrameExpandButtonFrame", {  } )
+		MAISkinFrame( "SkillListScrollFrame", {  } )
+		MAISkinFrame( "SkillDetailScrollFrame", {  } )
+		MAISkinFrame( "HonorFrame", {  } )
+		MAISkinFrame( "PVPFrame", {  } ) -- TBC
+		MAISkinFrame( "TokenFrame", {  } ) -- WOTLK
 
-		MAISkinFrame( "SpellBookFrame", { 2, 3, 4, 5 } )
+		MAISkinFrame( "SpellBookFrame", { 1 } )
 		for i = 1, 16 do
-			MAISkinFrame( "SpellButton" .. i, { 1} )
+			MAISkinFrame( "SpellButton" .. i, { 2 } )
 		end
 		for i = 1, 6 do
-			MAISkinFrame( "SpellBookSkillLineTab" .. i, { 1 } )
+			MAISkinFrame( "SpellBookSkillLineTab" .. i, { 2 } )
 		end
 		for i = 1, 2 do
-			MAISkinFrame( "SpellBookFrameTabButton" .. i, { 2, 3, 4 } )
+			MAISkinFrame( "SpellBookFrameTabButton" .. i, { 2 } )
 		end
 
-		MAISkinFrame( "PlayerTalentFrame", { 2, 3, 4, 5, 11, 12, 13 }, true )
-		MAISkinFrame( "PlayerTalentFrameTab1", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "PlayerTalentFrameTab2", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "PlayerTalentFrameTab3", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "PlayerTalentFrameScrollFrame", { 1, 2, 3 }, true )
+		MAISkinFrame( "PlayerTalentFrame", {  }, true )
+		MAISkinFrame( "PlayerTalentFrameTab1", {  }, true )
+		MAISkinFrame( "PlayerTalentFrameTab2", {  }, true )
+		MAISkinFrame( "PlayerTalentFrameTab3", {  }, true )
+		MAISkinFrame( "PlayerTalentFrameTab4", {  }, true )
+		MAISkinFrame( "PlayerTalentFrameScrollFrame", {  }, true )
+		MAISkinFrame( "GlyphFrame", {  }, true )
 
-		MAISkinFrame( "QuestLogFrame", { 3, 4, 5, 6, 8, 9, 10, 12, 13 } )--{ 1, 2, 7, 11 } )
-		MAISkinFrame( "QuestLogScrollFrame", { 1, 2, 3 } )
-		if QuestLogFrame then
-			QuestLogFrame.texture = QuestLogFrame:CreateTexture( nil, "OVERLAY", nil, 7 )
-			QuestLogFrame.texture:SetTexture( "Interface\\AddOns\\D4KiR MoveAndImprove\\media\\QuestBG" )
-			QuestLogFrame.texture:SetWidth( 514 )
-			QuestLogFrame.texture:SetPoint( "TOPLEFT", QuestLogDetailScrollFrame, "TOPLEFT", 0, 0 )
-			local h = 400
-			if IsAddOnLoaded("WideQuestLog") then
-				h = 560
-				QuestLogFrame.texture:SetPoint( "TOPLEFT", QuestLogDetailScrollFrame, "TOPLEFT", -12, 3 )
-				QuestLogFrame.texture:SetWidth( 540 )
-			end
-			QuestLogFrame.texture:SetHeight( h )
-		end
-		MAISkinFrame( "QuestLogCollapseAllButton", { 7, 8, 9 } )
+		MAISkinFrame( "QuestLogFrame", { 1 } )
+		MAISkinFrame( "QuestLogScrollFrame", {  } )
+		MAISkinFrame( "QuestLogCollapseAllButton", {  } )
 
-		MAISkinFrame( "FriendsFrame", { 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17 } )
-		MAISkinFrame( "FriendsFrameFriendsScrollFrame", { 1, 2, 3 } )
-		MAISkinFrame( "FriendsFrameInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "FriendsTabHeaderTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "FriendsTabHeaderTab2", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "FriendsFrameTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "FriendsFrameTab2", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "FriendsFrameTab3", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "FriendsFrameTab4", { 1, 2, 3, 4, 5, 6 } )
+		MAISkinFrame( "FriendsFrame", {  } )
+		MAISkinFrame( "FriendsListFrame", {  } )
+		MAISkinFrame( "FriendsTabHeader", {  } )
+		MAISkinFrame( "FriendsFrameFriendsScrollFrame", {  } )
+		MAISkinFrame( "FriendsFrameInset", {  } )
+		MAISkinFrame( "FriendsTabHeaderTab1", {  } )
+		MAISkinFrame( "FriendsTabHeaderTab2", {  } )
+		MAISkinFrame( "FriendsFrameTab1", {  } )
+		MAISkinFrame( "FriendsFrameTab2", {  } )
+		MAISkinFrame( "FriendsFrameTab3", {  } )
+		MAISkinFrame( "FriendsFrameTab4", {  } )
 
-		MAISkinFrame( "WhoFrameListInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "WhoListScrollFrame", { 1, 2, 3 } )
-		MAISkinFrame( "WhoFrameEditBoxInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
+		MAISkinFrame( "WhoFrameListInset", {  } )
+		MAISkinFrame( "WhoListScrollFrame", {  } )
+		MAISkinFrame( "WhoFrameEditBoxInset", {  } )
 
-		MAISkinFrame( "LFGParentFrame", { 2 } )
-		MAISkinFrame( "LFGParentFrameTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "LFGParentFrameTab2", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "LFMFrameInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
+		MAISkinFrame( "LFGListingFrame", {  } )
+		MAISkinFrame( "LFGBrowseFrame", {  } )
+		MAISkinFrame( "LFGParentFrame", {  } )
+		MAISkinFrame( "LFGParentFrameTab1", {  } )
+		MAISkinFrame( "LFGParentFrameTab2", {  } )
+		MAISkinFrame( "LFMFrameInset", {  } )
 
-		MAISkinFrame( "GameMenuFrame", { 1, 3, 4, 5, 6, 7, 8, 9, 10, 11 } )
+		MAISkinFrame( "GameMenuFrame", {  } )
 
-		MAISkinFrame( "MerchantFrame", { 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 22, 23, 24 } )
-		MAISkinFrame( "MerchantFrameInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "MerchantBuyBackItem", { 1, 2 } )
-		MAISkinFrame( "MerchantMoneyBg", { 1, 2, 3 } )
-		MAISkinFrame( "MerchantMoneyInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "MerchantFrameTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "MerchantFrameTab2", { 1, 2, 3, 4, 5, 6 } )
+		MAISkinFrame( "MerchantFrame", {  } )
+		MAISkinFrame( "MerchantFrameInset", {  } )
+		MAISkinFrame( "MerchantBuyBackItem", {  } )
+		MAISkinFrame( "MerchantMoneyBg", {  } )
+		MAISkinFrame( "MerchantMoneyInset", {  } )
+		MAISkinFrame( "MerchantFrameTab1", {  } )
+		MAISkinFrame( "MerchantFrameTab2", {  } )
 
-		MAISkinFrame( "MailFrame", { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 } )
-		MAISkinFrame( "MailFrameInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
+		MAISkinFrame( "MailFrame", {  } )
+		MAISkinFrame( "MailFrameInset", {  } )
 		MAISkinFrame( "InboxFrame", { 1 } )
 		for i = 1, 30 do
-			MAISkinFrame( "SendMailAttachment" .. i, { 1, 2, 3, 4, 5 } )
+			MAISkinFrame( "SendMailAttachment" .. i, {  } )
 		end
-		MAISkinFrame( "SendMailFrame", { 2, 3, 4, 5, 6, 7 } )
-		MAISkinFrame( "SendMailMoneyInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "SendMailMoneyBg", { 1, 2, 3 } )
-		MAISkinFrame( "MailFrameTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "MailFrameTab2", { 1, 2, 3, 4, 5, 6 } )
+		MAISkinFrame( "SendMailFrame", {  } )
+		MAISkinFrame( "SendMailMoneyInset", {  } )
+		MAISkinFrame( "SendMailMoneyBg", {  } )
+		MAISkinFrame( "MailFrameTab1", {  } )
+		MAISkinFrame( "MailFrameTab2", {  } )
 
-		MAISkinFrame( "OpenMailFrame", { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 24, 25 } )
-		MAISkinFrame( "OpenMailFrameInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "OpenMailScrollFrame", { 1, 2 } )
+		MAISkinFrame( "OpenMailFrame", {  } )
+		MAISkinFrame( "OpenMailFrameInset", {  } )
+		MAISkinFrame( "OpenMailScrollFrame", {  } )
 
-		MAISkinFrame( "BankFrame", { 2 } )
+		MAISkinFrame( "BankFrame", {  } )
 
-		MAISkinFrame( "GossipFrameGreetingPanel", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "GossipGreetingScrollFrame", { 1, 2, 3 } )
-		if MAIGV( "FrameColorEnabled", true ) then
-			GossipFrameGreetingPanel.texture = GossipFrameGreetingPanel:CreateTexture( nil, "OVERLAY", nil, 7 )
-			GossipFrameGreetingPanel.texture:SetTexture( "Interface\\AddOns\\D4KiR MoveAndImprove\\media\\QuestBG" )
-			GossipFrameGreetingPanel.texture:SetSize( 514, 517 )
-			GossipFrameGreetingPanel.texture:SetPoint( "TOPLEFT", GossipFrameGreetingPanel, "TOPLEFT", 22, -78 )
-		end
+		MAISkinFrame( "GossipFrameGreetingPanel", {  } )
+		MAISkinFrame( "GossipGreetingScrollFrame", {  } )
 
-		MAISkinFrame( "QuestFrameRewardPanel", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "QuestRewardScrollFrame", { 1, 2, 3 } )
-		if MAIGV( "FrameColorEnabled", true ) then
-			QuestFrameRewardPanel.texture = QuestFrameRewardPanel:CreateTexture( nil, "OVERLAY", nil, 7 )
-			QuestFrameRewardPanel.texture:SetTexture( "Interface\\AddOns\\D4KiR MoveAndImprove\\media\\QuestBG" )
-			QuestFrameRewardPanel.texture:SetSize( 514, 517 )
-			QuestFrameRewardPanel.texture:SetPoint( "TOPLEFT", QuestFrameRewardPanel, "TOPLEFT", 22, -78 )
-		end
-		MAISkinFrame( "QuestFrameDetailPanel", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "QuestDetailScrollFrame", { 1, 2, 3 } )
-		if MAIGV( "FrameColorEnabled", true ) then
-			QuestFrameDetailPanel.texture = QuestFrameDetailPanel:CreateTexture( nil, "OVERLAY", nil, 7 )
-			QuestFrameDetailPanel.texture:SetTexture( "Interface\\AddOns\\D4KiR MoveAndImprove\\media\\QuestBG" )
-			QuestFrameDetailPanel.texture:SetSize( 514, 517 )
-			QuestFrameDetailPanel.texture:SetPoint( "TOPLEFT", QuestFrameDetailPanel, "TOPLEFT", 22, -78 )
-		end
+		MAISkinFrame( "QuestFrameRewardPanel", {  } )
+		MAISkinFrame( "QuestRewardScrollFrame", {  } )
 
-		MAISkinFrame( "QuestFrameProgressPanel", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "QuestProgressScrollFrame", { 1, 2, 3 } )
-		if MAIGV( "FrameColorEnabled", true ) then
-			QuestFrameProgressPanel.texture = QuestFrameProgressPanel:CreateTexture( nil, "OVERLAY", nil, 7 )
-			QuestFrameProgressPanel.texture:SetTexture( "Interface\\AddOns\\D4KiR MoveAndImprove\\media\\QuestBG" )
-			QuestFrameProgressPanel.texture:SetSize( 514, 517 )
-			QuestFrameProgressPanel.texture:SetPoint( "TOPLEFT", QuestFrameProgressPanel, "TOPLEFT", 22, -78 )
-		end
+		MAISkinFrame( "QuestFrameDetailPanel", {  } )
+		MAISkinFrame( "QuestDetailScrollFrame", {  } )
 
-		MAISkinFrame( "QuestFrameGreetingPanel", { 1, 2, 3, 4, 10 } )
-		MAISkinFrame( "QuestGreetingScrollFrame", { 1, 2, 3 } )
-		if MAIGV( "FrameColorEnabled", true ) then
-			QuestFrameGreetingPanel.texture = QuestFrameGreetingPanel:CreateTexture( nil, "OVERLAY", nil, 7 )
-			QuestFrameGreetingPanel.texture:SetTexture( "Interface\\AddOns\\D4KiR MoveAndImprove\\media\\QuestBG" )
-			QuestFrameGreetingPanel.texture:SetSize( 514, 517 )
-			QuestFrameGreetingPanel.texture:SetPoint( "TOPLEFT", QuestFrameGreetingPanel, "TOPLEFT", 22, -78 )
-		end
+		MAISkinFrame( "QuestFrameProgressPanel", {  } )
+		MAISkinFrame( "QuestProgressScrollFrame", {  } )
 
-		MAISkinFrame( "ClassTrainerFrame", { 2, 3, 4, 5, 8, 9 }, true )
-		MAISkinFrame( "ClassTrainerExpandButtonFrame", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "ClassTrainerListScrollFrame", { 1, 2, 3 }, true )
+		MAISkinFrame( "QuestFrameGreetingPanel", {  } )
+		MAISkinFrame( "QuestGreetingScrollFrame", {  } )
 
-		MAISkinFrame( "LootFrame", { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 } )
-		MAISkinFrame( "LootFrameInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
+		MAISkinFrame( "ClassTrainerFrame", {  }, true )
+		MAISkinFrame( "ClassTrainerExpandButtonFrame", {  }, true )
+		MAISkinFrame( "ClassTrainerListScrollFrame", {  }, true )
 
-		MAISkinFrame( "AuctionFrame", { 2, 3, 4, 5, 6, 7  }, true )
-		MAISkinFrame( "BrowseBidButton", { 6 }, true )
-		MAISkinFrame( "BrowseBuyoutButton", { 6 }, true )
-		MAISkinFrame( "BrowseCloseButton", { 6 }, true )
-		MAISkinFrame( "BidBidButton", { 6 }, true )
-		MAISkinFrame( "BidBuyoutButton", { 6 }, true )
-		MAISkinFrame( "BidCloseButton", { 6 }, true )
-		MAISkinFrame( "AuctionFrameTab1", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "AuctionFrameTab2", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "AuctionFrameTab3", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "AuctionFrameTab4", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "AuctionFrameTab5", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "AuctionFrameTab6", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "AuctionFrameTab7", { 1, 2, 3, 4, 5, 6 }, true )
+		MAISkinFrame( "LootFrame", {  } )
+		MAISkinFrame( "LootFrameInset", {  } )
 
-		MAISkinFrame( "ItemTextFrame", { 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "ItemTextScrollFrame", { 1, 2, 3 } )
-		if MAIGV( "FrameColorEnabled", true ) then
-			ItemTextFrame.texture = ItemTextFrame:CreateTexture( nil, "OVERLAY", nil, 7 )
-			ItemTextFrame.texture:SetTexture( "Interface\\AddOns\\D4KiR MoveAndImprove\\media\\QuestBG" )
-			ItemTextFrame.texture:SetSize( 514, 517 )
-			ItemTextFrame.texture:SetPoint( "TOPLEFT", ItemTextFrame, "TOPLEFT", 22, -78 )
-		end
+		MAISkinFrame( "AuctionFrame", {   }, true )
+		MAISkinFrame( "BrowseBidButton", {  }, true )
+		MAISkinFrame( "BrowseBuyoutButton", {  }, true )
+		MAISkinFrame( "BrowseCloseButton", {  }, true )
+		MAISkinFrame( "BidBidButton", {  }, true )
+		MAISkinFrame( "BidBuyoutButton", {  }, true )
+		MAISkinFrame( "BidCloseButton", {  }, true )
+		MAISkinFrame( "AuctionFrameTab1", {  }, true )
+		MAISkinFrame( "AuctionFrameTab2", {  }, true )
+		MAISkinFrame( "AuctionFrameTab3", {  }, true )
+		MAISkinFrame( "AuctionFrameTab4", {  }, true )
+		MAISkinFrame( "AuctionFrameTab5", {  }, true )
+		MAISkinFrame( "AuctionFrameTab6", {  }, true )
+		MAISkinFrame( "AuctionFrameTab7", {  }, true )
 
-		MAISkinFrame( "TradeSkillFrame", { 2, 3, 4, 5 }, true )
-		MAISkinFrame( "TradeSkillListScrollFrame", { 1, 2, 3 }, true )
-		MAISkinFrame( "TradeSkillExpandButtonFrame", { 1, 2, 3, 4, 5, 6 }, true )	
+		MAISkinFrame( "ItemTextFrame", {  } )
+		MAISkinFrame( "ItemTextScrollFrame", {  } )
+
+		MAISkinFrame( "TradeSkillFrame", {  }, true )
+		MAISkinFrame( "TradeSkillListScrollFrame", {  }, true )
+		MAISkinFrame( "TradeSkillExpandButtonFrame", {  }, true )	
 	else
-		MAISkinFrame( "WorldMapFrameBg", { 1 } )
-		MAISkinFrame( "WorldMapFrame.BorderFrame", { 1 } )
-		MAISkinFrame( "WorldMapFrame.BorderFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "WorldMapFrame.NavBar", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "QuestScrollFrame.ScrollBar", { 1, 2, 3, 4 } )
+		MAISkinFrame( "WorldMapFrameBg", {  } )
+		MAISkinFrame( "WorldMapFrame.BorderFrame", {  } )
+		MAISkinFrame( "WorldMapFrame.BorderFrame.NineSlice", {  } )
+		MAISkinFrame( "WorldMapFrame.NavBar", {  } )
+		MAISkinFrame( "QuestScrollFrame.ScrollBar", {  } )
 
-		MAISkinFrame( "CharacterFrame", { 1, 2 } )
-		MAISkinFrame( "CharacterFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "PaperDollSidebarTabs", { 1, 2 } )
-		MAISkinFrame( "PaperDollSidebarTab1", { 1 } )
-		MAISkinFrame( "PaperDollSidebarTab2", { 1 } )
-		MAISkinFrame( "PaperDollSidebarTab3", { 1 } )
-		MAISkinFrame( "CharacterFrameInsetRight", { 1 } )
-		MAISkinFrame( "CharacterFrameInsetRight.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "CharacterStatsPane", { 1 } )
-		MAISkinFrame( "CharacterFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "CharacterFrameTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "CharacterFrameTab2", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "CharacterFrameTab3", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "CharacterFrameTab4", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "CharacterFrameInset", { 1 } )
-		MAISkinFrame( "CharacterModelFrame", { 6, 7, 8, 9, 10, 11, 12, 13, 14 } )
+		MAISkinFrame( "CharacterFrame", {  } )
+		MAISkinFrame( "CharacterFrameInset.NineSlice", {  } )
+		MAISkinFrame( "PaperDollSidebarTabs", {  } )
+		MAISkinFrame( "PaperDollSidebarTab1", {  } )
+		MAISkinFrame( "PaperDollSidebarTab2", {  } )
+		MAISkinFrame( "PaperDollSidebarTab3", {  } )
+		MAISkinFrame( "CharacterFrameInsetRight", {  } )
+		MAISkinFrame( "CharacterFrameInsetRight.NineSlice", {  } )
+		MAISkinFrame( "CharacterStatsPane", {  } )
+		MAISkinFrame( "CharacterFrame.NineSlice", {  } )
+		MAISkinFrame( "CharacterFrameTab1", {  } )
+		MAISkinFrame( "CharacterFrameTab2", {  } )
+		MAISkinFrame( "CharacterFrameTab3", {  } )
+		MAISkinFrame( "CharacterFrameTab4", {  } )
+		MAISkinFrame( "CharacterFrameInset", {  } )
+		MAISkinFrame( "CharacterModelFrame", {  } )
 		for i, v in pairs( MAICharSlots ) do
-			MAISkinFrame( "Character" .. v, { 16, 17 } )
+			MAISkinFrame( "Character" .. v, {  } )
 		end
-		MAISkinFrame( "ReputationListScrollFrame", { 1, 2 } )
+		MAISkinFrame( "ReputationListScrollFrame", {  } )
 
-		MAISkinFrame( "SpellBookFrame", { 1, 2, 6, 7 }, false )
-		MAISkinFrame( "SpellBookFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "SpellBookFrameInset", { 1 } )
-		MAISkinFrame( "SpellBookFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "SpellBookFrameTabButton1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "SpellBookFrameTabButton2", { 1, 2, 3, 4, 5, 6 } )
+		MAISkinFrame( "SpellBookFrame", {  }, false )
+		MAISkinFrame( "SpellBookFrame.NineSlice", {  } )
+		MAISkinFrame( "SpellBookFrameInset", {  } )
+		MAISkinFrame( "SpellBookFrameInset.NineSlice", {  } )
+		MAISkinFrame( "SpellBookFrameTabButton1", {  } )
+		MAISkinFrame( "SpellBookFrameTabButton2", {  } )
 		for i = 1, 6 do
-			MAISkinFrame( "SpellBookSkillLineTab" .. i, { 1 } )
+			MAISkinFrame( "SpellBookSkillLineTab" .. i, { 4, 6 } )
 		end
 
-		MAISkinFrame( "PlayerTalentFrame", { 1, 2 }, true )
-		MAISkinFrame( "PlayerTalentFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 }, true )
+		MAISkinFrame( "PlayerTalentFrame", {  }, true )
+		MAISkinFrame( "PlayerTalentFrame.NineSlice", {  }, true )
 		MAISkinFrame( "PlayerTalentFrameBg", nil, true )
-		MAISkinFrame( "PlayerTalentFrameInset", { 1 }, true )
-		MAISkinFrame( "PlayerTalentFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 }, true )
-		MAISkinFrame( "PlayerTalentFrameSpecialization", { 1, 2, 3, 4, 5 ,6 }, true )
-		MAISkinFrame( "PlayerTalentFrameTab1", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "PlayerTalentFrameTab2", { 1, 2, 3, 4, 5, 6 }, true )
-		MAISkinFrame( "PlayerTalentFrameTab3", { 1, 2, 3, 4, 5, 6 }, true )
-		--MAISkinFrame( "PlayerTalentFrameScrollFrame", { 1, 2, 3 }, true )
+		MAISkinFrame( "PlayerTalentFrameInset", {  }, true )
+		MAISkinFrame( "PlayerTalentFrameInset.NineSlice", {  }, true )
+		MAISkinFrame( "PlayerTalentFrameSpecialization", {  }, true )
+		MAISkinFrame( "PlayerTalentFrameTab1", { 1 }, true )
+		MAISkinFrame( "PlayerTalentFrameTab2", { 1 }, true )
+		MAISkinFrame( "PlayerTalentFrameTab3", { 1 }, true )
+		--MAISkinFrame( "PlayerTalentFrameScrollFrame", { , 3 }, true )
 
-		MAISkinFrame( "PVEFrame", { 1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 } )
-		MAISkinFrame( "PVEFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "PVEFrameTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "PVEFrameTab2", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "PVEFrameTab3", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "PVEFrameInset", { 1 } )
-		MAISkinFrame( "PVEFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "PVEFrameLeftInset", { 1 } )
-		MAISkinFrame( "PVEFrameLeftInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
+		MAISkinFrame( "PVEFrame", {  } )
+		MAISkinFrame( "PVEFrame.NineSlice", {  } )
+		MAISkinFrame( "PVEFrameTab1", {  } )
+		MAISkinFrame( "PVEFrameTab2", {  } )
+		MAISkinFrame( "PVEFrameTab3", {  } )
+		MAISkinFrame( "PVEFrameInset", {  } )
+		MAISkinFrame( "PVEFrameInset.NineSlice", {  } )
+		MAISkinFrame( "PVEFrameLeftInset", {  } )
+		MAISkinFrame( "PVEFrameLeftInset.NineSlice", {  } )
 
-		MAISkinFrame( "FriendsFrame", { 1, 2, 3, 5 } )
-		MAISkinFrame( "FriendsFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "FriendsFrameInset", { 1 } )
-		MAISkinFrame( "FriendsFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "FriendsListFrameScrollFrame.Slider", { 1, 2, 3,4 } )
-		MAISkinFrame( "FriendsTabHeaderTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "FriendsTabHeaderTab2", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "FriendsTabHeaderTab3", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "FriendsFrameTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "FriendsFrameTab2", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "FriendsFrameTab3", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "FriendsFrameTab4", { 1, 2, 3, 4, 5, 6 } )
+		MAISkinFrame( "FriendsFrame", {  } )
+		MAISkinFrame( "FriendsFrame.NineSlice", {  } )
+		MAISkinFrame( "FriendsFrameInset", {  } )
+		MAISkinFrame( "FriendsFrameInset.NineSlice", {  } )
+		MAISkinFrame( "FriendsListFrameScrollFrame.Slider", {  } )
+		MAISkinFrame( "FriendsTabHeaderTab1", {  } )
+		MAISkinFrame( "FriendsTabHeaderTab2", {  } )
+		MAISkinFrame( "FriendsTabHeaderTab3", {  } )
+		MAISkinFrame( "FriendsFrameTab1", {  } )
+		MAISkinFrame( "FriendsFrameTab2", {  } )
+		MAISkinFrame( "FriendsFrameTab3", {  } )
+		MAISkinFrame( "FriendsFrameTab4", {  } )
 
-		MAISkinFrame( "WhoListScrollFrame.Slider", { 1, 2, 3, 4 } )
-		MAISkinFrame( "WhoFrameListInset", { 1 } )
-		MAISkinFrame( "WhoFrameListInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "WhoFrameEditBoxInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "WhoFrameEditBoxInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
+		MAISkinFrame( "WhoListScrollFrame.Slider", {  } )
+		MAISkinFrame( "WhoFrameListInset", {  } )
+		MAISkinFrame( "WhoFrameListInset.NineSlice", {  } )
+		MAISkinFrame( "WhoFrameEditBoxInset", {  } )
+		MAISkinFrame( "WhoFrameEditBoxInset.NineSlice", {  } )
 
-		MAISkinFrame( "GameMenuFrame.Header", { 1, 2, 3 } )
-		MAISkinFrame( "GameMenuFrame.Border", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
+		MAISkinFrame( "GameMenuFrame.Header", {  } )
+		MAISkinFrame( "GameMenuFrame.Border", {  } )
 
-		MAISkinFrame( "MailFrame", { 1, 2, 3, 4, 5 } )
-		MAISkinFrame( "MailFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "MailFrameInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "MailFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "InboxFrame", { 1 } )
+		MAISkinFrame( "MailFrame", {  } )
+		MAISkinFrame( "MailFrame.NineSlice", {  } )
+		MAISkinFrame( "MailFrameInset", {  } )
+		MAISkinFrame( "MailFrameInset.NineSlice", {  } )
+		MAISkinFrame( "InboxFrame", {  } )
 		for i = 1, 30 do
-			MAISkinFrame( "SendMailAttachment" .. i, { 1, 2, 3, 4, 5 } )
+			MAISkinFrame( "SendMailAttachment" .. i, {  } )
 		end
-		MAISkinFrame( "SendMailFrame", { 2, 3, 4, 5, 6, 7 } )
-		MAISkinFrame( "SendMailMoneyInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "SendMailMoneyBg", { 1, 2, 3 } )
-		MAISkinFrame( "MailFrameTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "MailFrameTab2", { 1, 2, 3, 4, 5, 6 } )
+		MAISkinFrame( "SendMailFrame", {  } )
+		MAISkinFrame( "SendMailMoneyInset", {  } )
+		MAISkinFrame( "SendMailMoneyBg", {  } )
+		MAISkinFrame( "MailFrameTab1", {  } )
+		MAISkinFrame( "MailFrameTab2", {  } )
 
-		MAISkinFrame( "OpenMailFrame", { 1, 2, 3, 4, 5, 12, 13 } )
-		MAISkinFrame( "OpenMailFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "OpenMailFrameInset", { 1, 2, 3, 4, 5, 6, 7, 8, 9 } )
-		MAISkinFrame( "OpenMailFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "OpenMailScrollFrame", { 1, 2 } )
+		MAISkinFrame( "OpenMailFrame", {  } )
+		MAISkinFrame( "OpenMailFrame.NineSlice", {  } )
+		MAISkinFrame( "OpenMailFrameInset", {  } )
+		MAISkinFrame( "OpenMailFrameInset.NineSlice", {  } )
+		MAISkinFrame( "OpenMailScrollFrame", {  } )
 
-		MAISkinFrame( "BankFrame", { 2 } )
-		MAISkinFrame( "BankFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "BankFrameInset", { 2 } )
-		MAISkinFrame( "BankFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "BankFrameTab1", { 1, 2, 3, 4, 5, 6 }  )
-		MAISkinFrame( "BankFrameTab2", { 1, 2, 3, 4, 5, 6 }  )
+		MAISkinFrame( "BankFrame", {  } )
+		MAISkinFrame( "BankFrame.NineSlice", {  } )
+		MAISkinFrame( "BankFrameInset", {  } )
+		MAISkinFrame( "BankFrameInset.NineSlice", {  } )
+		MAISkinFrame( "BankFrameTab1", {  }  )
+		MAISkinFrame( "BankFrameTab2", {  }  )
 
-		MAISkinFrame( "GossipFrame", { 1, 2 } )
-		MAISkinFrame( "GossipFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "GossipFrameInset", { 1 } )
-		MAISkinFrame( "GossipFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "GossipGreetingScrollFrame", { 1, 2, 3 } )
+		MAISkinFrame( "GossipFrame", {  } )
+		MAISkinFrame( "GossipFrame.NineSlice", {  } )
+		MAISkinFrame( "GossipFrameInset", {  } )
+		MAISkinFrame( "GossipFrameInset.NineSlice", {  } )
+		MAISkinFrame( "GossipGreetingScrollFrame", {  } )
 
-		MAISkinFrame( "QuestFrame", { 1, 2 } )
-		MAISkinFrame( "QuestFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "QuestProgressScrollFrame", { 1, 2, 3 } )
-		MAISkinFrame( "QuestDetailScrollFrame", { 1, 2, 3 } )
-		MAISkinFrame( "QuestRewardScrollFrame", { 1, 2, 3 } )
-		MAISkinFrame( "QuestGreetingScrollFrame", { 1, 2, 3 } )
+		MAISkinFrame( "QuestFrame", {  } )
+		MAISkinFrame( "QuestFrame.NineSlice", {  } )
+		MAISkinFrame( "QuestProgressScrollFrame", {  } )
+		MAISkinFrame( "QuestDetailScrollFrame", {  } )
+		MAISkinFrame( "QuestRewardScrollFrame", {  } )
+		MAISkinFrame( "QuestGreetingScrollFrame", {  } )
 		
-		MAISkinFrame( "LootFrame", { 1, 2, 3, 4, 5 } )
-		MAISkinFrame( "LootFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "LootFrameInset", { 1 } )
-		MAISkinFrame( "LootFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
+		MAISkinFrame( "LootFrame", {  } )
+		MAISkinFrame( "LootFrame.NineSlice", {  } )
+		MAISkinFrame( "LootFrameInset", {  } )
+		MAISkinFrame( "LootFrameInset.NineSlice", {  } )
 		
-		MAISkinFrame( "ItemTextFrame", { 1, 2, 3 } )
-		MAISkinFrame( "ItemTextFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "ItemTextFrameInset", { 1 } )
-		MAISkinFrame( "ItemTextFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "ItemTextScrollFrameScrollBar", { 2, 3, 4 } )
+		MAISkinFrame( "ItemTextFrame", {  } )
+		MAISkinFrame( "ItemTextFrame.NineSlice", {  } )
+		MAISkinFrame( "ItemTextFrameInset", {  } )
+		MAISkinFrame( "ItemTextFrameInset.NineSlice", {  } )
+		MAISkinFrame( "ItemTextScrollFrameScrollBar", {  } )
 
-		MAISkinFrame( "MerchantFrame", { 1, 2, 4, 5, 6, 7, 10, 11, 12 } )
-		MAISkinFrame( "MerchantFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "MerchantFrameInset", { 1 } )
-		MAISkinFrame( "MerchantFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 } )
-		MAISkinFrame( "MerchantBuyBackItem", { 1, 2 } )
-		MAISkinFrame( "MerchantMoneyBg", { 1, 2, 3 } )
+		MAISkinFrame( "MerchantFrame", {  } )
+		MAISkinFrame( "MerchantFrame.NineSlice", {  } )
+		MAISkinFrame( "MerchantFrameInset", {  } )
+		MAISkinFrame( "MerchantFrameInset.NineSlice", {  } )
+		MAISkinFrame( "MerchantBuyBackItem", {  } )
+		MAISkinFrame( "MerchantMoneyBg", {  } )
 		MAISkinFrame( "MerchantMoneyInset" )
-		MAISkinFrame( "MerchantFrameTab1", { 1, 2, 3, 4, 5, 6 } )
-		MAISkinFrame( "MerchantFrameTab2", { 1, 2, 3, 4, 5, 6 } )
+		MAISkinFrame( "MerchantFrameTab1", {  } )
+		MAISkinFrame( "MerchantFrameTab2", {  } )
 
-		MAISkinFrame( "BackpackTokenFrame", { 1 } ) -- backpack unten
+		MAISkinFrame( "BackpackTokenFrame", {  } ) -- backpack unten
 
-		MAISkinFrame( "TradeSkillFrame", { 1, 2, 5, 6, 7, 8 }, true )
-		MAISkinFrame( "TradeSkillFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 }, true )
-		MAISkinFrame( "TradeSkillFrameInset", { 1 }, true )
-		MAISkinFrame( "TradeSkillFrameInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 }, true )
-		MAISkinFrame( "TradeSkillFrame.RecipeList.scrollBar", { 1, 2, 3, 4 }, true )
-		MAISkinFrame( "TradeSkillFrame.RecipeInset", { 1 }, true )
-		MAISkinFrame( "TradeSkillFrame.RecipeInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 }, true )
-		MAISkinFrame( "TradeSkillFrame.DetailsFrame", { 1 }, true )
-		MAISkinFrame( "TradeSkillFrame.DetailsFrame.ScrollBar", { 1, 2, 3, 4 }, true )
-		MAISkinFrame( "TradeSkillFrame.DetailInset", { 1 }, true )
-		MAISkinFrame( "TradeSkillFrame.DetailInset.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 }, true )
-		MAISkinFrame( "TradeSkillExpandButtonFrame", { 1, 2, 3, 4, 5, 6 }, true )	
+		MAISkinFrame( "TradeSkillFrame", {  }, true )
+		MAISkinFrame( "TradeSkillFrame.NineSlice", {  }, true )
+		MAISkinFrame( "TradeSkillFrameInset", {  }, true )
+		MAISkinFrame( "TradeSkillFrameInset.NineSlice", {  }, true )
+		MAISkinFrame( "TradeSkillFrame.RecipeList.scrollBar", {  }, true )
+		MAISkinFrame( "TradeSkillFrame.RecipeInset", {  }, true )
+		MAISkinFrame( "TradeSkillFrame.RecipeInset.NineSlice", {  }, true )
+		MAISkinFrame( "TradeSkillFrame.DetailsFrame", {  }, true )
+		MAISkinFrame( "TradeSkillFrame.DetailsFrame.ScrollBar", {  }, true )
+		MAISkinFrame( "TradeSkillFrame.DetailInset", {  }, true )
+		MAISkinFrame( "TradeSkillFrame.DetailInset.NineSlice", {  }, true )
+		MAISkinFrame( "TradeSkillExpandButtonFrame", {  }, true )	
 	end
 
-	--[[MAISkinFrame( "InspectFrame", { 1, 2 }, true )
-	MAISkinFrame( "InspectFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 }, true )
-	MAISkinFrame( "InspectPaperDollFrame", { 1, 2 }, true )
-	MAISkinFrame( "InspectPaperDollFrame.NineSlice", { 1, 2, 3, 4, 5, 6, 7, 8 }, true )
+	--[[MAISkinFrame( "InspectFrame", {  }, true )
+	MAISkinFrame( "InspectFrame.NineSlice", {  }, true )
+	MAISkinFrame( "InspectPaperDollFrame", {  }, true )
+	MAISkinFrame( "InspectPaperDollFrame.NineSlice", {  }, true )
 	]]
 	
 	for i = 1, 13 do
-		MAISkinFrame( "ContainerFrame" .. i, { 2, 3, 4, 5 } )
+		MAISkinFrame( "ContainerFrame" .. i, {  } )
 	end
 
 	for id = 1, 4 do

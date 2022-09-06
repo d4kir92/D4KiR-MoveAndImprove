@@ -346,8 +346,8 @@ function MAIUpdateBuffs()
 					if self.setpoint then return end
 					self.setpoint = true
 					if self.t1 then
-						buff:ClearAllPoints()
-						buff:SetPoint(self.t1, self.t2, self.t3, self.t4, self.t5)
+						self:ClearAllPoints()
+						self:SetPoint(self.t1, self.t2, self.t3, self.t4, self.t5)
 					end
 
 					self.setpoint = false
@@ -455,7 +455,7 @@ function MAIUpdateBuffs()
 					self.setpoint = false
 				end)
 
-				debuff:SetPoint(debuff:GetPoint())
+				debuff:SetPoint("CENTER")
 			end
 
 			oldd = debuff
