@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.1.5"
+MAIVERSION = "1.1.6"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -387,16 +387,6 @@ local FACTION_ALLIANCE = 1
 local spirittime = nil
 
 function MAISetupUIWidgetTopCenterContainerFrame()
-	UIWidgetTopCenterContainerFrame.textHorde = UIWidgetTopCenterContainerFrame:CreateFontString(nil, "ARTWORK")
-	UIWidgetTopCenterContainerFrame.textHorde:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
-	UIWidgetTopCenterContainerFrame.textHorde:SetPoint("TOP", UIWidgetTopCenterContainerFrame, "TOP", 144, -10)
-	UIWidgetTopCenterContainerFrame.textHorde:SetText( "" )
-
-	UIWidgetTopCenterContainerFrame.textAllia = UIWidgetTopCenterContainerFrame:CreateFontString(nil, "OVERLAY")
-	UIWidgetTopCenterContainerFrame.textAllia:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
-	UIWidgetTopCenterContainerFrame.textAllia:SetPoint("TOP", UIWidgetTopCenterContainerFrame, "TOP", -144, -10)
-	UIWidgetTopCenterContainerFrame.textAllia:SetText( "" )
-
 	UIWidgetTopCenterContainerFrame.textSpiri = UIWidgetTopCenterContainerFrame:CreateFontString(nil, "OVERLAY")
 	UIWidgetTopCenterContainerFrame.textSpiri:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
 	UIWidgetTopCenterContainerFrame.textSpiri:SetPoint("TOP", UIWidgetTopCenterContainerFrame, "TOP", 0, 16)
@@ -409,9 +399,6 @@ function MAISetupUIWidgetTopCenterContainerFrame()
 			local _, _, _, _, numHorde = GetBattlefieldTeamInfo(FACTION_HORDE)
 			local _, _, _, _, numAlliance = GetBattlefieldTeamInfo(FACTION_ALLIANCE)
 		
-			UIWidgetTopCenterContainerFrame.textHorde:SetText("H " .. numHorde)
-			UIWidgetTopCenterContainerFrame.textAllia:SetText("A " .. numAlliance)
-			
 			if spirittime then
 				UIWidgetTopCenterContainerFrame.textSpiri:SetText( tonumber(string.format("%." .. 0 .. "f", spirittime)))
 			end
@@ -434,8 +421,6 @@ function MAISetupUIWidgetTopCenterContainerFrame()
 			end
 			C_Timer.After(0.1, MAIThinkBG)
 		else
-			UIWidgetTopCenterContainerFrame.textHorde:SetText( "" )
-			UIWidgetTopCenterContainerFrame.textAllia:SetText( "" )
 			UIWidgetTopCenterContainerFrame.textSpiri:SetText( "" )
 
 			C_Timer.After(1, MAIThinkBG)
