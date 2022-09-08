@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.1.9"
+MAIVERSION = "1.2.0"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -1251,6 +1251,15 @@ function MAIGetElementList()
 
 	MAIAddElement(
 			{
+			["name"] = "BNToastFrame",
+			["lstr"] = "BattleNet Friends Notification",
+			["sw"] = 60,
+			["sh"] = 60
+		}
+	)
+
+	MAIAddElement(
+			{
 			["name"] = "MAIStatusBar",
 			["lstr"] = "statusbar",
 			["setup"] = MAISetupStatusBar
@@ -1516,6 +1525,7 @@ local ELESETTINGS = {
 		"ChatFrame1",
 		"GameTooltip",
 		"AlertFrame",
+		"BNToastFrame",
 		"GroupLootFrame1",
 		"MAISkills"
 	},
