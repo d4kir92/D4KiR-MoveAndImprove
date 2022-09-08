@@ -169,7 +169,7 @@ end
 
 function MAIWaitForUncombat( event )
 	if event == "PLAYER_ENTERING_WORLD" or not InCombatLockdown() then
-		--MAISetup()
+		MAISetup()
 		if MAIGV( "ZoomOut" ) == nil then
 			if MAIBUILD == "RETAIL" then
 				MAISV( "ZoomOut", 2.6 )
@@ -210,7 +210,7 @@ function f:OnEvent(event)
 		MAILoaded = true
 
 		if MAICreateBars then
-			--MAICreateBars()
+			MAICreateBars()
 		end
 
 		MAIWaitForUncombat(event)

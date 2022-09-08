@@ -2,7 +2,7 @@
 
 ## Title: D4KiR |cffffffff• |cff9090ffM|cffffffffove |cff9090ffA|cffffffffnd |cff9090ffI|cffffffffmprove
 
-## Version: 1.1.8
+## Version: 1.1.9
 ## X-License: GPL v3
 
 ## Notes: MAI

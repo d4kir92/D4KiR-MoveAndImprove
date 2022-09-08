@@ -1,5 +1,5 @@
 
---[[MAIMAXBAR = 10
+MAIMAXBAR = 10
 MAIMINBAR = 7
 
 local BINDBARS = {}
@@ -1028,4 +1028,3 @@ function MAISetupPetbar()
 
 	MAIUpdateActionButton()
 end
-]]
