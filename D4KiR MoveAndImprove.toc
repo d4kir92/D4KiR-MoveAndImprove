@@ -2,7 +2,7 @@
 
 ## Title: D4KiR |cffffffff• |cff9090ffM|cffffffffove |cff9090ffA|cffffffffnd |cff9090ffI|cffffffffmprove
 
-## Version: 1.1.7
+## Version: 1.1.8
 ## X-License: GPL v3
 
 ## Notes: MAI
@@ -35,8 +35,6 @@ libs/realms.lua
 libs/LIB_ranges.lua
 
 settings.lua
-
-Bindings.xml
 
 elements/skills.lua
 elements/actionbuttons.lua

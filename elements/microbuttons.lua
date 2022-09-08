@@ -1,6 +1,10 @@
 
+local mbc = 11
+if MICRO_BUTTONS then
+	mbc = getn(MICRO_BUTTONS)
+end
 MAIMicroButtons = CreateFrame( "FRAME", "MAIMicroButtons", UIParent)
-MAIMicroButtons:SetSize((CharacterMicroButton:GetWidth() - 4) * getn(MICRO_BUTTONS), CharacterMicroButton:GetHeight())
+MAIMicroButtons:SetSize((CharacterMicroButton:GetWidth() - 4) * mbc, CharacterMicroButton:GetHeight())
 MAIMicroButtons:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0)
 --MAIMicroButtons:SetMovable(true)
 --MAIMicroButtons:SetUserPlaced(true)

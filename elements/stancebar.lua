@@ -1,8 +1,10 @@
 
 local oldcou = -1
 
-StanceBar = CreateFrame( "FRAME", "StanceBar", UIParent)
-StanceBar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 100)
+if StanceBar == nil then
+	StanceBar = CreateFrame( "FRAME", "StanceBar", UIParent)
+	StanceBar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 100)
+end
 
 function UpdateStanceBarSize()
 	local cou = 0

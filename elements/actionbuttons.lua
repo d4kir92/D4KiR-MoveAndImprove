@@ -1,5 +1,5 @@
 
-MAIMAXBAR = 10
+--[[MAIMAXBAR = 10
 MAIMINBAR = 7
 
 local BINDBARS = {}
@@ -60,15 +60,17 @@ function MAIUpdateActionButton()
 		if MainMenuBarArtFrame then
 			MainMenuBarArtFrame:EnableMouse(false)
 		end
+		if MainMenuBarArtFrame and MainMenuBarArtFrame.LeftEndCap and MainMenuBarArtFrame.RightEndCap then
+			MainMenuBarArtFrame.LeftEndCap:SetTexture(nil)
+			MainMenuBarArtFrame.RightEndCap:SetTexture(nil)
+		end
 		--MainMenuBar:EnableMouse(false)
 		if MainMenuBarArtFrameBackground ~= nil then
 			MainMenuBarArtFrameBackground:EnableMouse(false)
 			MainMenuBarArtFrameBackground.BackgroundLarge:SetTexture(nil)
 			MainMenuBarArtFrameBackground.BackgroundSmall:SetTexture(nil)
-			MainMenuBarArtFrame.LeftEndCap:SetTexture(nil)
-			MainMenuBarArtFrame.RightEndCap:SetTexture(nil)
 		end
-		if MainMenuBarLeftEndCap then
+		if MainMenuBarLeftEndCap and MainMenuBarRightEndCap then
 			MainMenuBarLeftEndCap:SetTexture(nil)
 			MainMenuBarRightEndCap:SetTexture(nil)
 			for i = 0, 3 do
@@ -135,7 +137,7 @@ function MAIUpdateActionButton()
 		if ActionBar1 ~= nil and ActionBar1.btns then
 			emb = true
 
-			if MainMenuBarArtFrame.PageNumber then
+			if MainMenuBarArtFrame and MainMenuBarArtFrame.PageNumber then
 				tinsert(ActionBar1.btns, MainMenuBarArtFrame.PageNumber)
 			elseif MainMenuBarPageNumber then
 				tinsert(ActionBar1.btns, MainMenuBarPageNumber)
@@ -257,13 +259,15 @@ function MAIUpdateActionButton()
 		end
 		MAISV( "StanceBar" .. "count", cou )
 		
-		count = MAIGV( "StanceBar" .. "count" )
+		count = MAIGV( "StanceBar" .. "count" ) or 12
 		if type(MAIGV( "StanceBar" .. "rows" )) and MAIGV( "StanceBar" .. "rows" ) == "max" then
 			rows = cou
 		else
 			rows = MAIGV( "StanceBar" .. "rows" )
 		end
-		c = count / rows
+		if count and rows then
+			c = count / rows
+		end
 
 		spacing = MAIGV( "StanceBar" .. "spacing" )
 		w = MAIMathR(_G["StanceButton1"]:GetWidth()) * c + spacing * (c - 1)
@@ -873,7 +877,7 @@ function MAISetupActionButtons()
 			ActionBarDownButton:SetPoint("CENTER", 0, 0)
 		end
 
-		if MainMenuBarArtFrame.PageNumber then
+		if MainMenuBarArtFrame and MainMenuBarArtFrame.PageNumber then
 			if MainMenuBarArtFrame.PageNumber.hooked == nil then
 				MainMenuBarArtFrame.PageNumber.hooked = true
 				hooksecurefunc(MainMenuBarArtFrame.PageNumber, "SetPoint", function(self, ...)
@@ -1024,3 +1028,4 @@ function MAISetupPetbar()
 
 	MAIUpdateActionButton()
 end
+]]
