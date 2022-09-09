@@ -38,10 +38,51 @@ function MAIZoomBuffs(id)
 		local icon = _G["BuffButton" .. id .. "Icon"]
 
 		if border == nil and _G["BuffButton" .. id] ~= nil then
-			_G["BuffButton" .. id .. "Border"] = _G["BuffButton" .. id]:CreateTexture(nil, "ARTWORK")
+			_G["BuffButton" .. id .. "Border"] = _G["BuffButton" .. id]:CreateTexture("BuffButton" .. id .. "Border", "ARTWORK")
 			border = _G["BuffButton" .. id .. "Border"]
 			border:SetTexture("Interface\\AddOns\\D4KiR MoveAndImprove\\media\\border")
 			border:SetAllPoints(_G["BuffButton" .. id])
+		end
+
+		if border ~= nil and border.hooked == nil then
+			border.hooked = true
+			
+			hooksecurefunc(border, "SetVertexColor", function(self, ...)
+				if self.setvertexcolor then return end
+				self.setvertexcolor = true
+				if MAIGV( "UIColorEnabled", true ) then
+					self:SetVertexColor(MAIGetUIColor())
+				end
+				self.setvertexcolor = false
+			end)
+			MAIRegisterUIColor(border)
+		end
+
+		if icon ~= nil and icon.hooked == nil then
+			icon.hooked = true
+
+			hooksecurefunc(icon, "SetTexCoord", function(self, ...)
+				if self.settexcoord then return end
+				self.settexcoord = true
+
+				local br = FLATBORDER
+				self:SetTexCoord(br, 1 - br, br, 1 - br)
+
+				self.settexcoord = false
+			end)
+			icon:SetTexCoord(0, 1, 0, 1)
+		end
+	end
+
+	if MAIGV( "MAIBuffFrame" .. "Enabled" ) and MAIGV( "MAIBuffFrame" .. "improvements" ) and not MAIGV( "nochanges" ) then
+		local border = _G["DebuffButton" .. id .. "Border"]
+		local icon = _G["DebuffButton" .. id .. "Icon"]
+
+		if border == nil and _G["DebuffButton" .. id] ~= nil then
+			_G["DebuffButton" .. id .. "Border"] = _G["DebuffButton" .. id]:CreateTexture("DebuffButton" .. id .. "Border", "ARTWORK")
+			border = _G["DebuffButton" .. id .. "Border"]
+			border:SetTexture("Interface\\AddOns\\D4KiR MoveAndImprove\\media\\border")
+			border:SetAllPoints(_G["DebuffButton" .. id])
 		end
 
 		if border ~= nil and border.hooked == nil then

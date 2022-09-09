@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.2.0"
+MAIVERSION = "1.2.1"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -275,11 +275,11 @@ function MAIMSGS()
 end
 
 function MAIMSG( str, ... )
-	print("|cFFAAAAFF[MAI] |r" .. tostring( str ), ...)
+	print("|cff3FC7EB[MAI] |r" .. tostring( str ), ...)
 end
 
 function MAIERR( str, ... )
-	print("|cFFAAAAFF[MAI v" .. MAIVERSION .. "-|cffff0000ERROR|cFFAAAAFF] |cffff0000" .. tostring( str ), ...)
+	print("|cff3FC7EB[MAI v" .. MAIVERSION .. "-|cffff0000ERROR|cff3FC7EB] |cffff0000" .. tostring( str ), ...)
 end
 -- OUTPUT
 

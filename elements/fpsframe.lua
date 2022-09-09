@@ -5,12 +5,13 @@ FPSFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0)
 
 FPSFrame.textfps = FPSFrame:CreateFontString(nil, "ARTWORK")
 FPSFrame.textfps:SetSize(0, 15)
-FPSFrame.textfps:SetFont(STANDARD_TEXT_FONT, 10, "")
+FPSFrame.textfps:SetFont(STANDARD_TEXT_FONT, 12, "")
 FPSFrame.textfps:SetText("")
 FPSFrame.textfps:SetShadowOffset(1, -1)
 
 FPSFrame.textfps:SetPoint("CENTER", FPSFrame, "CENTER", 0, 0)
 
+local fpssetup = true
 function MAISetupFPSFrame()
     function MAIFPSThink()
         local mover = _G["FPSFrameMover"]
@@ -18,7 +19,13 @@ function MAISetupFPSFrame()
         if mover then
             local down, up, lagHome, lagWorld = GetNetStats();
 
-            FPSFrame.textfps:SetText(string.format(getglobal("FPS_FORMAT"), GetFramerate()))
+			if fpssetup then
+				fpssetup = false
+				_G["FPS_FORMAT"] = string.maireplace( _G["FPS_FORMAT"], " ", " |cff3FC7EB" )
+				_G["FPS_FORMAT"] = string.maireplace( _G["FPS_FORMAT"], "%d", "%3d" )
+			end
+
+            FPSFrame.textfps:SetText( string.format( _G["FPS_FORMAT"], GetFramerate() ) )
 
             local point, _ , relativePoint = mover:GetPoint()
 
