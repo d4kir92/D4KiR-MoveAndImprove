@@ -1,11 +1,4 @@
 
-function MAIIsCustomMinimapLoaded()
-	if IsAddOnLoaded("SexyMap") then
-		return true
-	end
-	return false
-end
-
 local ranges = {
 	[0] = 233,
 	[1] = 200,
@@ -21,8 +14,8 @@ local maimmbtnsbliz = {}
 local iconsize = 24
 local iconborder = 6
 
-function GetMinimapShape()
-	if not MAIIsCustomMinimapLoaded() then
+if not GetMinimapShape then
+	function GetMinimapShape()
 		if MAIGV( "Minimap" .. "form" ) ~= nil then
 			if MAIGV( "Minimap" .. "form" ) == "round" or MAIGV( "nochanges" ) then
 				return 'ROUND'
