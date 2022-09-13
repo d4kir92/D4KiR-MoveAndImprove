@@ -169,23 +169,34 @@ end
 
 function MAIWaitForUncombat( event )
 	if event == "PLAYER_ENTERING_WORLD" or not InCombatLockdown() then
-		MAISetup()
-		if MAIGV( "ZoomOut" ) == nil then
-			if MAIBUILD == "RETAIL" then
-				MAISV( "ZoomOut", 2.6 )
-			else
-				MAISV( "ZoomOut", 4.0 )
+		if IsAddOnLoaded("MoveAny") or IsAddOnLoaded("ImproveAny") then
+			if IsAddOnLoaded("MoveAny") then
+				MAIMSG( "DON'T use MoveAny with MoveAndImprove." )
 			end
-		end
-		if MAIGV( "WorldTextScale" ) == nil then
-			if MAIBUILD == "RETAIL" then
-				MAISV( "WorldTextScale", 1.0 )
-			else
-				MAISV( "WorldTextScale", 1.0 )
+			if IsAddOnLoaded("ImproveAny") then
+				MAIMSG( "DON'T use ImproveAny with MoveAndImprove." )
 			end
+
+			MAIMSG( "Use: MoveAndImprove OR MoveAny+ImproveAny OR only one of them." )
+		else
+			MAISetup()
+			if MAIGV( "ZoomOut" ) == nil then
+				if MAIBUILD == "RETAIL" then
+					MAISV( "ZoomOut", 2.6 )
+				else
+					MAISV( "ZoomOut", 4.0 )
+				end
+			end
+			if MAIGV( "WorldTextScale" ) == nil then
+				if MAIBUILD == "RETAIL" then
+					MAISV( "WorldTextScale", 1.0 )
+				else
+					MAISV( "WorldTextScale", 1.0 )
+				end
+			end
+			ConsoleExec( "cameraDistanceMaxZoomFactor " .. MAIGV( "ZoomOut" ) )
+			ConsoleExec( "WorldTextScale " .. MAIGV( "WorldTextScale" ) )
 		end
-		ConsoleExec( "cameraDistanceMaxZoomFactor " .. MAIGV( "ZoomOut" ) )
-		ConsoleExec( "WorldTextScale " .. MAIGV( "WorldTextScale" ) )
 	else
 		C_Timer.After( 0.1, function()
 			MAIWaitForUncombat( event )

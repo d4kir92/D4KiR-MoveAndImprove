@@ -625,6 +625,9 @@ function MAISetupGryphonRight()
 end
 
 function MAICreateBars()
+	if IsAddOnLoaded("MoveAny") or IsAddOnLoaded("ImproveAny") then
+		return
+	end
 	MAIActionbarsCheckDefault()
 
 	local ab1 = _G["ActionButton1"]
