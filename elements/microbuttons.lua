@@ -7,7 +7,6 @@ MAIMicroButtons = CreateFrame( "FRAME", "MAIMicroButtons", UIParent)
 MAIMicroButtons:SetSize((CharacterMicroButton:GetWidth() - 4) * mbc, CharacterMicroButton:GetHeight())
 MAIMicroButtons:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0)
 --MAIMicroButtons:SetMovable(true)
---MAIMicroButtons:SetUserPlaced(true)
 
 function MAIUpdateMAIMicroButtons()
 	if MAIMicroButtons.once then return end
@@ -50,7 +49,7 @@ function MAIUpdateMAIMicroButtons()
 				microbtn:SetParent(MAIMicroButtons)
 				if microbtn.OldSetPoint ~= nil then
 					microbtn:SetMovable(true)
-					--microbtn:SetUserPlaced(true)
+
 					if (i-1) % (tabLen / rows) == 0 and i ~= 1 then
 						MAISV( "MAIMicroButtons" .. "row", MAIGV( "MAIMicroButtons" .. "row" ) + 1 )
 						microbtn:OldClearAllPoints()
@@ -151,7 +150,6 @@ function MAISetupMAIMicroButtons()
 		end
 
 		btn:SetMovable(true)
-		--btn:SetUserPlaced(true)
 		btn:SetParent(MAIMicroButtons)
 		if btn.OldSetPoint == nil then
 			btn.OldSetPoint = btn.SetPoint
@@ -169,7 +167,6 @@ function MAISetupMAIMicroButtons()
 				self.setpoint = true
 
 				self:SetMovable(true)
-				--self:SetUserPlaced(true)
 				self:OldClearAllPoints()
 				if MAIBUILD == "RETAIL" then
 					self:OldSetPoint("TOPLEFT", MAIMicroButtons, "TOPLEFT", (i - 1) * (self:GetWidth() - 4), 0)

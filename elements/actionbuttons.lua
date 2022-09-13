@@ -156,7 +156,6 @@ function MAIUpdateActionButton()
 			local btn = _G[btnname]
 			
 			btn:SetMovable(true)
-			--btn:SetUserPlaced(true)
 
 			local pname = ""
 			if _G[btnname]:GetParent() then
@@ -700,7 +699,7 @@ function MAICreateBars()
 			end
 			
 			ActionBar:SetMovable(true)
-			--ActionBar:SetUserPlaced(true)
+
 			local point = MAIGV( "ActionBar" .. i .. "point" )
 			local parent = nil
 			local relativePoint = MAIGV( "ActionBar" .. i .. "relativePoint" )
@@ -760,7 +759,6 @@ function MAICreateBars()
 									self.force = false
 									self.setpoint = true
 									self:SetMovable(true)
-									--self:SetUserPlaced(true)
 									self:ClearAllPoints()
 									self:SetPoint("TOPLEFT", _G["ActionBar1Mover"], "TOPLEFT", 0, 0)
 									self.setpoint = false
@@ -829,7 +827,6 @@ function MAISetupActionButtons()
 					if self.setpoint then return end
 					self.setpoint = true
 					self:SetMovable(true)
-					--self:SetUserPlaced(true)
 					if MAIIsExtraBarsEnabled() then
 						if self:IsShown() and not InCombatLockdown() then
 							self:Hide()
@@ -857,7 +854,6 @@ function MAISetupActionButtons()
 					if self.setpoint then return end
 					self.setpoint = true
 					self:SetMovable(true)
-					--self:SetUserPlaced(true)
 					if MAIIsExtraBarsEnabled() then
 						if self:IsShown() and not InCombatLockdown() then
 							self:Hide()

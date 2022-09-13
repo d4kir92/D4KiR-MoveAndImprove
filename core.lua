@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.2.4"
+MAIVERSION = "1.2.5"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -3384,11 +3384,6 @@ function MAIElementSetup(element)
 									mover.frame:SetMovable(true)
 								end
 							end
-							if element.setuserplaced then
-								if mover.frame.SetUserPlaced then
-									mover.frame:SetUserPlaced(true)
-								end
-							end
 
 							-- IGNORE BLIZZARD
 							mover.frame:SetAttribute('ignoreFramePositionManager', true )
@@ -3469,11 +3464,6 @@ function MAIElementSetup(element)
 											s:SetMovable(true)
 										end
 									end
-									if element.setuserplaced then
-										if s.SetUserPlaced then
-											s:SetUserPlaced(true)
-										end
-									end
 
 									if s.OldClearAllPoints and s.OldSetPoint and s ~= GameTooltip then
 										if mov.element.name ~= "Minimap" or Minimap:GetParent() ~= FarmHud then
@@ -3498,11 +3488,6 @@ function MAIElementSetup(element)
 								if element.setmovable or element.setuserplaced then
 									if mover.frame.SetMovable then
 										mover.frame:SetMovable(true)
-									end
-								end
-								if element.setuserplaced then
-									if mover.frame.SetUserPlaced then
-										mover.frame:SetUserPlaced(true)
 									end
 								end
 

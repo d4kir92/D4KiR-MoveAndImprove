@@ -64,7 +64,6 @@ function MAISetupGameTooltip()
 	end
 
 	--GameTooltip:SetMovable(true)
-	--GameTooltip:SetUserPlaced(true)
 
 	hooksecurefunc(GameTooltip, "SetPoint", function(self, ...)
 		if self.setpoint then return end

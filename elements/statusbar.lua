@@ -88,7 +88,6 @@ function MAISetupStatusBar()
 	MAIStatusBar:SetHeight( MAIGV( "MAIStatusBar" .. "height" ) )
 	
 	MAIStatusBar:SetMovable(true)
-	--MAIStatusBar:SetUserPlaced(true)
 		
 	stabar:UnregisterAllEvents()
 	stabar.Show = stabar.Hide
