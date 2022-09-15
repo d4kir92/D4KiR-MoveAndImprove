@@ -64,7 +64,7 @@ function MAILang_ruRU()
 		["profile"] = "Профиль",
 		["profiles"] = "Профили",
 		["pvpcapturestatus"] = "Статус Захвата Флага ПВП",
-		["questlog"] = "Журнал заданий",
+		["questtracker"] = "Журнал заданий",
 		["remove"] = "Удалить",
 		["removeprofile"] = "Удалить Профиль",
 		["repbar"] = "Панель Репутации",

@@ -64,7 +64,7 @@ function MAILang_frFR()
 		["profile"] = "Profile",
 		["profiles"] = "Profils",
 		["pvpcapturestatus"] = "Statut de capture de drapeau JcJ",
-		["questlog"] = "Questlog",
+		["questtracker"] = "QuestTracker",
 		["remove"] = "Remove",
 		["removeprofile"] = "Supprimer le profil",
 		["repbar"] = "Reputation Bar",

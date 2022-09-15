@@ -68,7 +68,7 @@ function MAILang_deDE()
 		["profile"] = "Profil",
 		["profiles"] = "Profile",
 		["pvpcapturestatus"] = "PvP Flaggen Eroberungs Status",
-		["questlog"] = "Questlog",
+		["questtracker"] = "QuestTracker",
 		["remove"] = "Entfernen",
 		["removeprofile"] = "Profil entfernen",
 		["repbar"] = "Ruf Leiste",

@@ -64,7 +64,7 @@ function MAILang_itIT()
 		["profile"] = "Profilo",
 		["profiles"] = "Profili",
 		["pvpcapturestatus"] = "Stato cattura bandiera PvP",
-		["questlog"] = "Questlog",
+		["questtracker"] = "QuestTracker",
 		["remove"] = "Rimuovi",
 		["removeprofile"] = "Rimuovi profilo",
 		["repbar"] = "Barra della reputazione",

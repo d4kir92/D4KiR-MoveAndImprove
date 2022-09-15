@@ -66,7 +66,7 @@ function MAILang_ptBR()
 		["profile"] = "Perfil",
 		["profiles"] = "Profiles",
 		["pvpcapturestatus"] = "PvP Flag Capture Status",
-		["questlog"] = "Questlog",
+		["questtracker"] = "QuestTracker",
 		["remove"] = "Remover",
 		["removeprofile"] = "Remove Profile",
 		["repbar"] = "Reputation Bar",

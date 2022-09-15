@@ -64,7 +64,7 @@ function MAILang_zhTW()
 		["profile"] = "個人資料",
 		["profiles"] = "配置文件",
 		["pvpcapturestatus"] = "PvP 標誌捕獲狀態",
-		["questlog"] = "任務日誌",
+		["questtracker"] = "任務日誌",
 		["remove"] = "刪除",
 		["removeprofile"] = "刪除配置文件",
 		["repbar"] = "聲望欄",

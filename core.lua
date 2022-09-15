@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.2.5"
+MAIVERSION = "1.2.6"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -990,23 +990,45 @@ function MAIGetElementList()
 		)
 	end
 
-	if not IsAddOnLoaded("Questie") then
+	
+	if ObjectiveTrackerFrame == nil then
+		ObjectiveTrackerFrame = CreateFrame( "FRAME", "ObjectiveTrackerFrame", UIParent )
+		ObjectiveTrackerFrame:SetSize( 224, 600 )
+		ObjectiveTrackerFrame:SetPoint( "TOPRIGHT", UIParent, "TOPRIGHT", 0, 0 )
+		
+		if QuestWatchFrame then
+			hooksecurefunc( QuestWatchFrame, "SetPoint", function( self, ... )
+				if self.masetpoint then return end
+				self.masetpoint = true
+				QuestWatchFrame:ClearAllPoints()
+				QuestWatchFrame:SetPoint( "TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", 0, 0 )
+				self.masetpoint = false
+			end )
+			QuestWatchFrame:ClearAllPoints()
+			QuestWatchFrame:SetPoint( "TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", 0, 0 )
+
+			QuestWatchFrame:SetSize( ObjectiveTrackerFrame:GetSize() )
+		end
+
+		if WatchFrame then
+			hooksecurefunc( WatchFrame, "SetPoint", function( self, ... )
+				if self.masetpoint then return end
+				self.masetpoint = true
+				WatchFrame:ClearAllPoints()
+				WatchFrame:SetPoint( "TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", 0, 0 )
+				self.masetpoint = false
+			end )
+			WatchFrame:ClearAllPoints()
+			WatchFrame:SetPoint( "TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", 0, 0 )
+
+			WatchFrame:SetSize( ObjectiveTrackerFrame:GetSize() )
+		end
+		
 		MAIAddElement(
 			{
 				["name"] = "ObjectiveTrackerFrame",
-				["lstr"] = "questlog",
+				["lstr"] = "questtracker",
 				["setup"] = MAISetupObjectiveTrackerFrame,
-				["sw"] = 235,
-				["sh"] = 600,
-				["anchor"] = "TOPLEFT",
-				["forcedrag"] = true
-			}
-		)
-		MAIAddElement(
-			{
-				["name"] = "QuestWatchFrame",
-				["lstr"] = "questlog",
-				["setup"] = MAISetupQuestWatchFrame,
 				["sw"] = 235,
 				["sh"] = 600,
 				["anchor"] = "TOPLEFT",
@@ -2180,12 +2202,10 @@ function MAISetupMAIMENU()
 				end
 			end
 
-			if not IsAddOnLoaded("Questie") then
-				if ObjectiveTrackerFrame then
-					tinsert(ELESETTINGS["Interface"], "ObjectiveTrackerFrame")
-				elseif QuestWatchFrame then
-					tinsert(ELESETTINGS["Interface"], "QuestWatchFrame")
-				end
+			if ObjectiveTrackerFrame then
+				tinsert(ELESETTINGS["Interface"], "ObjectiveTrackerFrame")
+			elseif QuestWatchFrame then
+				tinsert(ELESETTINGS["Interface"], "QuestWatchFrame")
 			end
 
 			for i = 1, 4 do

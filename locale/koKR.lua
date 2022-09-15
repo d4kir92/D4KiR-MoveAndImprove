@@ -64,7 +64,7 @@ function MAILang_koKR()
 		["profile"] = "프로필",
 		["profiles"] = "프로필",
 		["pvpcapturestatus"] = "PvP 깃발 캡처 상태",
-		["questlog"] = "퀘스트로그",
+		["questtracker"] = "퀘스트로그",
 		["remove"] = "제거",
 		["removeprofile"] = "프로필 제거",
 		["repbar"] = "평판 표시줄",

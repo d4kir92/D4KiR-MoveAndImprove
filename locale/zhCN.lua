@@ -64,7 +64,7 @@ function MAILang_zhCN()
 		["profile"] = "配置文件",
 		["profiles"] = "Profiles",
 		["pvpcapturestatus"] = "PvP旗帜捕获状态",
-		["questlog"] = "任务记录",
+		["questtracker"] = "任务记录",
 		["remove"] = "移除",
 		["removeprofile"] = "Remove Profile",
 		["repbar"] = "Reputation Bar",

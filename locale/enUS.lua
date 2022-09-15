@@ -103,7 +103,7 @@ function MAILang_enUS()
 		["profile"] = "Profile",
 		["profiles"] = "Profiles",
 		["pvpcapturestatus"] = "PvP Flag Capture Status",
-		["questlog"] = "Questlog",
+		["questtracker"] = "QuestTracker",
 		["remove"] = "Remove",
 		["removeprofile"] = "Remove Profile",
 		["repbar"] = "Reputation Bar",
