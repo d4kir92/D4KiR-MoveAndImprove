@@ -66,7 +66,7 @@ function MAICreateMinimapButtonsFrame()
 	if Move_And_Improve then
 		icon = LibStub("LibDBIcon-1.0", true)
 		if icon then
-			icon:Register("Move_And_Improve", Move_And_Improve, MAIGV( "mmicon" ))
+			icon:Register( "Move_And_Improve", Move_And_Improve, MAIGV( "mmicon", {} ) )
 		end
 	end
 	

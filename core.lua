@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.2.7"
+MAIVERSION = "1.2.8"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -990,7 +990,6 @@ function MAIGetElementList()
 		)
 	end
 
-	
 	if ObjectiveTrackerFrame == nil then
 		ObjectiveTrackerFrame = CreateFrame( "FRAME", "ObjectiveTrackerFrame", UIParent )
 		ObjectiveTrackerFrame:SetSize( 224, 600 )
@@ -1023,19 +1022,18 @@ function MAIGetElementList()
 
 			WatchFrame:SetSize( ObjectiveTrackerFrame:GetSize() )
 		end
-		
-		MAIAddElement(
-			{
-				["name"] = "ObjectiveTrackerFrame",
-				["lstr"] = "questtracker",
-				["setup"] = MAISetupObjectiveTrackerFrame,
-				["sw"] = 235,
-				["sh"] = 600,
-				["anchor"] = "TOPLEFT",
-				["forcedrag"] = true
-			}
-		)
 	end
+	MAIAddElement(
+		{
+			["name"] = "ObjectiveTrackerFrame",
+			["lstr"] = "questtracker",
+			["setup"] = MAISetupObjectiveTrackerFrame,
+			["sw"] = 235,
+			["sh"] = 600,
+			["anchor"] = "TOPLEFT",
+			["forcedrag"] = true
+		}
+	)
 
 	MAIAddElement(
 		{
@@ -2094,10 +2092,10 @@ function MAISetupMAIMENU()
 			MAIMENUELEMENTS:SetScript("OnDragStart", MAIMENUELEMENTS.StartMoving)
 			MAIMENUELEMENTS:SetScript("OnDragStop", MAIMENUELEMENTS.StopMovingOrSizing)
 
-			MAIMENUELEMENTS.CLOSE = CreateFrame("Button", "MAIMENUELEMENTS.CLOSE", MAIMENUELEMENTS, "UIPanelCloseButton")
-			MAIMENUELEMENTS.CLOSE:SetSize(btnh, btnh)
-			MAIMENUELEMENTS.CLOSE:SetText(getglobal("CLOSEUI"))
-			MAIMENUELEMENTS.CLOSE:SetPoint("TOPLEFT", MAIMENUELEMENTS, "TOPLEFT", MAIMENUELEMENTS:GetWidth() - btnh - sbr, -sbr)
+			MAIMENUELEMENTS.CLOSE = CreateFrame( "Button", "MAIMENUELEMENTS.CLOSE", MAIMENUELEMENTS, "UIPanelButtonTemplate" ) --"UIPanelCloseButton")
+			MAIMENUELEMENTS.CLOSE:SetSize( btnw, btnh )
+			MAIMENUELEMENTS.CLOSE:SetText( SAVE )
+			MAIMENUELEMENTS.CLOSE:SetPoint("TOPLEFT", MAIMENUELEMENTS, "TOPLEFT", MAIMENUELEMENTS:GetWidth() - btnw - sbr, -sbr)
 			MAIMENUELEMENTS.CLOSE:SetScript("OnClick", function()
 				MAIMENUELEMENTS:Hide()
 
@@ -2204,8 +2202,6 @@ function MAISetupMAIMENU()
 
 			if ObjectiveTrackerFrame then
 				tinsert(ELESETTINGS["Interface"], "ObjectiveTrackerFrame")
-			elseif QuestWatchFrame then
-				tinsert(ELESETTINGS["Interface"], "QuestWatchFrame")
 			end
 
 			for i = 1, 4 do
