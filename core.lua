@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.2.8"
+MAIVERSION = "1.2.9"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -6239,66 +6239,81 @@ function MAISetup()
 
 	MAISetupLFG()
 
-	local texts = {
-		QuestInfoTitleHeader,
-		QuestInfoQuestType,
-		QuestInfoObjectivesHeader,
-		QuestInfoObjectivesText,
-		QuestInfoObjective1,
-		QuestInfoObjective2,
-		QuestInfoObjective3,
-		QuestInfoObjective4,
-		QuestInfoObjective5,
-		QuestInfoObjective6,
-		QuestInfoDescriptionHeader,
-		QuestInfoDescriptionText,
-		QuestInfoRewardsFrame.Header,
-		QuestInfoRewardsFrame.ItemChooseText,
-		QuestInfoRewardsFrame.ItemReceiveText,
-		QuestInfoRewardsFrameHonorReceiveText,
-		QuestInfoXPFrame.ReceiveText,
-		QuestProgressTitleText,
-		QuestProgressText,
-		QuestInfoRewardText,
-		GreetingText,
-		AvailableQuestsText,
-		CurrentQuestsText,
-		QuestProgressRequiredItemsText,
-		GossipGreetingText,
+	if MAIGV( "FrameColorEnabled", true ) then
+		local texts = {
+			QuestInfoTitleHeader,
+			QuestInfoQuestType,
+			QuestInfoObjectivesHeader,
+			QuestInfoObjectivesText,
+			QuestInfoObjective1,
+			QuestInfoObjective2,
+			QuestInfoObjective3,
+			QuestInfoObjective4,
+			QuestInfoObjective5,
+			QuestInfoObjective6,
+			QuestInfoDescriptionHeader,
+			QuestInfoDescriptionText,
+			QuestInfoRewardsFrame.Header,
+			QuestInfoRewardsFrame.ItemChooseText,
+			QuestInfoRewardsFrame.ItemReceiveText,
+			QuestInfoRewardsFrameHonorReceiveText,
+			QuestInfoXPFrame.ReceiveText,
+			QuestProgressTitleText,
+			QuestProgressText,
+			QuestInfoRewardText,
+			GreetingText,
+			AvailableQuestsText,
+			CurrentQuestsText,
+			QuestProgressRequiredItemsText,
+			GossipGreetingText,
+			
+			GossipFrameGreetingPanel,
+			QuestTitleButton1,
+			QuestTitleButton2,
+			QuestTitleButton3,
+			QuestTitleButton4,
+			QuestTitleButton5,
+			QuestTitleButton6,
+			GossipTitleButton1,
+			GossipTitleButton2,
+			GossipTitleButton3,
+			GossipTitleButton4,
+			GossipTitleButton5,
+			GossipTitleButton6
+		}
 		
-		GossipFrameGreetingPanel,
-		QuestTitleButton1,
-		QuestTitleButton2,
-		QuestTitleButton3,
-		QuestTitleButton4,
-		QuestTitleButton5,
-		QuestTitleButton6,
-		GossipTitleButton1,
-		GossipTitleButton2,
-		GossipTitleButton3,
-		GossipTitleButton4,
-		GossipTitleButton5,
-		GossipTitleButton6
-	}
-	for i, text in pairs( texts ) do
-		if text then
-			if text.GetRegions then
-				for i, tex in pairs( { text:GetRegions() } ) do
-					if tex.SetTextColor then
-						hooksecurefunc( tex, "SetTextColor", function( self, color )
+		for i, text in pairs( texts ) do
+			if text then
+				if text.GetRegions then
+					for i, tex in pairs( { text:GetRegions() } ) do
+						if tex.SetTextColor then
+							hooksecurefunc( tex, "SetTextColor", function( self, color )
+								if self.maisettextcolor then return end
+								self.maisettextcolor = true
+								self:SetTextColor( MAITextColor( MAIGetFrameColor() ) )
+								self.maisettextcolor = false
+							end )
+							tex:SetTextColor( 1, 1, 1, 1 )
+
+							hooksecurefunc( "MAIFrameColor", function()
+								tex:SetTextColor( 1, 1, 1, 1 )
+							end )
+						end
+					end
+					if text.SetTextColor then
+						hooksecurefunc( text, "SetTextColor", function( self, color )
 							if self.maisettextcolor then return end
 							self.maisettextcolor = true
 							self:SetTextColor( MAITextColor( MAIGetFrameColor() ) )
 							self.maisettextcolor = false
 						end )
-						tex:SetTextColor( 1, 1, 1, 1 )
+						text:SetTextColor( 1, 1, 1, 1 )
 
 						hooksecurefunc( "MAIFrameColor", function()
-							tex:SetTextColor( 1, 1, 1, 1 )
+							text:SetTextColor( 1, 1, 1, 1 )
 						end )
 					end
-				end
-				if text.SetTextColor then
+				else
 					hooksecurefunc( text, "SetTextColor", function( self, color )
 						if self.maisettextcolor then return end
 						self.maisettextcolor = true
@@ -6311,22 +6326,10 @@ function MAISetup()
 						text:SetTextColor( 1, 1, 1, 1 )
 					end )
 				end
-			else
-				hooksecurefunc( text, "SetTextColor", function( self, color )
-					if self.maisettextcolor then return end
-					self.maisettextcolor = true
-					self:SetTextColor( MAITextColor( MAIGetFrameColor() ) )
-					self.maisettextcolor = false
-				end )
-				text:SetTextColor( 1, 1, 1, 1 )
-
-				hooksecurefunc( "MAIFrameColor", function()
-					text:SetTextColor( 1, 1, 1, 1 )
-				end )
 			end
 		end
 	end
-	
+
 	if MAIBUILD ~= "RETAIL" then
 		MAISkinFrame( "WorldMapFrame.BorderFrame", {  } )
 
