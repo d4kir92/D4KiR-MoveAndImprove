@@ -4,6 +4,10 @@ function MAISetupTargetFrame()
 		TargetFrame:Show()
 		TargetFrame:Hide()
 	end
+	
+	if not MAIGV( "TargetFrame" .. "showpvpicon", true ) then
+		TargetFrameTextureFramePVPIcon:SetParent( MAIHIDDEN )
+	end
 
 	MAIRegisterUIColor(TargetFrameTextureFrameTexture)
 	MAIRegisterUIColor(TargetFrameToTTextureFrameTexture)

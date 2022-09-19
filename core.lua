@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.2.9"
+MAIVERSION = "1.3.0"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -993,7 +993,7 @@ function MAIGetElementList()
 	if ObjectiveTrackerFrame == nil then
 		ObjectiveTrackerFrame = CreateFrame( "FRAME", "ObjectiveTrackerFrame", UIParent )
 		ObjectiveTrackerFrame:SetSize( 224, 600 )
-		ObjectiveTrackerFrame:SetPoint( "TOPRIGHT", UIParent, "TOPRIGHT", 0, 0 )
+		ObjectiveTrackerFrame:SetPoint( "TOPRIGHT", UIParent, "TOPRIGHT", -85, -180 )
 		
 		if QuestWatchFrame then
 			hooksecurefunc( QuestWatchFrame, "SetPoint", function( self, ... )
@@ -2102,12 +2102,7 @@ function MAISetupMAIMENU()
 				MAISV( "menu", true )
 				MAISV( "toggler", false )
 
-				if not MAICheckIfSame(MAITAB["PROFILES"][MAIGCP()], OLDMAITAB) then
-					C_UI.Reload()
-				end
-				if mcur == 0 then
-					C_UI.Reload()
-				end
+				C_UI.Reload()
 
 				C_Timer.After(0.1, MAIOpenMenu)
 			end)
@@ -2317,12 +2312,7 @@ function MAISetupMAIMENU()
 				MAISV( "menu", true )
 				MAISV( "toggler", false )
 
-				if not MAICheckIfSame(MAITAB["PROFILES"][MAIGCP()], OLDMAITAB) then
-					C_UI.Reload()
-				end
-				if mcur == 0 then
-					C_UI.Reload()
-				end
+				C_UI.Reload()
 
 				C_Timer.After(0.1, MAIOpenMenu)
 			end)
@@ -4841,6 +4831,22 @@ function MAIElementSetup(element)
 						showtotemtimer.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
 						showtotemtimer.text:SetPoint("LEFT", showtotemtimer, "RIGHT", 0, 0)
 						showtotemtimer.text:SetText(MAIGT("totemtimer"))
+
+						if MAIGV( element.name .. "showpvpicon" ) == nil then
+							MAISV( element.name .. "showpvpicon", true )
+						end
+						local showpvpicon = CreateFrame("CheckButton", "showpvpicon", mover.tab10.content, "ChatConfigCheckButtonTemplate")
+						showpvpicon:SetSize(20, 20)
+						showpvpicon:SetPoint("TOPLEFT", 10, -50)
+						showpvpicon:SetChecked(MAIGV( element.name .. "showpvpicon" ) )
+						showpvpicon:SetScript("OnClick", function(self)
+							local newval = self:GetChecked()
+							MAISV( element.name .. "showpvpicon", newval )
+						end)
+						showpvpicon.text = showpvpicon:CreateFontString(nil, "ARTWORK")
+						showpvpicon.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						showpvpicon.text:SetPoint("LEFT", showpvpicon, "RIGHT", 0, 0)
+						showpvpicon.text:SetText(MAIGT("showpvpicon"))
 					end
 
 					if element.name == "TargetFrame" then
@@ -4890,6 +4896,22 @@ function MAIElementSetup(element)
 						ilvl.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
 						ilvl.text:SetPoint("LEFT", ilvl, "RIGHT", 0, 0)
 						ilvl.text:SetText(MAIGT("ilvl"))
+
+						if MAIGV( element.name .. "showpvpicon" ) == nil then
+							MAISV( element.name .. "showpvpicon", true )
+						end
+						local showpvpicon = CreateFrame("CheckButton", "showpvpicon", mover.tab11.content, "ChatConfigCheckButtonTemplate")
+						showpvpicon:SetSize(20, 20)
+						showpvpicon:SetPoint("TOPLEFT", 10, -50)
+						showpvpicon:SetChecked(MAIGV( element.name .. "showpvpicon" ) )
+						showpvpicon:SetScript("OnClick", function(self)
+							local newval = self:GetChecked()
+							MAISV( element.name .. "showpvpicon", newval )
+						end)
+						showpvpicon.text = showpvpicon:CreateFontString(nil, "ARTWORK")
+						showpvpicon.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						showpvpicon.text:SetPoint("LEFT", showpvpicon, "RIGHT", 0, 0)
+						showpvpicon.text:SetText(MAIGT("showpvpicon"))
 					end
 
 					mover.settings.SelectTab(mover.tab1)

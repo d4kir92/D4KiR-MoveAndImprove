@@ -44,6 +44,10 @@ function MAISetupPlayerFrame()
 		end
 	end
 
+	if not MAIGV( "PlayerFrame" .. "showpvpicon", true ) then
+		PlayerPVPIcon:SetParent( MAIHIDDEN )
+	end
+
 	MAIRegisterUIColor(PlayerFrameTexture)
 end
 
