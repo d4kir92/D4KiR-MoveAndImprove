@@ -1590,131 +1590,133 @@ hooksecurefunc(GameTooltip, "AddLine", function(self, text)
 	end
 end)
 
-local LFGFlagsFrame = CreateFrame("Frame")
-LFGFlagsFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-LFGFlagsFrame.loaded = false
-LFGFlagsFrame:SetScript("OnEvent", function(self, event, ...)
-	MAISetupLFG()
-end)
+if MAIBUILD == "RETAIL" then
+	local LFGFlagsFrame = CreateFrame("Frame")
+	LFGFlagsFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	LFGFlagsFrame.loaded = false
+	LFGFlagsFrame:SetScript("OnEvent", function(self, event, ...)
+		MAISetupLFG()
+	end)
 
-function MAISetupLFG()
-	if MAILoaded and LFGListApplicationViewer_UpdateApplicantMember and LFGFlagsFrame.loaded == false then
-		LFGFlagsFrame.loaded = true
+	function MAISetupLFG()
+		if MAILoaded and LFGListApplicationViewer_UpdateApplicantMember and LFGFlagsFrame.loaded == false then
+			LFGFlagsFrame.loaded = true
 
 
+			
+			-- FLAG
+			if MAIGV( "mailfgflags" ) == nil then
+				MAISV( "mailfgflags", true )
+			end
+			local mailfgflags = CreateFrame("CheckButton", "mailfgflags", PVEFrame, "UICheckButtonTemplate")
+			mailfgflags:SetSize(20, 20)
+			mailfgflags:SetPoint("TOPLEFT", PVEFrame, "TOPLEFT", 10, -60)
+			mailfgflags:SetScript("OnClick", function(self)
+				if MAILoaded then
+					if self:GetChecked() then
+						MAISV( "mailfgflags", true )
+					else
+						MAISV( "mailfgflags", false )
+					end
+
+					if LFGListFrame.SearchPanel:IsShown() then
+						LFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel)
+					elseif LFGListFrame.ApplicationViewer:IsShown() then
+						LFGListApplicationViewer_UpdateResultList(LFGListFrame.ApplicationViewer)
+						LFGListApplicationViewer_UpdateResults(LFGListFrame.ApplicationViewer)
+					end
+				end
+			end)
+			mailfgflags:SetChecked( MAIGV( "mailfgflags" ) )
 		
-		-- FLAG
-		if MAIGV( "mailfgflags" ) == nil then
-			MAISV( "mailfgflags", true )
-		end
-		local mailfgflags = CreateFrame("CheckButton", "mailfgflags", PVEFrame, "UICheckButtonTemplate")
-		mailfgflags:SetSize(20, 20)
-		mailfgflags:SetPoint("TOPLEFT", PVEFrame, "TOPLEFT", 10, -60)
-		mailfgflags:SetScript("OnClick", function(self)
-			if MAILoaded then
-				if self:GetChecked() then
-					MAISV( "mailfgflags", true )
-				else
-					MAISV( "mailfgflags", false )
-				end
+			mailfgflags.text = mailfgflags:CreateFontString(nil, "OVERLAY")
+			mailfgflags.text:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
+			mailfgflags.text:SetPoint("LEFT", mailfgflags, "RIGHT", 2, 0)
+			mailfgflags.text:SetText(getglobal("LANGUAGE"))
 
+			function MAILFGFlagsThink()
 				if LFGListFrame.SearchPanel:IsShown() then
-					LFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel)
+					mailfgflags:Show()
 				elseif LFGListFrame.ApplicationViewer:IsShown() then
-					LFGListApplicationViewer_UpdateResultList(LFGListFrame.ApplicationViewer)
-					LFGListApplicationViewer_UpdateResults(LFGListFrame.ApplicationViewer)
-				end
-			end
-		end)
-		mailfgflags:SetChecked( MAIGV( "mailfgflags" ) )
-	
-		mailfgflags.text = mailfgflags:CreateFontString(nil, "OVERLAY")
-		mailfgflags.text:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
-		mailfgflags.text:SetPoint("LEFT", mailfgflags, "RIGHT", 2, 0)
-		mailfgflags.text:SetText(getglobal("LANGUAGE"))
-
-		function MAILFGFlagsThink()
-			if LFGListFrame.SearchPanel:IsShown() then
-				mailfgflags:Show()
-			elseif LFGListFrame.ApplicationViewer:IsShown() then
-				mailfgflags:Show()
-			else
-				mailfgflags:Hide()
-			end
-			C_Timer.After(0.2, MAILFGFlagsThink)
-		end
-		MAILFGFlagsThink()
-
-		hooksecurefunc("LFGListApplicationViewer_UpdateApplicantMember", function(member, id, index)
-			local name = C_LFGList.GetApplicantMemberInfo(id, index)
-			if name then
-				local server = ""
-				local s, e = string.find(name, "-")
-				if s then
-					server = strsub(name, s + 1)
+					mailfgflags:Show()
 				else
-					server = GetRealmName()
+					mailfgflags:Hide()
 				end
-
-				local realmID = MAIGetRealmIDByName(server, member)
-				local lang = MAIGetRealmLangByID(realmID)
-	
-				if lang and MAIGV( "mailfgflags" ) then
-					member.Name:SetText("|T".."Interface\\Addons\\D4KiR MoveAndImprove\\media\\" .. lang .. ":12:24:0:0|t" .. " " .. member.Name:GetText())
-				end
+				C_Timer.After(0.2, MAILFGFlagsThink)
 			end
-		end)
+			MAILFGFlagsThink()
 
-		hooksecurefunc("LFGListSearchEntry_Update", function(self, ...)
-			local sri = C_LFGList.GetSearchResultInfo(self.resultID)
-			local name = sri.leaderName
-			if name and MAIGV( "mailfgflags" ) then
-				self.Name:SetText(MAIGetFlagString(name) .. " " .. self.Name:GetText())
-			end
-		end)
+			hooksecurefunc("LFGListApplicationViewer_UpdateApplicantMember", function(member, id, index)
+				local name = C_LFGList.GetApplicantMemberInfo(id, index)
+				if name then
+					local server = ""
+					local s, e = string.find(name, "-")
+					if s then
+						server = strsub(name, s + 1)
+					else
+						server = GetRealmName()
+					end
 
-
-
-		-- Smart Filter
-		if MAIGV( "maismartfilter" ) == nil then
-			MAISV( "maismartfilter", true )
-		end
-		local maismartfilter = CreateFrame("CheckButton", "maismartfilter", PVEFrame, "UICheckButtonTemplate")
-		maismartfilter:SetSize(20, 20)
-		maismartfilter:SetPoint("TOPLEFT", PVEFrame, "TOPLEFT", 10, -75)
-		maismartfilter:SetScript("OnClick", function(self)
-			if MAILoaded then
-				if self:GetChecked() then
-					MAISV( "maismartfilter", true )
-				else
-					MAISV( "maismartfilter", false )
+					local realmID = MAIGetRealmIDByName(server, member)
+					local lang = MAIGetRealmLangByID(realmID)
+		
+					if lang and MAIGV( "mailfgflags" ) then
+						member.Name:SetText("|T".."Interface\\Addons\\D4KiR MoveAndImprove\\media\\" .. lang .. ":12:24:0:0|t" .. " " .. member.Name:GetText())
+					end
 				end
-	
+			end)
+
+			hooksecurefunc("LFGListSearchEntry_Update", function(self, ...)
+				local sri = C_LFGList.GetSearchResultInfo(self.resultID)
+				local name = sri.leaderName
+				if name and MAIGV( "mailfgflags" ) then
+					self.Name:SetText(MAIGetFlagString(name) .. " " .. self.Name:GetText())
+				end
+			end)
+
+
+
+			-- Smart Filter
+			if MAIGV( "maismartfilter" ) == nil then
+				MAISV( "maismartfilter", true )
+			end
+			local maismartfilter = CreateFrame("CheckButton", "maismartfilter", PVEFrame, "UICheckButtonTemplate")
+			maismartfilter:SetSize(20, 20)
+			maismartfilter:SetPoint("TOPLEFT", PVEFrame, "TOPLEFT", 10, -75)
+			maismartfilter:SetScript("OnClick", function(self)
+				if MAILoaded then
+					if self:GetChecked() then
+						MAISV( "maismartfilter", true )
+					else
+						MAISV( "maismartfilter", false )
+					end
+		
+					if LFGListFrame.SearchPanel:IsShown() then
+						LFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel)
+					elseif LFGListFrame.ApplicationViewer:IsShown() then
+						LFGListApplicationViewer_UpdateResultList(LFGListFrame.ApplicationViewer)
+						LFGListApplicationViewer_UpdateResults(LFGListFrame.ApplicationViewer)
+					end
+				end
+			end)
+			maismartfilter:SetChecked( MAIGV( "maismartfilter" ) )
+		
+			maismartfilter.text = maismartfilter:CreateFontString(nil, "OVERLAY")
+			maismartfilter.text:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
+			maismartfilter.text:SetPoint("LEFT", maismartfilter, "RIGHT", 2, 0)
+			maismartfilter.text:SetText("Filter unimportant groups")
+
+			function MAISmartFilterThink()
 				if LFGListFrame.SearchPanel:IsShown() then
-					LFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel)
+					maismartfilter:Show()
 				elseif LFGListFrame.ApplicationViewer:IsShown() then
-					LFGListApplicationViewer_UpdateResultList(LFGListFrame.ApplicationViewer)
-					LFGListApplicationViewer_UpdateResults(LFGListFrame.ApplicationViewer)
+					maismartfilter:Show()
+				else
+					maismartfilter:Hide()
 				end
+				C_Timer.After(0.2, MAISmartFilterThink)
 			end
-		end)
-		maismartfilter:SetChecked( MAIGV( "maismartfilter" ) )
-	
-		maismartfilter.text = maismartfilter:CreateFontString(nil, "OVERLAY")
-		maismartfilter.text:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
-		maismartfilter.text:SetPoint("LEFT", maismartfilter, "RIGHT", 2, 0)
-		maismartfilter.text:SetText("Filter unimportant groups")
-
-		function MAISmartFilterThink()
-			if LFGListFrame.SearchPanel:IsShown() then
-				maismartfilter:Show()
-			elseif LFGListFrame.ApplicationViewer:IsShown() then
-				maismartfilter:Show()
-			else
-				maismartfilter:Hide()
-			end
-			C_Timer.After(0.2, MAISmartFilterThink)
+			MAISmartFilterThink()
 		end
-		MAISmartFilterThink()
 	end
 end

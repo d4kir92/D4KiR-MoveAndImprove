@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.3.0"
+MAIVERSION = "1.3.1"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -5543,7 +5543,10 @@ function MAISetup()
 		end
 	end
 
-	MAISetupSortSearchResult()
+	if MAIBUILD == "RETAIL" then
+		MAISetupLFG()
+		MAISetupLFGSortSearchResult()
+	end
 
 	if MAIGV( "StanceBar" .. "allclasses" ) == nil then
 		MAISV( "StanceBar" .. "allclasses", true )
@@ -6259,8 +6262,6 @@ function MAISetup()
 		StanceBar:Show()
 	end
 
-	MAISetupLFG()
-
 	if MAIGV( "FrameColorEnabled", true ) then
 		local texts = {
 			QuestInfoTitleHeader,
@@ -6748,7 +6749,7 @@ function MAIAddRole(tab, role)
 	tab[role] = tab[role] + 1
 end
 
-function MAISetupSortSearchResult()
+function MAISetupLFGSortSearchResult()
 	if LFGListUtil_SortSearchResults then
 		if MAIGV( "maismartfilter" ) == nil then
 			MAISV( "maismartfilter", true )
