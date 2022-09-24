@@ -1595,7 +1595,9 @@ if MAIBUILD == "RETAIL" then
 	LFGFlagsFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	LFGFlagsFrame.loaded = false
 	LFGFlagsFrame:SetScript("OnEvent", function(self, event, ...)
-		MAISetupLFG()
+		if MAISetupLFG then
+			MAISetupLFG()
+		end
 	end)
 
 	function MAISetupLFG()

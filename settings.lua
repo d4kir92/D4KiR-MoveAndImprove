@@ -224,7 +224,7 @@ function f:OnEvent(event)
 			MAICreateBars()
 		end
 
-		MAIWaitForUncombat(event)
+		MAIWaitForUncombat( event )
 	end
 end
 f:SetScript("OnEvent", f.OnEvent)

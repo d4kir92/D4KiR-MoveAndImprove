@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.3.1"
+MAIVERSION = "1.3.2"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -5544,8 +5544,12 @@ function MAISetup()
 	end
 
 	if MAIBUILD == "RETAIL" then
-		MAISetupLFG()
-		MAISetupLFGSortSearchResult()
+		if MAISetupLFG then
+			MAISetupLFG()
+		end
+		if MAISetupLFGSortSearchResult then
+			MAISetupLFGSortSearchResult()
+		end
 	end
 
 	if MAIGV( "StanceBar" .. "allclasses" ) == nil then
