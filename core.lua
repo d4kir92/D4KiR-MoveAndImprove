@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.3.3"
+MAIVERSION = "1.3.4"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -355,7 +355,12 @@ function MAISetupPlayerPowerBarAlt()
 	UnitPowerBarAltStatus_ToggleFrame(PlayerPowerBarAltStatusFrame)
 	
 	if MAIGV( "PlayerPowerBarAlt" .. "hideartwork" ) then
-		PlayerPowerBarAlt.frame.Show = PlayerPowerBarAlt.frame.Hide
+		hooksecurefunc( PlayerPowerBarAlt.frame, "Show", function( self )
+			if self.mashow then return end
+			self.mashow = true
+			self:Hide()
+			self.mashow = false
+		end )
 		PlayerPowerBarAlt.frame:Hide()
 	end
 end
@@ -858,7 +863,12 @@ function MAIMoveFrames()
 					if WorldMapFrame.ScrollContainer.Child.TiledBackground then
 						WorldMapFrame.ScrollContainer.Child.TiledBackground:Hide()
 					end
-					WorldMapFrame.BlackoutFrame.Show = WorldMapFrame.BlackoutFrame.Hide
+					hooksecurefunc( WorldMapFrame.BlackoutFrame, "Show", function( self )
+						if self.mashow then return end
+						self.mashow = true
+						self:Hide()
+						self.mashow = false
+					end )
 					WorldMapFrame.BlackoutFrame:Hide()
 
 					WorldMapFrame.ScrollContainer.GetCursorPosition = function(f)
@@ -6943,9 +6953,20 @@ local function OnEventXP(self, event, ...)
 					local ManaBar = _G["PartyMemberFrame" .. i .. "ManaBar"]
 					local Portrait = _G["PartyMemberFrame" .. i .. "Portrait"]
 					if maidebugxpbar then
-						PartyFrame.Hide = PartyFrame.Show
+						hooksecurefunc( PartyFrame, "Hide", function( self )
+							if self.mahide then return end
+							self.mahide = true
+							self:Show()
+							self.mahide = false
+						end )
 						PartyFrame:Show()
-						PartyFrame:GetParent().Hide = PartyFrame:GetParent().Show
+
+						hooksecurefunc( PartyFrame:GetParent(), "Hide", function( self )
+							if self.mahide then return end
+							self.mahide = true
+							self:Show()
+							self.mahide = false
+						end )
 						PartyFrame:GetParent():Show()
 					end
 
@@ -6957,13 +6978,23 @@ local function OnEventXP(self, event, ...)
 						end
 						if debuff then
 							if maidebugxpbar then
-								debuff.Hide = debuff.Show
+								hooksecurefunc( debuff, "Hide", function( self )
+									if self.mahide then return end
+									self.mahide = true
+									self:Show()
+									self.mahide = false
+								end )
 								debuff:Show()
 
 								if false then
 									local xpbar = _G["PartyFrameXPBar".. id]
 									if xpbar then
-										xpbar.Hide = xpbar.Show
+										hooksecurefunc( xpbar, "Hide", function( self )
+											if self.mahide then return end
+											self.mahide = true
+											self:Show()
+											self.mahide = false
+										end )
 										xpbar:Show()
 									end
 								end

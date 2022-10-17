@@ -21,6 +21,13 @@ function MAISetupBossFrame()
     Boss1TargetFrame:OldClearAllPoints()
     Boss1TargetFrame:OldSetPoint("TOPLEFT", MAIBossList, "TOPLEFT", 0, 0)
 
-	--[[Boss1TargetFrame.Hide = Boss1TargetFrame.Show
-	Boss1TargetFrame:Show()]]
+	--[[
+		hooksecurefunc( Boss1TargetFrame, "Hide", function( self )
+			if self.mahide then return end
+			self.mahide = true
+			self:Show()
+			self.mahide = false
+		end )
+		Boss1TargetFrame:Show()
+	]]
 end

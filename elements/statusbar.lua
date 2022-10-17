@@ -90,7 +90,12 @@ function MAISetupStatusBar()
 	MAIStatusBar:SetMovable(true)
 		
 	stabar:UnregisterAllEvents()
-	stabar.Show = stabar.Hide
+	hooksecurefunc( stabar, "Show", function( self )
+		if self.mashow then return end
+		self.mashow = true
+		self:Hide()
+		self.mashow = false
+	end )
 	stabar:Hide()
 
 	for i = 0, 90, 10 do

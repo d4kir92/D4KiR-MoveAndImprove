@@ -87,21 +87,41 @@ function MAICreateMinimapButtonsFrame()
 
 		if mmdebug_design then
 			if MiniMapMailFrame then
-				MiniMapMailFrame.Hide = MiniMapMailFrame.Show
+				hooksecurefunc( MiniMapMailFrame, "Hide", function( self )
+					if self.mahide then return end
+					self.mahide = true
+					self:Show()
+					self.mahide = false
+				end )
 				MiniMapMailFrame:Show()
 			end
 
 			if MiniMapTracking then
-				MiniMapTracking.Hide = MiniMapTracking.Show
+				hooksecurefunc( MiniMapTracking, "Hide", function( self )
+					if self.mahide then return end
+					self.mahide = true
+					self:Show()
+					self.mahide = false
+				end )
 				MiniMapTracking:Show()
 			end
 			if MiniMapTrackingFrame then
-				MiniMapTrackingFrame.Hide = MiniMapTrackingFrame.Show
+				hooksecurefunc( MiniMapTrackingFrame, "Hide", function( self )
+					if self.mahide then return end
+					self.mahide = true
+					self:Show()
+					self.mahide = false
+				end )
 				MiniMapTrackingFrame:Show()
 			end
 
 			if QueueStatusMinimapButton then
-				QueueStatusMinimapButton.Hide = QueueStatusMinimapButton.Show
+				hooksecurefunc( QueueStatusMinimapButton, "Hide", function( self )
+					if self.mahide then return end
+					self.mahide = true
+					self:Show()
+					self.mahide = false
+				end )
 				QueueStatusMinimapButton:Show()
 			end
 		end
@@ -466,7 +486,12 @@ function MAISetupMinimap()
 
 
 	if GameTimeTexture then
-		GameTimeTexture.Show = GameTimeTexture.Hide
+		hooksecurefunc( GameTimeTexture, "Show", function( self )
+			if self.mashow then return end
+			self.mashow = true
+			self:Hide()
+			self.mashow = false
+		end )
 		GameTimeTexture:Hide()
 	end
 

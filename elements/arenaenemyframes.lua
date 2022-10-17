@@ -15,11 +15,21 @@ function MAISetupArenaEnemyFrames()
 
 	if MAIDEBUG then
 
-		ArenaEnemyFrames.Hide = ArenaEnemyFrames.Show
+		hooksecurefunc( ArenaEnemyFrames, "Hide", function( self )
+			if self.mahide then return end
+			self.mahide = true
+			self:Show()
+			self.mahide = false
+		end )
 		ArenaEnemyFrames:Show()
 
 		for i = 1, 5 do
-			_G["ArenaEnemyFrame" .. i].Hide = _G["ArenaEnemyFrame" .. i].Show
+			hooksecurefunc( _G["ArenaEnemyFrame" .. i], "Hide", function( self )
+				if self.mahide then return end
+				self.mahide = true
+				self:Show()
+				self.mahide = false
+			end )
 			_G["ArenaEnemyFrame" .. i]:Show()
 		end
 	end
@@ -36,11 +46,21 @@ function MAISetupArenaPrepFrames()
 	end
 
 	if MAIDEBUG then
-		ArenaPrepFrames.Hide = ArenaPrepFrames.Show
+		hooksecurefunc( ArenaPrepFrames, "Hide", function( self )
+			if self.mahide then return end
+			self.mahide = true
+			self:Show()
+			self.mahide = false
+		end )
 		ArenaPrepFrames:Show()
 
 		for i = 1, 5 do
-			_G["ArenaPrepFrame" .. i].Hide = _G["ArenaPrepFrame" .. i].Show
+			hooksecurefunc( _G["ArenaPrepFrame" .. i], "Hide", function( self )
+				if self.mahide then return end
+				self.mahide = true
+				self:Show()
+				self.mahide = false
+			end )
 			_G["ArenaPrepFrame" .. i]:Show()
 		end
 	end
