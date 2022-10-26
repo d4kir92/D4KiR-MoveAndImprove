@@ -32,7 +32,7 @@ end
 
 
 -- Fix Blizzard Ui
-if TargetFrameHealthBarText == nil and TargetFrameHealthBarTextLeft == nil and TargetFrameHealthBarTextRight == nil and TargetFrameHealthBar.LeftText == nil and TargetFrameHealthBar.RightText == nil then
+if TargetFrameHealthBar and TargetFrameHealthBarText == nil and TargetFrameHealthBarTextLeft == nil and TargetFrameHealthBarTextRight == nil and TargetFrameHealthBar.LeftText == nil and TargetFrameHealthBar.RightText == nil then
 	TargetFrameTextureFrame:CreateFontString("TargetFrameHealthBarText", "BORDER", "TextStatusBarText")
 	TargetFrameHealthBarText:SetPoint("CENTER", TargetFrameTextureFrame, "CENTER", -50, 3)
 
@@ -48,7 +48,7 @@ if TargetFrameHealthBarText == nil and TargetFrameHealthBarTextLeft == nil and T
 	UnitFrameHealthBar_Initialize("target", TargetFrameHealthBar, TargetFrameHealthBarText, true);
 end
 
-if TargetFrameManaBarText == nil and TargetFrameManaBarTextLeft == nil and TargetFrameManaBarTextRight == nil and TargetFrameManaBar.LeftText == nil and TargetFrameManaBar.RightText == nil then
+if TargetFrameManaBar and TargetFrameManaBarText == nil and TargetFrameManaBarTextLeft == nil and TargetFrameManaBarTextRight == nil and TargetFrameManaBar.LeftText == nil and TargetFrameManaBar.RightText == nil then
 	TargetFrameTextureFrame:CreateFontString("TargetFrameManaBarText", "BORDER", "TextStatusBarText")
 	TargetFrameManaBarText:SetPoint("CENTER", TargetFrameTextureFrame, "CENTER", -50, -8)
 

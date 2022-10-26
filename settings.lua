@@ -179,6 +179,7 @@ function MAIWaitForUncombat( event )
 
 			MAIMSG( "Use: MoveAndImprove OR MoveAny+ImproveAny OR only one of them." )
 		else
+			MAIMSG( "This Addon is a prototype, there are 2 new addons: MoveAny, ImproveAny" )
 			MAISetup()
 			if MAIGV( "ZoomOut" ) == nil then
 				if MAIBUILD == "RETAIL" then

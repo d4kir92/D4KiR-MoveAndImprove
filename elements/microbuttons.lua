@@ -20,7 +20,10 @@ function MAIUpdateMAIMicroButtons()
 			MAISV( "MAIMicroButtons" .. "spacing", -4 )
 		end
 
-		local tabLen = getn(MICRO_BUTTONS)
+		local tabLen = 10
+		if MICRO_BUTTONS then
+			tabLen = getn( MICRO_BUTTONS )
+		end
 		MAISV( "MAIMicroButtons" .. "count", tabLen )
 
 		if tabLen % 2 ~= 0 then
@@ -43,7 +46,7 @@ function MAIUpdateMAIMicroButtons()
 		MAIMicroButtons:SetSize(w, h)
 
 		MAISV( "MAIMicroButtons" .. "row", 0 )
-		if MAIGV( "MAIMicroButtons" .. "move" ) then
+		if MAIGV( "MAIMicroButtons" .. "move" ) and MICRO_BUTTONS then
 			for i, v in pairs(MICRO_BUTTONS) do
 				local microbtn = _G[v]
 				microbtn:SetParent(MAIMicroButtons)
@@ -140,43 +143,45 @@ function MAISetupMAIMicroButtons()
 		MainMenuBarPerformanceBarFrame:Hide()
 	end
 
-	for i, v in pairs(MICRO_BUTTONS) do
-		local btn = _G[v]
+	if MICRO_BUTTONS then
+		for i, v in pairs(MICRO_BUTTONS) do
+			local btn = _G[v]
 
-		if v == "HelpMicroButton" then -- Support auto hides, dont know why
-			hooksecurefunc(btn, "Hide", function(self)
-				self:Show()
-			end)
-		end
-
-		btn:SetMovable(true)
-		btn:SetParent(MAIMicroButtons)
-		if btn.OldSetPoint == nil then
-			btn.OldSetPoint = btn.SetPoint
-			function btn:SetPoint(...)
-				-- FAKE
+			if v == "HelpMicroButton" then -- Support auto hides, dont know why
+				hooksecurefunc(btn, "Hide", function(self)
+					self:Show()
+				end)
 			end
-			btn.OldClearAllPoints = btn.ClearAllPoints
-			function btn:ClearAllPoints()
-				-- FAKE
-			end
-		end
-		if i == 1 then
-			hooksecurefunc(btn, "SetPoint", function(self, ...)
-				if self.setpoint then return end
-				self.setpoint = true
 
-				self:SetMovable(true)
-				self:OldClearAllPoints()
-				if MAIBUILD == "RETAIL" then
-					self:OldSetPoint("TOPLEFT", MAIMicroButtons, "TOPLEFT", (i - 1) * (self:GetWidth() - 4), 0)
-				else
-					self:OldSetPoint("TOPLEFT", MAIMicroButtons, "TOPLEFT", (i - 1) * (self:GetWidth() - 4), 21)
+			btn:SetMovable(true)
+			btn:SetParent(MAIMicroButtons)
+			if btn.OldSetPoint == nil then
+				btn.OldSetPoint = btn.SetPoint
+				function btn:SetPoint(...)
+					-- FAKE
 				end
-				self.setpoint = false
-			end)
+				btn.OldClearAllPoints = btn.ClearAllPoints
+				function btn:ClearAllPoints()
+					-- FAKE
+				end
+			end
+			if i == 1 then
+				hooksecurefunc(btn, "SetPoint", function(self, ...)
+					if self.setpoint then return end
+					self.setpoint = true
+
+					self:SetMovable(true)
+					self:OldClearAllPoints()
+					if MAIBUILD == "RETAIL" then
+						self:OldSetPoint("TOPLEFT", MAIMicroButtons, "TOPLEFT", (i - 1) * (self:GetWidth() - 4), 0)
+					else
+						self:OldSetPoint("TOPLEFT", MAIMicroButtons, "TOPLEFT", (i - 1) * (self:GetWidth() - 4), 21)
+					end
+					self.setpoint = false
+				end)
+			end
+			btn:SetPoint("LEFT", MAIMicroButtons, "LEFT", (i - 1) * (btn:GetWidth() - 4), 0)
 		end
-		btn:SetPoint("LEFT", MAIMicroButtons, "LEFT", (i - 1) * (btn:GetWidth() - 4), 0)
 	end
 
 	MAIUpdateMAIMicroButtons()

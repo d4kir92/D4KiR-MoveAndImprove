@@ -4,29 +4,31 @@ function MAISetupPlayerFrame()
 		PlayerFrame:Show()
 		PlayerFrame:Hide()
 	end
-
-	hooksecurefunc(PlayerFrameTexture, "SetVertexColor", function(self, ...)
-		if self.maisetvertexcolor then return end
-		self.maisetvertexcolor = true
-		if MAIGV( "UIColorEnabled", true ) then
-			self:SetVertexColor(MAIGetUIColor())
-		end
-		self.maisetvertexcolor = false
-	end )
-	MAIRegisterUIColor(PlayerFrameTexture)
-	
+	if PlayerFrameTexture then
+		hooksecurefunc(PlayerFrameTexture, "SetVertexColor", function(self, ...)
+			if self.maisetvertexcolor then return end
+			self.maisetvertexcolor = true
+			if MAIGV( "UIColorEnabled", true ) then
+				self:SetVertexColor(MAIGetUIColor())
+			end
+			self.maisetvertexcolor = false
+		end )
+		MAIRegisterUIColor(PlayerFrameTexture)
+	end
 	MAIRegisterUIColor( PetFrameTexture )
 
 	if MAIGV( "PlayerFrame" .. "groupindicator" ) == nil then
 		MAISV( "PlayerFrame" .. "groupindicator", true )
 	end
-	hooksecurefunc(PlayerFrameGroupIndicator, "Show", function(self)
+	if PlayerFrameGroupIndicator then
+		hooksecurefunc(PlayerFrameGroupIndicator, "Show", function(self)
+			if not MAIGV( "PlayerFrame" .. "groupindicator" ) then
+				PlayerFrameGroupIndicator:Hide()
+			end
+		end)
 		if not MAIGV( "PlayerFrame" .. "groupindicator" ) then
 			PlayerFrameGroupIndicator:Hide()
 		end
-	end)
-	if not MAIGV( "PlayerFrame" .. "groupindicator" ) then
-		PlayerFrameGroupIndicator:Hide()
 	end
 
 	if MAIGV( "PlayerFrame" .. "showtotemtimer" ) == nil then

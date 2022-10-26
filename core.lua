@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.3.4"
+MAIVERSION = "1.3.5"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -139,6 +139,9 @@ function MAIGetUIColor()
 end
 
 function MAIRegisterUIColor( ele )
+	if ele == nil then
+		return
+	end
 	if MAIGV( "UIColorEnabled", true ) then
 		if not MAIGV( "nochanges" ) then
 			tinsert( maiuicolortab, ele )
@@ -3404,7 +3407,9 @@ function MAIElementSetup(element)
 							-- IGNORE BLIZZARD
 							mover.frame:SetAttribute('ignoreFramePositionManager', true )
 							mover.frame.ignoreFramePositionManager = true
-							UIPARENT_MANAGED_FRAME_POSITIONS[mover.element.name] = nil
+							if UIPARENT_MANAGED_FRAME_POSITIONS then
+								UIPARENT_MANAGED_FRAME_POSITIONS[mover.element.name] = nil
+							end
 
 							-- Scale
 							if MAIGV( mover.element.name .. "scale" ) == nil then

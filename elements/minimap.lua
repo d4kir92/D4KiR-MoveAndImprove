@@ -496,21 +496,27 @@ function MAISetupMinimap()
 	end
 
 	if not MAIGV( "nochanges" ) then
-		hooksecurefunc(MinimapBorder, "Show", function(self, ...)
-			if not MAIGV( "nochanges" ) and MAIGV( "Minimap" .. "hideartwork" ) or MAIBUILD == "RETAIL" or (not MAIGV( "Minimap" .. "hideartwork" ) and MAIGV( "Minimap" .. "form" ) ~= "round") then
-				self:Hide()
-			end
-		end)
+		if MinimapBorder then
+			hooksecurefunc(MinimapBorder, "Show", function(self, ...)
+				if not MAIGV( "nochanges" ) and MAIGV( "Minimap" .. "hideartwork" ) or MAIBUILD == "RETAIL" or (not MAIGV( "Minimap" .. "hideartwork" ) and MAIGV( "Minimap" .. "form" ) ~= "round") then
+					self:Hide()
+				end
+			end)
+		end
 		if not MAIGV( "nochanges" ) and MAIGV( "Minimap" .. "hideartwork" ) or MAIBUILD == "RETAIL" or (not MAIGV( "Minimap" .. "hideartwork" ) and MAIGV( "Minimap" .. "form" ) ~= "round") then
-			MinimapBorder:Hide()
+			if MinimapBorder then
+				MinimapBorder:Hide()
+			end
 		elseif not MAIGV( "nochanges" ) then
 			MAIRegisterUIColor(MinimapBorder)
 		end
 		if not MAIGV( "nochanges" ) then
-			hooksecurefunc(MinimapBorderTop, "Show", function(self, ...)
-				self:Hide()
-			end)
-			MinimapBorderTop:Hide()
+			if MinimapBorderTop then
+				hooksecurefunc(MinimapBorderTop, "Show", function(self, ...)
+					self:Hide()
+				end)
+				MinimapBorderTop:Hide()
+			end
 		end
 	end
 
@@ -519,27 +525,31 @@ function MAISetupMinimap()
 	MinimapBackdrop:SetParent(Minimap)
 
 	local minimapborderscale = 0.7
-	MinimapBorder:ClearAllPoints()
-	MinimapBorder:SetPoint("CENTER", Minimap, "CENTER", -11, -31)
-	--MinimapBorder:SetParent(Minimap)
+	if MinimapBorder then
+		MinimapBorder:ClearAllPoints()
+		MinimapBorder:SetPoint("CENTER", Minimap, "CENTER", -11, -31)
+		--MinimapBorder:SetParent(Minimap)
+	end
 	hooksecurefunc(Minimap, "SetScale", function(self, ...)
 		if self.setscaleMinimapBorder then return end
 		self.setscaleMinimapBorder = true
 		MinimapBorder:SetScale(minimapborderscale)
 		self.setscaleMinimapBorder = false
 	end)
-	hooksecurefunc(MinimapBorder, "SetScale", function(self, ...)
-		if self.setscaleMinimapBorder then return end
-		self.setscaleMinimapBorder = true
+	if MinimapBorder then
+		hooksecurefunc(MinimapBorder, "SetScale", function(self, ...)
+			if self.setscaleMinimapBorder then return end
+			self.setscaleMinimapBorder = true
+			MinimapBorder:SetScale(minimapborderscale)
+			self.setscaleMinimapBorder = false
+		end)
 		MinimapBorder:SetScale(minimapborderscale)
-		self.setscaleMinimapBorder = false
-	end)
-	MinimapBorder:SetScale(minimapborderscale)
-
-	MinimapBorderTop:ClearAllPoints()
-	MinimapBorderTop:SetPoint("CENTER", Minimap, "CENTER", -8, 74)
-	MinimapBorderTop:SetParent(Minimap)
-
+	end
+	if MinimapBorderTop then
+		MinimapBorderTop:ClearAllPoints()
+		MinimapBorderTop:SetPoint("CENTER", Minimap, "CENTER", -8, 74)
+		MinimapBorderTop:SetParent(Minimap)
+	end
 	if MinimapZoneTextButton and not MAIGV( "nochanges" ) then
 		MinimapZoneTextButton:ClearAllPoints()
 		MinimapZoneTextButton:SetPoint("CENTER", Minimap, "CENTER", -8, 76)
@@ -619,18 +629,21 @@ function MAISetupMinimap()
 
 	if not MAIGV( "nochanges" ) then
 		local clocktexture = select(1, TimeManagerClockButton:GetRegions())
-		clocktexture:SetTexture(nil)
+		if clocktexture and clocktexture.SetTexture then
+			clocktexture:SetTexture(nil)
+		end
 	end
 
-	hooksecurefunc(MinimapZoneTextButton, "SetPoint", function(self, ...)
-		if self.setpoint then return end
-		self.setpoint = true
-		self:ClearAllPoints()
-		self:SetPoint("TOP", Minimap, "TOP", 0, 12)
-		self.setpoint = false
-	end)
-	MinimapZoneTextButton:SetPoint("TOP", Minimap, "TOP", 0, 0)
-
+	if MinimapZoneTextButton then
+		hooksecurefunc(MinimapZoneTextButton, "SetPoint", function(self, ...)
+			if self.setpoint then return end
+			self.setpoint = true
+			self:ClearAllPoints()
+			self:SetPoint("TOP", Minimap, "TOP", 0, 12)
+			self.setpoint = false
+		end)
+		MinimapZoneTextButton:SetPoint("TOP", Minimap, "TOP", 0, 0)
+	end
 	if MAIGV( "Minimap" .. "improvements" ) and not MAIGV( "nochanges" ) then
 		if Minimap.SetArchBlobRingScalar and Minimap.SetQuestBlobRingScalar then
 			Minimap:SetArchBlobRingScalar(0)
@@ -641,10 +654,12 @@ function MAISetupMinimap()
 
 		MinimapThinker = CreateFrame( "FRAME", "MinimapThinker", UIParent)
 		function MinimapThinker.Think()
-			if ( GetCVar("rotateMinimap") == "1" ) then
-				MinimapNorthTag:Show()
-			else
-				MinimapNorthTag:Hide()
+			if MinimapNorthTag then
+				if ( GetCVar("rotateMinimap") == "1" ) then
+					MinimapNorthTag:Show()
+				else
+					MinimapNorthTag:Hide()
+				end
 			end
 
 			if not Minimap.range then
@@ -684,14 +699,16 @@ function MAISetupMinimap()
 		end
 		MinimapThinker.Think()
 
-		hooksecurefunc(MinimapNorthTag, "SetPoint", function(self, ...)
-			if self.setpoint then return end
-			self.setpoint = true
-			self:ClearAllPoints()
-			self:SetPoint("TOP", Minimap, "TOP", 0, -1)
-			self.setpoint = false
-		end)
-		MinimapNorthTag:SetPoint("TOP", Minimap, "TOP", 0, 0)
+		if MinimapNorthTag then
+			hooksecurefunc(MinimapNorthTag, "SetPoint", function(self, ...)
+				if self.setpoint then return end
+				self.setpoint = true
+				self:ClearAllPoints()
+				self:SetPoint("TOP", Minimap, "TOP", 0, -1)
+				self.setpoint = false
+			end)
+			MinimapNorthTag:SetPoint("TOP", Minimap, "TOP", 0, 0)
+		end
 
 		MinimapCoords = CreateFrame( "FRAME", "MinimapCoords", Minimap)
 		MinimapCoords:SetSize(100, 20)
@@ -746,8 +763,10 @@ function MAISetupMinimap()
 		Minimap:EnableMouseWheel()
 		Minimap:SetScript('OnMouseWheel', MAIOnMouseWheel)
 
-		MinimapZoomIn:Hide()
-		MinimapZoomOut:Hide()
+		if MinimapZoomIn and MinimapZoomOut then
+			MinimapZoomIn:Hide()
+			MinimapZoomOut:Hide()
+		end
 
 		Minimap:SetMaskTexture("Interface\\BUTTONS\\WHITE8X8")
 		hooksecurefunc(Minimap, "SetMaskTexture", function(self, ...)
@@ -762,30 +781,32 @@ function MAISetupMinimap()
 		Minimap:SetMaskTexture("")
 
 		TimeManagerClockTicker:SetPoint("CENTER", TimeManagerClockButton, "CENTER", 0, 0)
-		if GameTimeFrame.GetFontString ~= nil then
+		if GameTimeFrame.GetFontString ~= nil and GameTimeFrame:GetFontString() then
 			GameTimeFrame:GetFontString():SetFont(STANDARD_TEXT_FONT, 8)
 		end
 
 		-- Mail indicator
-		MiniMapMailFrame.text = MiniMapMailFrame:CreateFontString(nil, "ARTWORK")
-		MiniMapMailFrame.text:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
-		MiniMapMailFrame.text:SetPoint("CENTER", MiniMapMailFrame, "CENTER", 0, 0)
-		MiniMapMailFrame.text:SetText("-1")
-		function MiniMapMailFrame.Think()
-			local n = getn({GetLatestThreeSenders()})
-			if n ~= MiniMapMailFrame.n then
-				MiniMapMailFrame.n = n
-				MiniMapMailFrame.text:SetText(MiniMapMailFrame.n)
-				if n == 0 then
-					--MiniMapMailFrame:Hide()
-				else
-					--MiniMapMailFrame:Show()
+		if MiniMapMailFrame then
+			MiniMapMailFrame.text = MiniMapMailFrame:CreateFontString(nil, "ARTWORK")
+			MiniMapMailFrame.text:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
+			MiniMapMailFrame.text:SetPoint("CENTER", MiniMapMailFrame, "CENTER", 0, 0)
+			MiniMapMailFrame.text:SetText("-1")
+			function MiniMapMailFrame.Think()
+				local n = getn({GetLatestThreeSenders()})
+				if n ~= MiniMapMailFrame.n then
+					MiniMapMailFrame.n = n
+					MiniMapMailFrame.text:SetText(MiniMapMailFrame.n)
+					if n == 0 then
+						--MiniMapMailFrame:Hide()
+					else
+						--MiniMapMailFrame:Show()
+					end
 				end
+				
+				C_Timer.After(1, MiniMapMailFrame.Think)
 			end
-			
-			C_Timer.After(1, MiniMapMailFrame.Think)
+			MiniMapMailFrame.Think()
 		end
-		MiniMapMailFrame.Think()
 		
 		hooksecurefunc(TimeManagerClockButton, "SetPoint", function(self, ...)
 			if self.setpoint then return end

@@ -11,7 +11,7 @@ function UpdateStanceBarSize()
 	if GetNumShapeshiftForms() > 0 then
 		cou = GetNumShapeshiftForms()
 	else
-		cou = NUM_STANCE_SLOTS
+		cou = NUM_STANCE_SLOTS or 0
 	end
 
 	StanceBar:SetSize(StanceButton1:GetWidth() * cou, StanceButton1:GetHeight())

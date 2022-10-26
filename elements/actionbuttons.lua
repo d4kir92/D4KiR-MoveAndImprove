@@ -353,7 +353,7 @@ function MAIUpdateActionButton()
 						end)
 					end
 				end
-				if i > MAIGV( "StanceBar" .. "count" ) then
+				if i > MAIGV( "StanceBar" .. "count", 10 ) then
 					if _G["StanceButton" .. i]:IsShown() and not InCombatLockdown() then
 						_G["StanceButton" .. i]:Hide()
 					end
@@ -369,8 +369,8 @@ function MAIUpdateActionButton()
 					end			
 					
 					if i > 1 then
-						if (i-1) % (MAIGV( "StanceBar" .. "count" ) / rows) == 0 then
-							MAISV( "StanceBar" .. "row", MAIGV( "StanceBar" .. "row" ) + 1 )
+						if (i-1) % (MAIGV( "StanceBar" .. "count", 10 ) / rows) == 0 then
+							MAISV( "StanceBar" .. "row", MAIGV( "StanceBar" .. "row", 1 ) + 1 )
 							_G["StanceButton" .. i]:ClearAllPoints()
 							_G["StanceButton" .. i]:SetPoint("LEFT", _G["StanceButton" .. 1], "RIGHT", -_G["StanceButton" .. 1]:GetWidth(), -(MAIGV( "StanceBar" .. "row" ) * _G["StanceButton" .. 1]:GetHeight() + (MAIGV( "StanceBar" .. "row" )) * MAIGV( "StanceBar" .. "spacing" )))
 						else
@@ -736,7 +736,7 @@ function MAICreateBars()
 						end)
 					end
 				else
-					_G[btnname] = CreateFrame("CheckButton", btnname, ActionBar, "MultiBarButtonTemplate")
+					_G[btnname] = CreateFrame("CheckButton", btnname, ActionBar, "ActionBarButtonTemplate")
 					
 					_G[btnname]:SetAttribute("action", id)
 					_G[btnname]:SetAttribute("useparent-actionpage", true)

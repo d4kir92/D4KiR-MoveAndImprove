@@ -539,39 +539,41 @@ function MAICheckEnchants()
 				oldenchants = enchants
 
 				if not TemporaryEnchantFrameMover then
-					hooksecurefunc( TemporaryEnchantFrame, "SetPoint", function(self, ...)
-						if self.maisetpointe then return end
-						self.maisetpointe = true
-						local t1, t2, t3, t4, t5 = MAIBuffFrameMover:GetPoint()
-						self:ClearAllPoints()
-						self:SetPoint(t1, t2, t3, t4, t5)
-						self.maisetpointe = false
-					end )
-					TemporaryEnchantFrame:SetPoint(TemporaryEnchantFrame:GetPoint())
+					if TemporaryEnchantFrame then
+						hooksecurefunc( TemporaryEnchantFrame, "SetPoint", function(self, ...)
+							if self.maisetpointe then return end
+							self.maisetpointe = true
+							local t1, t2, t3, t4, t5 = MAIBuffFrameMover:GetPoint()
+							self:ClearAllPoints()
+							self:SetPoint(t1, t2, t3, t4, t5)
+							self.maisetpointe = false
+						end )
+						TemporaryEnchantFrame:SetPoint(TemporaryEnchantFrame:GetPoint())
+					
+						hooksecurefunc( TemporaryEnchantFrame, "SetSize", function(self, ...)
+							if self.maisetsize then return end
+							self.maisetsize = true
+							self:SetSize( 30, 30 )
+							self.maisetsize = false
+						end )
+						TemporaryEnchantFrame:SetSize( 30, 30 )
 
-					hooksecurefunc( TemporaryEnchantFrame, "SetSize", function(self, ...)
-						if self.maisetsize then return end
-						self.maisetsize = true
-						self:SetSize( 30, 30 )
-						self.maisetsize = false
-					end )
-					TemporaryEnchantFrame:SetSize( 30, 30 )
+						hooksecurefunc( TemporaryEnchantFrame, "SetWidth", function(self, ...)
+							if self.maisetwidth then return end
+							self.maisetwidth = true
+							self:SetWidth( 30 )
+							self.maisetwidth = false
+						end )
+						TemporaryEnchantFrame:SetWidth( 30 )
 
-					hooksecurefunc( TemporaryEnchantFrame, "SetWidth", function(self, ...)
-						if self.maisetwidth then return end
-						self.maisetwidth = true
-						self:SetWidth( 30 )
-						self.maisetwidth = false
-					end )
-					TemporaryEnchantFrame:SetWidth( 30 )
-
-					hooksecurefunc( TemporaryEnchantFrame, "SetHeight", function(self, ...)
-						if self.maisetheight then return end
-						self.maisetheight = true
-						self:SetHeight( 30 )
-						self.maisetheight = false
-					end )
-					TemporaryEnchantFrame:SetHeight( 30 )
+						hooksecurefunc( TemporaryEnchantFrame, "SetHeight", function(self, ...)
+							if self.maisetheight then return end
+							self.maisetheight = true
+							self:SetHeight( 30 )
+							self.maisetheight = false
+						end )
+						TemporaryEnchantFrame:SetHeight( 30 )
+					end
 
 					DIRT = DIRB
 				else
@@ -610,8 +612,9 @@ function MAICheckEnchants()
 
 				MAIUpdateBuffs()
 			end
-
-			TemporaryEnchantFrame:SetPoint(TemporaryEnchantFrame:GetPoint())
+			if TemporaryEnchantFrame then
+				TemporaryEnchantFrame:SetPoint(TemporaryEnchantFrame:GetPoint())
+			end
 		end)
 		MAIBuffFrameMover:SetPoint(MAIBuffFrameMover:GetPoint())
 	end
@@ -748,7 +751,7 @@ function MAISetupBuffFrame()
 		MAISV( "MAIBuffFrame" .. "accuratetime", true )
 	end
 
-	if MAIGV( "MAIBuffFrame" .. "accuratetime" ) then
+	if MAIGV( "MAIBuffFrame" .. "accuratetime" ) and AuraButton_UpdateDuration then
 		hooksecurefunc("AuraButton_UpdateDuration", function(buff, duration)
 			local buffname = buff:GetName()
 			if buff.setfont == nil then
