@@ -1,7 +1,7 @@
 -- By D4KiR
 
 MAIBUILD = "CLASSIC"
-if select(4, GetBuildInfo()) > 90000 then
+if select(4, GetBuildInfo()) >= 100000 then
 	MAIBUILD = "RETAIL"
 elseif select(4, GetBuildInfo()) > 29999 then
 	MAIBUILD = "WRATH"
