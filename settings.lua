@@ -179,7 +179,15 @@ function MAIWaitForUncombat( event )
 
 			MAIMSG( "Use: MoveAndImprove OR MoveAny+ImproveAny OR only one of them." )
 		else
-			MAIMSG( "This Addon is a prototype, there are 2 new addons: MoveAny, ImproveAny" )
+			MAIMSG( "------------------------------------------------------------" )
+			MAIMSG( "This addon was only a prototype" )
+			MAIMSG( "There are now 2 new addons that will replace this one:" )
+			MAIMSG( "MoveAny => Moves, Scales, Alpha Ui Elements" )
+			MAIMSG( "=> Moves, Scales, Alpha/Hide, Share Profiles, Importing MAIProfiles" )
+			MAIMSG( "ImproveAny" )
+			MAIMSG( "=> Chat Icons, Coloring, Removing Blizz Arts, More Text/Less Text, ..." )
+			MAIMSG( "------------------------------------------------------------" )
+			
 			MAISetup()
 			if MAIGV( "ZoomOut" ) == nil then
 				if MAIBUILD == "RETAIL" then
