@@ -1556,17 +1556,19 @@ function MAIAddFlag(tt, name)
 end
 
 -- MOUSEOVER TOOLTIP
-GameTooltip:HookScript("OnTooltipSetUnit", function(self, ...)
-	local name, unit, guid, realm = self:GetUnit()
-	if unit and UnitIsPlayer(unit) then
-		name = MAIUnitName(unit)
-		if name then
-			if MAIGV( "GameTooltip" .. "Enabled" ) and MAIGV( "GameTooltip" .. "improvements" ) and not MAIGV( "nochanges" ) then
-				MAIAddFlag(self, name)
+if GameTooltip.OnTooltipSetUnit then
+	GameTooltip:HookScript("OnTooltipSetUnit", function(self, ...)
+		local name, unit, guid, realm = self:GetUnit()
+		if unit and UnitIsPlayer(unit) then
+			name = MAIUnitName(unit)
+			if name then
+				if MAIGV( "GameTooltip" .. "Enabled" ) and MAIGV( "GameTooltip" .. "improvements" ) and not MAIGV( "nochanges" ) then
+					MAIAddFlag(self, name)
+				end
 			end
 		end
-	end
-end)
+	end)
+end
 
 hooksecurefunc(GameTooltip, "AddLine", function(self, text)
 	local owner, frame = self:GetOwner()
