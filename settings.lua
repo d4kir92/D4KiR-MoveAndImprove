@@ -180,7 +180,7 @@ function MAIWaitForUncombat( event )
 			MAIMSG( "Use: MoveAndImprove OR MoveAny+ImproveAny OR only one of them." )
 		else
 			MAIMSG( "------------------------------------------------------------" )
-			MAIMSG( "This addon was only a prototype" )
+			MAIMSG( "This addon was only a prototype!!!" )
 			MAIMSG( "There are now 2 new addons that will replace this one:" )
 			MAIMSG( "MoveAny => Moves, Scales, Alpha Ui Elements" )
 			MAIMSG( "=> Moves, Scales, Alpha/Hide, Share Profiles, Importing MAIProfiles" )
