@@ -2,7 +2,7 @@
 
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-MAIVERSION = "1.3.17"
+MAIVERSION = "1.3.18"
 
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = 	{0.2, 0.2, 0.2, 0.7}
@@ -5518,26 +5518,32 @@ function MAISetup()
 				for i=1, size do
 					local bid = size - i + 1
 					local SLOT = _G[name .. 'Item' .. bid]
-					local slotLink = GetContainerItemLink(id, i)
-					MAIAddIlvl(SLOT, i)
+					if GetContainerItemLink then
+						local slotLink = GetContainerItemLink(id, i)
+						MAIAddIlvl(SLOT, i)
 
-					if slotLink and GetDetailedItemLevelInfo then
-						local t1, t2, rarity, t4, t5, t6, t7, t8, t9, t10, t11, classID, subclassID = GetItemInfo(slotLink)
-						local ilvl, _, baseilvl = GetDetailedItemLevelInfo(slotLink)
-						local color = ITEM_QUALITY_COLORS[rarity]
-						if ilvl and color then
-							if MAIGV( "PaperDollFrame" .. "showilvl" ) and not MAIGV( "nochanges" ) then
-								if tContains(MAIClassIDs, classID) or (classID == 15 and tContains(MAISubClassIDs15, subclassID)) then
-									SLOT.text:SetText(color.hex .. ilvl)
+						if slotLink and GetDetailedItemLevelInfo then
+							local t1, t2, rarity, t4, t5, t6, t7, t8, t9, t10, t11, classID, subclassID = GetItemInfo(slotLink)
+							local ilvl, _, baseilvl = GetDetailedItemLevelInfo(slotLink)
+							local color = ITEM_QUALITY_COLORS[rarity]
+							if ilvl and color then
+								if MAIGV( "PaperDollFrame" .. "showilvl" ) and not MAIGV( "nochanges" ) then
+									if tContains(MAIClassIDs, classID) or (classID == 15 and tContains(MAISubClassIDs15, subclassID)) then
+										SLOT.text:SetText(color.hex .. ilvl)
+									else
+										SLOT.text:SetText( "" )
+									end
+									local alpha = MAIGlowAlpha
+									if color.r == 1 and color.g == 1 and color.b == 1 then
+										alpha = alpha - 0.2
+									end
+									SLOT.border:SetVertexColor( color.r, color.g, color.b, alpha )
+									--SLOT.info:Show()
 								else
 									SLOT.text:SetText( "" )
+									SLOT.border:SetVertexColor( 1, 1, 1, 0 )
+									--SLOT.info:Hide()
 								end
-								local alpha = MAIGlowAlpha
-								if color.r == 1 and color.g == 1 and color.b == 1 then
-									alpha = alpha - 0.2
-								end
-								SLOT.border:SetVertexColor( color.r, color.g, color.b, alpha )
-								--SLOT.info:Show()
 							else
 								SLOT.text:SetText( "" )
 								SLOT.border:SetVertexColor( 1, 1, 1, 0 )
@@ -5548,10 +5554,6 @@ function MAISetup()
 							SLOT.border:SetVertexColor( 1, 1, 1, 0 )
 							--SLOT.info:Hide()
 						end
-					else
-						SLOT.text:SetText( "" )
-						SLOT.border:SetVertexColor( 1, 1, 1, 0 )
-						--SLOT.info:Hide()
 					end
 				end
 			end)

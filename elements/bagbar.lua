@@ -69,11 +69,13 @@ function MAISetupBagBar()
 				local SLOT = _G[slot]
 				local COUNT = _G[slot .. "Count"]
 				if SLOT and SLOT.text ~= nil then
-					local numberOfFreeSlots = GetContainerNumFreeSlots(i - 1);
-					sum = sum + numberOfFreeSlots
-					SLOT.text:SetText(numberOfFreeSlots)
-					SLOT.maxDisplayCount = 999999
-					COUNT:SetText("")
+					if GetContainerNumFreeSlots then
+						local numberOfFreeSlots = GetContainerNumFreeSlots(i - 1);
+						sum = sum + numberOfFreeSlots
+						SLOT.text:SetText(numberOfFreeSlots)
+						SLOT.maxDisplayCount = 999999
+						COUNT:SetText("")
+					end
 				end
 			end
 			if MAIGV( "BagBar" .. "onebag" ) and MAIBUILD ~= "RETAIL" then
