@@ -1,6 +1,6 @@
 -- By D4KiR
-
 MAIBUILD = "CLASSIC"
+
 if select(4, GetBuildInfo()) >= 100000 then
 	MAIBUILD = "RETAIL"
 elseif select(4, GetBuildInfo()) > 29999 then
@@ -9,37 +9,41 @@ elseif select(4, GetBuildInfo()) > 19999 then
 	MAIBUILD = "TBC"
 end
 
-MAIHIDDEN = CreateFrame( "FRAME", "MAIHIDDEN", UIParent)
+MAIHIDDEN = CreateFrame("FRAME", "MAIHIDDEN", UIParent)
 MAIHIDDEN:SetSize(50, 50)
 MAIHIDDEN:Hide()
-
 MAILoaded = MAILoaded or false
-
 MAITAB = MAITAB or {}
 MAITABPC = MAITABPC or {}
 
 function MAIGetMaxLevel()
 	local maxlevel = 60
+
 	if MAIBUILD == "TBC" then
 		maxlevel = 70
 	end
+
 	if MAIBUILD == "WRATH" then
 		maxlevel = 80
 	end
+
 	if GetMaxLevelForPlayerExpansion ~= nil then
 		maxlevel = GetMaxLevelForPlayerExpansion()
 	end
+
 	return maxlevel
 end
 
 function MAIUnitName(unit)
 	if UnitExists(unit) then
 		local name, realm = UnitName(unit)
+
 		if realm and realm ~= "" then
 			name = name .. "-" .. realm
 		else
 			name = name .. "-" .. GetRealmName()
 		end
+
 		return name
 	else
 		return "NOT EXISTS"
@@ -49,24 +53,20 @@ end
 function MAIMathR(num, dec)
 	num = num or 0
 	dec = dec or 2
+	num = tonumber(string.format("%." .. dec .. "f", num))
 
-	num = tonumber( string.format("%." .. dec .. "f", num) )
 	if num == -0 then
 		num = 0
 	end
+
 	return num
 end
 
-function MAIMathC( val, vmin, vmax )
-	if val == nil then
-		return 0
-	end
-	if vmin == nil then
-		return 0
-	end
-	if vmax == nil then
-		return 1
-	end
+function MAIMathC(val, vmin, vmax)
+	if val == nil then return 0 end
+	if vmin == nil then return 0 end
+	if vmax == nil then return 1 end
+
 	if val < vmin then
 		return vmin
 	elseif val > vmax then
@@ -78,39 +78,46 @@ end
 
 function MAIStringR(num, dec)
 	local d = dec
+
 	if dec == nil then
 		d = 2
 	end
+
 	return string.format("%." .. d .. "f", num)
 end
 
 function MAIDottedNumber(num)
 	local revnum = tostring(num):reverse()
 	local ret = ""
+
 	for i = 0, strlen(revnum), 4 do
 		local first = string.sub(revnum, i, i + 3)
+
 		if first ~= nil then
 			if i ~= 0 then
 				ret = ret .. "."
 			end
+
 			ret = ret .. first
 		end
 	end
+
 	return ret:reverse()
 end
 
-function strEmpty( str )
-	if type( str ) == "string" then
-		if strtrim( str ) == "" then
+function strEmpty(str)
+	if type(str) == "string" then
+		if strtrim(str) == "" then
 			return true
 		else
 			return false
 		end
 	end
+
 	return true
 end
 
-function MAISCP( pname )
+function MAISCP(pname)
 	if pname and pname ~= "" and pname ~= " " then
 		MAITABPC["CP"] = pname
 	end
@@ -120,6 +127,7 @@ function MAIGCP()
 	if MAITABPC["CP"] == nil then
 		MAITABPC["CP"] = "DEFAULT"
 	end
+
 	return MAITABPC["CP"]
 end
 
@@ -130,30 +138,31 @@ end
 
 function MAILoadConfig()
 	MAICheckConfig()
-
 	MAIImportProfiles()
 end
 
-function MAISV( key, val )
+function MAISV(key, val)
 	if MAITAB and MAITAB["PROFILES"] then
 		MAICheckConfig()
+
 		if MAITAB["PROFILES"][MAIGCP()] then
 			if key ~= nil then
 				MAITAB["PROFILES"][MAIGCP()][key] = val
 			else
-				MAIMSG( "[SetValue] NO KEY", key, val )
+				MAIMSG("[SetValue] NO KEY", key, val)
 			end
 		else
 			print("[MAI] |cFFFF0000" .. "Characer using a deleted Profile, switched to DEFAULT.")
-			MAISCP( "DEFAULT" )
+			MAISCP("DEFAULT")
 		end
 	else
 		MAIMSG("[SetValue] TO EARLY:", key, val)
 	end
 end
 
-function MAIGV( key, value )
+function MAIGV(key, value)
 	MAICheckConfig()
+
 	if MAITAB["PROFILES"][MAIGCP()] then
 		if MAITAB["PROFILES"][MAIGCP()][key] ~= nil then
 			return MAITAB["PROFILES"][MAIGCP()][key]
@@ -162,62 +171,69 @@ function MAIGV( key, value )
 		end
 	else
 		print("[MAI] |cFFFF0000" .. "Characer using a deleted Profile, switched to DEFAULT.")
-		MAISCP( "DEFAULT" )
+		MAISCP("DEFAULT")
 	end
+
 	return nil
 end
 
-function MAIWaitForUncombat( event )
+function MAIWaitForUncombat(event)
 	if event == "PLAYER_ENTERING_WORLD" or not InCombatLockdown() then
 		if IsAddOnLoaded("MoveAny") or IsAddOnLoaded("ImproveAny") then
 			if IsAddOnLoaded("MoveAny") then
-				MAIMSG( "DON'T use MoveAny with MoveAndImprove." )
-			end
-			if IsAddOnLoaded("ImproveAny") then
-				MAIMSG( "DON'T use ImproveAny with MoveAndImprove." )
+				MAIMSG("DON'T use MoveAny with MoveAndImprove.")
 			end
 
-			MAIMSG( "Use: MoveAndImprove OR MoveAny+ImproveAny OR only one of them." )
+			if IsAddOnLoaded("ImproveAny") then
+				MAIMSG("DON'T use ImproveAny with MoveAndImprove.")
+			end
+
+			MAIMSG("Use: MoveAndImprove OR MoveAny+ImproveAny OR only one of them.")
 		else
-			MAIMSG( "------------------------------------------------------------" )
-			MAIMSG( "This addon was only a prototype!!!" )
-			MAIMSG( "There are now 2 new addons that will replace this one:" )
-			MAIMSG( "------------------------------------------------------------" )
-			MAIMSG( "MoveAny => Moves, Scales, Alpha Ui Elements" )
-			MAIMSG( "=> Moves, Scales, Alpha/Hide, Share Profiles, Importing MAIProfiles" )
-			MAIMSG( "------------------------------------------------------------" )
-			MAIMSG( "ImproveAny" )
-			MAIMSG( "=> Chat Icons, Coloring, Removing Blizz Arts, More Text/Less Text, ..." )
-			MAIMSG( "------------------------------------------------------------" )
-			
+			MAIMSG("------------------------------------------------------------")
+			MAIMSG("------------------------------------------------------------")
+			MAIMSG("------------------------------------------------------------")
+			MAIMSG("This addon was only a prototype!!!")
+			MAIMSG("There are now 2 new addons that will replace this one:")
+			MAIMSG("------------------------------------------------------------")
+			MAIMSG("MoveAny => Moves, Scales, Alpha Ui Elements")
+			MAIMSG("=> Moves, Scales, Alpha/Hide, Share Profiles, Importing MAIProfiles")
+			MAIMSG("------------------------------------------------------------")
+			MAIMSG("ImproveAny")
+			MAIMSG("=> Chat Icons, Coloring, Removing Blizz Arts, More Text/Less Text, ...")
+			MAIMSG("------------------------------------------------------------")
 			MAISetup()
-			if MAIGV( "ZoomOut" ) == nil then
+
+			if MAIGV("ZoomOut") == nil then
 				if MAIBUILD == "RETAIL" then
-					MAISV( "ZoomOut", 2.6 )
+					MAISV("ZoomOut", 2.6)
 				else
-					MAISV( "ZoomOut", 4.0 )
+					MAISV("ZoomOut", 4.0)
 				end
 			end
-			if MAIGV( "WorldTextScale" ) == nil then
+
+			if MAIGV("WorldTextScale") == nil then
 				if MAIBUILD == "RETAIL" then
-					MAISV( "WorldTextScale", 1.0 )
+					MAISV("WorldTextScale", 1.0)
 				else
-					MAISV( "WorldTextScale", 1.0 )
+					MAISV("WorldTextScale", 1.0)
 				end
 			end
-			ConsoleExec( "cameraDistanceMaxZoomFactor " .. MAIGV( "ZoomOut" ) )
-			ConsoleExec( "WorldTextScale " .. MAIGV( "WorldTextScale" ) )
+
+			ConsoleExec("cameraDistanceMaxZoomFactor " .. MAIGV("ZoomOut"))
+			ConsoleExec("WorldTextScale " .. MAIGV("WorldTextScale"))
 		end
 	else
-		C_Timer.After( 0.1, function()
-			MAIWaitForUncombat( event )
-		end )
+		C_Timer.After(0.1, function()
+			MAIWaitForUncombat(event)
+		end)
 	end
 end
 
 local loaded = false
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
+
 function f:OnEvent(event)
 	if event == "PLAYER_ENTERING_WORLD" and not loaded then
 		loaded = true
@@ -228,34 +244,32 @@ function f:OnEvent(event)
 		end
 
 		MAILoadConfig()
-
 		MAILoaded = true
 
 		if MAICreateBars then
 			MAICreateBars()
 		end
 
-		MAIWaitForUncombat( event )
+		MAIWaitForUncombat(event)
 	end
 end
+
 f:SetScript("OnEvent", f.OnEvent)
 
 function MAINN(value, short)
 	value = tonumber(value) or value
+
 	if value > 999999999 then
-		if short then
-			return format("%.0f B", value / 1000000000)
-		end
+		if short then return format("%.0f B", value / 1000000000) end
+
 		return format("%.1f B", value / 1000000000)
 	elseif value > 999999 then
-		if short then
-			return format("%.0f M", value / 1000000)
-		end
+		if short then return format("%.0f M", value / 1000000) end
+
 		return format("%.1f M", value / 1000000)
 	elseif value > 999 then
-		if short then
-			return format("%.0f K", value / 1000)
-		end
+		if short then return format("%.0f K", value / 1000) end
+
 		return format("%.1f K", value / 1000)
 	else
 		return value
@@ -318,70 +332,42 @@ function MAIImportProfiles()
 						"buff", -- [2]
 						[4] = 23028,
 						[5] = "buffbetter",
-					}, -- [1]
-					{
-						168, -- [1]
-						"buff", -- [2]
-					}, -- [2]
-					{
-						6117, -- [1]
-						"buff", -- [2]
-					}, -- [3]
-				}, -- [1]
+					},
+					-- [1]
+					{168, "buff",},
+					-- [1] -- [2] -- [2]
+					{6117, "buff",},
+				},
+				-- [1] -- [2] -- [3] -- [1]
 				{
-					{
-						604, -- [1]
-						"buffshort", -- [2]
-					}, -- [1]
-					{
-						1008, -- [1]
-						"buffshort", -- [2]
-					}, -- [2]
-				}, -- [2]
+					{604, "buffshort",},
+					-- [1] -- [2] -- [1]
+					{1008, "buffshort",},
+				},
+				-- [1] -- [2] -- [2] -- [2]
 				{
-					{
-						5504, -- [1]
-						"food", -- [2]
-					}, -- [1]
-					{
-						587, -- [1]
-						"food", -- [2]
-					}, -- [2]
-					{
-						43987, -- [1]
-						"food", -- [2]
-					}, -- [3]
-				}, -- [3]
+					{5504, "food",},
+					-- [1] -- [2] -- [1]
+					{587, "food",},
+					-- [1] -- [2] -- [2]
+					{43987, "food",},
+				},
+				-- [1] -- [2] -- [3] -- [3]
 				{
-					{
-						543, -- [1]
-						"buffempower", -- [2]
-						true, -- [3]
-					}, -- [1]
-					{
-						6143, -- [1]
-						"buffempower", -- [2]
-						true, -- [3]
-					}, -- [2]
-				}, -- [4]
+					{543, "buffempower", true,},
+					-- [1] -- [2] -- [3] -- [1]
+					{6143, "buffempower", true,},
+				},
+				-- [1] -- [2] -- [3] -- [2] -- [4]
 				{
-					{
-						1463, -- [1]
-						"shield", -- [2]
-						true, -- [3]
-					}, -- [1]
-					{
-						11426, -- [1]
-						"shield", -- [2]
-						true, -- [3]
-					}, -- [2]
-					{
-						30482, -- [1]
-						"shield", -- [2]
-						true, -- [3]
-					}, -- [3]
-				}, -- [5]
+					{1463, "shield", true,},
+					-- [1] -- [2] -- [3] -- [1]
+					{11426, "shield", true,},
+					-- [1] -- [2] -- [3] -- [2]
+					{30482, "shield", true,},
+				},
 			},
+			-- [1] -- [2] -- [3] -- [3] -- [5]
 			["MAGEVERSION"] = 6,
 		},
 		["ZoneAbilityFramealpha2"] = 1,
@@ -1250,53 +1236,56 @@ function MAIImportProfiles()
 		["MAISkillsEnabled"] = true,
 		["Version"] = 1
 	}
-	if MAITAB["PROFILES"]["D4KiRsUi"] == nil or ( MAITAB["PROFILES"]["D4KiRsUi"]["Version"] and MAITAB["PROFILES"]["D4KiRsUi"]["Version"] < 1 ) then
+
+	if MAITAB["PROFILES"]["D4KiRsUi"] == nil or (MAITAB["PROFILES"]["D4KiRsUi"]["Version"] and MAITAB["PROFILES"]["D4KiRsUi"]["Version"] < 1) then
 		MAITAB["PROFILES"]["D4KiRsUi"] = tab
 	end
 end
 
+function MAICreateDropdown(opts)
+	local dropdown_name = "$parent_" .. opts["name"] .. "_dropdown"
+	local menu_items = opts["items"] or {}
+	local title_text = opts["title"] or ""
+	local dropdown_width = 120
+	local default_val = opts["defaultVal"] or ""
+	local change_func = opts["changeFunc"] or function(dropdown_val) end
+	local dropdown = CreateFrame("Frame", dropdown_name, opts["parent"], "UIDropDownMenuTemplate")
+	local dd_title = dropdown:CreateFontString(dropdown, "OVERLAY", "GameFontNormal")
+	dd_title:SetPoint("TOPLEFT", 20, 10)
 
+	-- Sets the dropdown width to the largest item string width.
+	for _, item in pairs(menu_items) do
+		dd_title:SetText(item)
+		local text_width = dd_title:GetStringWidth() + 20
 
-function MAICreateDropdown( opts )
-    local dropdown_name = '$parent_' .. opts['name'] .. '_dropdown'
-    local menu_items = opts['items'] or {}
-    local title_text = opts['title'] or ''
-    local dropdown_width = 120
-    local default_val = opts['defaultVal'] or ''
-    local change_func = opts['changeFunc'] or function (dropdown_val) end
+		if text_width > dropdown_width then
+			dropdown_width = text_width
+		end
+	end
 
-    local dropdown = CreateFrame("Frame", dropdown_name, opts['parent'], 'UIDropDownMenuTemplate')
-    local dd_title = dropdown:CreateFontString(dropdown, 'OVERLAY', 'GameFontNormal')
-    dd_title:SetPoint("TOPLEFT", 20, 10)
+	UIDropDownMenu_SetWidth(dropdown, dropdown_width)
+	UIDropDownMenu_SetText(dropdown, default_val)
+	dd_title:SetText(title_text)
 
-    for _, item in pairs(menu_items) do -- Sets the dropdown width to the largest item string width.
-        dd_title:SetText(item)
-        local text_width = dd_title:GetStringWidth() + 20
-        if text_width > dropdown_width then
-            dropdown_width = text_width
-        end
-    end
+	UIDropDownMenu_Initialize(dropdown, function(self, level, _)
+		local info = UIDropDownMenu_CreateInfo()
 
-    UIDropDownMenu_SetWidth(dropdown, dropdown_width)
-    UIDropDownMenu_SetText(dropdown, default_val)
-    dd_title:SetText(title_text)
+		for key, val in pairs(menu_items) do
+			info.text = val
+			info.checked = false
+			info.menuList = key
+			info.hasArrow = false
 
-    UIDropDownMenu_Initialize(dropdown, function(self, level, _)
-        local info = UIDropDownMenu_CreateInfo()
-        for key, val in pairs(menu_items) do
-            info.text = val;
-            info.checked = false
-            info.menuList= key
-            info.hasArrow = false
-            info.func = function(b)
-                UIDropDownMenu_SetSelectedValue(dropdown, b.value, b.value)
-                UIDropDownMenu_SetText(dropdown, b.value)
-                b.checked = true
-                change_func(dropdown, b.value)
-            end
-            UIDropDownMenu_AddButton(info)
-        end
-    end)
+			info.func = function(b)
+				UIDropDownMenu_SetSelectedValue(dropdown, b.value, b.value)
+				UIDropDownMenu_SetText(dropdown, b.value)
+				b.checked = true
+				change_func(dropdown, b.value)
+			end
 
-    return dropdown
+			UIDropDownMenu_AddButton(info)
+		end
+	end)
+
+	return dropdown
 end

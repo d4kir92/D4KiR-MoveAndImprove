@@ -1,5 +1,4 @@
 -- zhTW Traditional Chinese
-
 function MAILang_zhTW()
 	local tab = {
 		["actionbar"] = "操作欄",
@@ -22,23 +21,23 @@ function MAILang_zhTW()
 		["chatraceicons"] = "聊天競賽圖標",
 		["chatshortchannels"] = "聊天短頻道",
 		["count"] = "數量",
-		["cry"] ="哭",
-		["current"] ="當前",
+		["cry"] = "哭",
+		["current"] = "當前",
 		["debuffframe"] = "減益幀",
 		["draghelp"] = "如果你想拖動它,使用 SHIFT + 左鍵",
 		["elements"] = "元素",
 		["extraaction"] = "額外動作",
-		["focusframe"] ="焦點框",
-		["frame"] ="框架",
-		["frames"] ="幀",
+		["focusframe"] = "焦點框",
+		["frame"] = "框架",
+		["frames"] = "幀",
 		["grouplootframe1"] = "群組戰利品框架",
 		["gryphonleft"] = "獅鷲（左）",
 		["gryphonright"] = "獅鷲（右）",
-		["hidden"] ="隱藏",
+		["hidden"] = "隱藏",
 		["hideartwork"] = "隱藏藝術品",
 		["ilevel"] = "物品等級",
 		["ilvl"] = "物品等級",
-		["improvements"] ="改進",
+		["improvements"] = "改進",
 		["incombat"] = "在戰鬥中",
 		["inheritfrom"] = "繼承自",
 		["invehicle"] = "車內",
@@ -46,7 +45,7 @@ function MAILang_zhTW()
 		["lock"] = "鎖",
 		["locked"] = "鎖定",
 		["maimoneybar"] = "錢欄",
-		["micromenu"] ="微菜單",
+		["micromenu"] = "微菜單",
 		["minimapbuttons"] = "小地圖按鈕",
 		["minimapicon"] = "小地圖圖標",
 		["move"] = "移動",
@@ -69,7 +68,7 @@ function MAILang_zhTW()
 		["removeprofile"] = "刪除配置文件",
 		["repbar"] = "聲望欄",
 		["rows"] = "行",
-		["scale"] ="規模",
+		["scale"] = "規模",
 		["scaleframes"] = "縮放幀",
 		["share"] = "分享",
 		["showcountryflag"] = "顯示國家標誌",
@@ -100,5 +99,5 @@ function MAILang_zhTW()
 		["zoomout"] = "縮小"
 	}
 
-	MAIUpdateLanguageTab( tab )
+	MAIUpdateLanguageTab(tab)
 end

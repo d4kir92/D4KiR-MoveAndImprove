@@ -1,13 +1,13 @@
-
 local oldcou = -1
 
 if StanceBar == nil then
-	StanceBar = CreateFrame( "FRAME", "StanceBar", UIParent)
+	StanceBar = CreateFrame("FRAME", "StanceBar", UIParent)
 	StanceBar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 100)
 end
 
 function UpdateStanceBarSize()
 	local cou = 0
+
 	if GetNumShapeshiftForms() > 0 then
 		cou = GetNumShapeshiftForms()
 	else
@@ -16,11 +16,12 @@ function UpdateStanceBarSize()
 
 	StanceBar:SetSize(StanceButton1:GetWidth() * cou, StanceButton1:GetHeight())
 	StanceBar:SetPoint("CENTER", UIParent, "CENTER")
+
 	for i = 1, 9 do
 		local stancebtn = _G["StanceButton" .. i]
 		stancebtn:SetParent(StanceBar)
-		
-		if MAIGV( "StanceBar" .. "hide" ) and _G["StanceButton" .. i .. "Cooldown"] then
+
+		if MAIGV("StanceBar" .. "hide") and _G["StanceButton" .. i .. "Cooldown"] then
 			_G["StanceButton" .. i .. "Cooldown"]:SetDrawBling(false)
 		end
 
@@ -33,6 +34,7 @@ function UpdateStanceBarSize()
 				self.setpoint = false
 			end)
 		end
+
 		stancebtn:SetPoint("LEFT", StanceBar, "LEFT", (i - 1) * stancebtn:GetWidth(), 0)
 
 		if cou == 10 then
@@ -47,11 +49,13 @@ end
 
 function MAISBThink()
 	local cou = 0
+
 	if GetNumShapeshiftForms() > 0 then
 		cou = GetNumShapeshiftForms()
 	else
 		cou = NUM_STANCE_SLOTS
 	end
+
 	if cou ~= oldcou then
 		oldcou = cou
 		UpdateStanceBarSize()
@@ -68,6 +72,5 @@ function MAISetupStanceBar()
 	end
 
 	MAISBThink()
-
 	MAIUpdateActionButton()
 end

@@ -1,37 +1,39 @@
+function MAIChatOnlyBig(str)
+	local res = string.gsub(str, "[^%u-]", "")
 
-function MAIChatOnlyBig( str )
-	local res = string.gsub(str, "[^%u-]", "" )
-
-	if #res > 3 then -- shorten
-		res = string.sub( res, 1, 3 )
-	end
-	if #str <= 3 then -- 1-3 => upper
-		res = string.upper( res )
+	-- shorten
+	if #res > 3 then
+		res = string.sub(res, 1, 3)
 	end
 
-	if #res <= 0 then -- no upper?
+	-- 1-3 => upper
+	if #str <= 3 then
+		res = string.upper(res)
+	end
+
+	-- no upper?
+	if #res <= 0 then
 		if #str <= 3 then
-			res = string.upper( str )
+			res = string.upper(str)
 		else
-			res = string.gsub(str, "[^%l-]", "" )
-			res = string.sub( res, 1, 1 )
-			res = string.upper( res )
+			res = string.gsub(str, "[^%l-]", "")
+			res = string.sub(res, 1, 1)
+			res = string.upper(res)
 			--res = MAIChatOnlyBig( res )
 		end
 	end
 
-	if string.find( res, "-", string.len( res ), true ) then
-		res = string.gsub(str, "[^%u]", "" )
+	if string.find(res, "-", string.len(res), true) then
+		res = string.gsub(str, "[^%u]", "")
 	end
 
 	return res
 end
 
 local races = {}
-
 local classes = {}
 
-C_Timer.After( 0.01, function()
+C_Timer.After(0.01, function()
 	if MAIBUILD == "CLASSIC" then
 		races["Troll2"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Races:0:0:0:0:256:256:128:192:64:128|t"
 		races["NightElf3"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Races:0:0:0:0:256:256:192:256:128:192|t"
@@ -118,79 +120,88 @@ C_Timer.After( 0.01, function()
 		races["HighmountainTauren3"] = "|TInterface\\Glues\\CharacterCreate\\CharacterCreateIcons:0:0:0:0:2048:1024:1564:1630:0:66|t"
 		races["Pandaren2"] = "|TInterface\\Glues\\CharacterCreate\\CharacterCreateIcons:0:0:0:0:2048:1024:1040:1106:922:988|t"
 	end
-	
-	classes["WARRIOR"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:0:64:0:64|t" 
-	classes["MAGE"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:64:128:0:64|t" 
-	classes["ROGUE"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:128:192:0:64|t" 
-	classes["DRUID"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:192:256:0:64|t" 
-	classes["HUNTER"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:0:64:64:128|t" 
-	classes["SHAMAN"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:64:128:64:128|t" 
-	classes["PRIEST"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:128:192:64:128|t" 
-	classes["WARLOCK"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:192:256:64:128|t" 
-	classes["PALADIN"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:0:64:128:192|t" 
-	classes["DEATHKNIGHT"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:64:128:128:192|t" 
-	classes["MONK"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:128:192:128:192|t" 
-	classes["DEMONHUNTER"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:192:256:128:192|t" 
+
+	classes["WARRIOR"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:0:64:0:64|t"
+	classes["MAGE"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:64:128:0:64|t"
+	classes["ROGUE"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:128:192:0:64|t"
+	classes["DRUID"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:192:256:0:64|t"
+	classes["HUNTER"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:0:64:64:128|t"
+	classes["SHAMAN"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:64:128:64:128|t"
+	classes["PRIEST"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:128:192:64:128|t"
+	classes["WARLOCK"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:192:256:64:128|t"
+	classes["PALADIN"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:0:64:128:192|t"
+	classes["DEATHKNIGHT"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:64:128:128:192|t"
+	classes["MONK"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:128:192:128:192|t"
+	classes["DEMONHUNTER"] = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:0:0:0:0:256:256:192:256:128:192|t"
 end)
 
 local PLYCache = {}
-local function MAIGetGUID( name )
+
+local function MAIGetGUID(name)
 	return PLYCache[name]
 end
 
-function MAIResetMsg( msg )
+function MAIResetMsg(msg)
 	msg = string.gsub(msg, "(|Z)", "|X", 1)
 	msg = string.gsub(msg, "(|z)", "|x", 1)
+
 	return msg
 end
 
-function MAIChatAddItemIcons( msg, c )
+function MAIChatAddItemIcons(msg, c)
 	msg = string.gsub(msg, "(|H)", "|Z", 1)
 	msg = string.gsub(msg, "(|h)", "|y", 1)
 	msg = string.gsub(msg, "(|h)", "|z", 1)
-
 	local itemString = select(3, strfind(msg, "|Z(.+)|z"))
 
 	if itemString then
-		local type = select( 1, string.split( ":", itemString ) )
-		local id = select( 2, string.split( ":", itemString ) )
+		local type = select(1, string.split(":", itemString))
+		local id = select(2, string.split(":", itemString))
 
 		if type == "item" then
 			itemTexture = GetItemIcon(id)
+
 			if itemTexture then
-				if MAIGV( "ChatFrame1" .. "chatitemicons", true ) and not MAIGV( "nochanges" ) then
+				if MAIGV("ChatFrame1" .. "chatitemicons", true) and not MAIGV("nochanges") then
 					msg = string.gsub(msg, "(|Z)", "|T" .. itemTexture .. ":0|t" .. "|X", 1)
 					msg = string.gsub(msg, "(|z)", "|x", 1)
 
-					return MAIChatAddItemIcons( msg, c + 1 )
+					return MAIChatAddItemIcons(msg, c + 1)
 				else
-					msg = MAIResetMsg( msg )
+					msg = MAIResetMsg(msg)
 				end
 			else
-				msg = MAIResetMsg( msg )
+				msg = MAIResetMsg(msg)
 			end
 		elseif type == "player" or type == "playerCommunity" or type == "playerGM" then
-			local guid = MAIGetGUID( id )
+			local guid = MAIGetGUID(id)
+
 			if guid then
-				local _, engClass, _, engRace, gender, name, realm = GetPlayerInfoByGUID( guid )
+				local _, engClass, _, engRace, gender, name, realm = GetPlayerInfoByGUID(guid)
+
 				if engClass and engRace and gender and races[engRace .. gender] and classes[engClass] then
 					local res = ""
-					if MAIGV( "ChatFrame1" .. "chatraceicons", true ) and not MAIGV( "nochanges" ) then
+
+					if MAIGV("ChatFrame1" .. "chatraceicons", true) and not MAIGV("nochanges") then
 						res = res .. races[engRace .. gender]
 					end
-					if MAIGV( "ChatFrame1" .. "chatclassicons", true ) and not MAIGV( "nochanges" ) then
+
+					if MAIGV("ChatFrame1" .. "chatclassicons", true) and not MAIGV("nochanges") then
 						res = res .. classes[engClass]
 					end
+
 					local r, g, b, hex = 0, 0, 0, "FFFFFFFF"
+
 					if GetClassColor then
 						r, g, b, hex = GetClassColor(engClass)
 					end
-					if ( string.find( msg, name .. "-" .. realm, 1, true ) or string.find( msg, name, 1, true ) ) and MAIBUILD ~= "RETAIL" and MAIGV( "ChatFrame1" .. "chatshortchannels", true ) then
+
+					if (string.find(msg, name .. "-" .. realm, 1, true) or string.find(msg, name, 1, true)) and MAIBUILD ~= "RETAIL" and MAIGV("ChatFrame1" .. "chatshortchannels", true) then
 						msg = string.gsub(msg, "(|Z)", res .. "[|c" .. hex .. "|X", 1)
 						msg = string.gsub(msg, "(%[" .. name .. "%])", name, 1)
 						msg = string.gsub(msg, "(|z)", "|r]|x", 1)
 					else
-						if MAIBUILD ~= "RETAIL" and MAIGV( "ChatFrame1" .. "chatshortchannels", true ) then
+						if MAIBUILD ~= "RETAIL" and MAIGV("ChatFrame1" .. "chatshortchannels", true) then
 							msg = string.gsub(msg, "(|Z)", res .. "|c" .. hex .. "|X", 1)
 							msg = string.gsub(msg, "(|z)", "|r|x", 1)
 						else
@@ -199,21 +210,21 @@ function MAIChatAddItemIcons( msg, c )
 						end
 					end
 
-					return MAIChatAddItemIcons( msg, c + 1 )
+					return MAIChatAddItemIcons(msg, c + 1)
 				else
-					msg = MAIResetMsg( msg )
+					msg = MAIResetMsg(msg)
 				end
 			else
 				-- NPC TALK
-				msg = MAIResetMsg( msg )
+				msg = MAIResetMsg(msg)
 			end
 		elseif type == "ccpCustomLink" then
-			msg = MAIResetMsg( msg )
+			msg = MAIResetMsg(msg)
 		elseif type == "BNplayer" or type == "BNplayerCommunity" then
-			msg = MAIResetMsg( msg )
+			msg = MAIResetMsg(msg)
 		else
 			--MAIMSG( "SEND TO DEV => UNKNOWN CHAT TYPE: " .. tostring( type ) )
-			msg = MAIResetMsg( msg )
+			msg = MAIResetMsg(msg)
 		end
 	end
 
@@ -224,61 +235,58 @@ function MAIChatAddItemIcons( msg, c )
 	return msg
 end
 
-
-
 -- Item Icons
-function MAIIconsFilter( self, event, msg, author, ... )
-	local guid = select( 10, ... )
+function MAIIconsFilter(self, event, msg, author, ...)
+	local guid = select(10, ...)
+
 	if author and guid then
 		PLYCache[author] = guid
 	end
-	return false, MAIChatAddItemIcons( msg, 1 ), author, ...
+
+	return false, MAIChatAddItemIcons(msg, 1), author, ...
 end
 
 for type in next, getmetatable(ChatTypeInfo).__index do
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_" .. type, MAIIconsFilter)
 end
 
-
-
 -- Class/Race Icons
 local function MAIAddLinks(str)
-	return MAIChatAddItemIcons( str, 1 )
+	return MAIChatAddItemIcons(str, 1)
 end
 
-local function MAIHookFunc( key )
+local function MAIHookFunc(key)
 	local org = _G[key]
-	_G[key] = function( ... )
-		return MAIAddLinks( org( ... ) ) 
-	end
+	_G[key] = function(...) return MAIAddLinks(org(...)) end
 end
-MAIHookFunc("GetBNPlayerCommunityLink") 
-MAIHookFunc("GetBNPlayerLink") 
-MAIHookFunc("GetGMLink") 
-MAIHookFunc("GetPlayerCommunityLink") 
-MAIHookFunc("GetPlayerLink") 
 
-
-
+MAIHookFunc("GetBNPlayerCommunityLink")
+MAIHookFunc("GetBNPlayerLink")
+MAIHookFunc("GetGMLink")
+MAIHookFunc("GetPlayerCommunityLink")
+MAIHookFunc("GetPlayerLink")
 -- Change
 local oldstrs = {}
+
 function MAIUpdateChatChannels()
 	local c = 1
+
 	for i, v in pairs(_G) do
 		if type(v) == "string" and string.find(i, "CHAT_", 1, true) and string.find(i, "_GET", 1, true) then
 			c = c + 1
-			local lang = string.sub( i, 6 )
-			lang = string.sub( lang, 1, string.len( lang ) - 4 )
+			local lang = string.sub(i, 6)
+			lang = string.sub(lang, 1, string.len(lang) - 4)
+
 			if _G[lang] then
 				if oldstrs[i] == nil then
 					oldstrs[i] = _G[i]
 				end
 
-				if MAIGV("ChatFrame1" .. "chatshortchannels") and not MAIGV( "nochanges" ) then
+				if MAIGV("ChatFrame1" .. "chatshortchannels") and not MAIGV("nochanges") then
 					if lang == "CHANNEL" then
 						_G[i] = "%s: "
 					else
-						_G[i] = "[" .. MAIChatOnlyBig( _G[lang] ) .. "] %s: "
+						_G[i] = "[" .. MAIChatOnlyBig(_G[lang]) .. "] %s: "
 					end
 				elseif oldstrs[i] then
 					_G[i] = oldstrs[i]
@@ -288,11 +296,12 @@ function MAIUpdateChatChannels()
 	end
 end
 
-function ChatFrame_ResolvePrefixedChannelName( communityChannel )
-	local prefix, communityChannel = communityChannel:match("(%d+. )(.*)");
-	if MAIGV("ChatFrame1" .. "chatshortchannels") and not MAIGV( "nochanges" ) then
-		return MAIChatOnlyBig( communityChannel )
+function ChatFrame_ResolvePrefixedChannelName(communityChannel)
+	local prefix, communityChannel = communityChannel:match("(%d+. )(.*)")
+
+	if MAIGV("ChatFrame1" .. "chatshortchannels") and not MAIGV("nochanges") then
+		return MAIChatOnlyBig(communityChannel)
 	else
-		return prefix..ChatFrame_ResolveChannelName(communityChannel);
+		return prefix .. ChatFrame_ResolveChannelName(communityChannel)
 	end
 end
