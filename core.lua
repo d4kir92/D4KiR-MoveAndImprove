@@ -1,6 +1,6 @@
 -- By D4KiR
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
-MAIVERSION = "1.3.31"
+MAIVERSION = "1.3.33"
 FLATBORDER = 0.068
 
 local MAICOLORBACKGROUNDHEADER = {0.2, 0.2, 0.2, 0.7}
@@ -1065,7 +1065,7 @@ function MAIGetElementList()
 			lstr = lstr .. " (" .. "Bottombar (Left)" .. ")"
 		else
 			lstr = lstr .. " (" .. "Custom Bar" .. ")"
-			_, englishClass = UnitClass("PLAYER")
+			local _, englishClass = UnitClass("PLAYER")
 
 			if englishClass == "DRUID" then
 				if i == 7 then
@@ -3493,13 +3493,13 @@ function MAIElementSetup(element)
 			end
 
 			mover.Think()
-			local point = MAIGV(mover.element.name .. "point")
-			local relativePoint = MAIGV(mover.element.name .. "relativePoint")
-			local ofsx = MAIGV(mover.element.name .. "ofsx")
-			local ofsy = MAIGV(mover.element.name .. "ofsy")
 			mover:ClearAllPoints()
 
-			if point then
+			if MAIGV(mover.element.name .. "point") then
+				local point = MAIGV(mover.element.name .. "point")
+				local relativePoint = MAIGV(mover.element.name .. "relativePoint")
+				local ofsx = MAIGV(mover.element.name .. "ofsx")
+				local ofsy = MAIGV(mover.element.name .. "ofsy")
 				mover:SetPoint(point, UIParent, relativePoint, ofsx, ofsy)
 			end
 
@@ -3617,7 +3617,7 @@ function MAIElementSetup(element)
 					mover.tab1.content.upf:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
 
 					mover.tab1.content.upf:SetScript("OnClick", function(sel)
-						point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
 
 						if point then
 							ofsy = ofsy + 10
@@ -3637,7 +3637,7 @@ function MAIElementSetup(element)
 					mover.tab1.content.up:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
 
 					mover.tab1.content.up:SetScript("OnClick", function(sel)
-						point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
 
 						if point then
 							ofsy = ofsy + 1
@@ -3658,7 +3658,7 @@ function MAIElementSetup(element)
 					mover.tab1.content.dn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
 
 					mover.tab1.content.dn:SetScript("OnClick", function(sel)
-						point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
 
 						if point then
 							ofsy = ofsy - 1
@@ -3679,7 +3679,7 @@ function MAIElementSetup(element)
 					mover.tab1.content.dnf:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
 
 					mover.tab1.content.dnf:SetScript("OnClick", function(sel)
-						point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
 
 						if point then
 							ofsy = ofsy - 10
@@ -3699,7 +3699,7 @@ function MAIElementSetup(element)
 					mover.tab1.content.rif:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
 
 					mover.tab1.content.rif:SetScript("OnClick", function(sel)
-						point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
 
 						if point then
 							ofsx = ofsx + 10
@@ -3719,7 +3719,7 @@ function MAIElementSetup(element)
 					mover.tab1.content.ri:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
 
 					mover.tab1.content.ri:SetScript("OnClick", function(sel)
-						point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
 
 						if point then
 							ofsx = ofsx + 1
@@ -3739,7 +3739,7 @@ function MAIElementSetup(element)
 					mover.tab1.content.li:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
 
 					mover.tab1.content.li:SetScript("OnClick", function(sel)
-						point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
 
 						if point then
 							ofsx = ofsx - 1
@@ -3759,7 +3759,7 @@ function MAIElementSetup(element)
 					mover.tab1.content.lif:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
 
 					mover.tab1.content.lif:SetScript("OnClick", function(sel)
-						point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
 
 						if point then
 							ofsx = ofsx - 10
@@ -4802,13 +4802,7 @@ function MAIIgnoreBlizz(frame)
 end
 
 local MAIGlowAlpha = 0.75
-
-local LEFTSLOTS = {2, 3, 4, 5, 6, 10, 16, 20, 18}
-
-local RIGHTSLOTS = {7, 8, 9, 11, 12, 13, 14, 15, 17}
-
 local slotbry = 0
-local slotbrx = 3
 
 function MAIAddIlvl(SLOT, i)
 	if SLOT and SLOT.info == nil then
@@ -4894,17 +4888,13 @@ function MAISkinFrame(frameName, ids, retry, show)
 							skip = true
 						end
 
-						if show then
-							if texture.GetTexture then
-								MAIMSG("DEBUG: |cFFFFFF00" .. tostring(frameName) .. " " .. tostring(i) .. " " .. tostring(texture) .. " " .. tostring(texture:GetTexture()))
-							end
+						if show and texture.GetTexture then
+							MAIMSG("DEBUG: |cFFFFFF00" .. tostring(frameName) .. " " .. tostring(i) .. " " .. tostring(texture) .. " " .. tostring(texture:GetTexture()))
 						end
 
-						if not skip then
-							if not tContains(ids, i) then
-								texture:SetVertexColor(MAIGetFrameColor())
-								MAIRegisterFrameColor(texture)
-							end
+						if not skip and not tContains(ids, i) then
+							texture:SetVertexColor(MAIGetFrameColor())
+							MAIRegisterFrameColor(texture)
 						end
 					end
 				end
@@ -5124,7 +5114,6 @@ function MAISetup()
 			local sum = 0
 
 			for i, slot in pairs(MAICharSlots) do
-				local id = i
 				i = i - 1
 				local SLOT = _G["Character" .. slot]
 
@@ -5132,8 +5121,8 @@ function MAISetup()
 					local ItemID = GetInventoryItemLink("PLAYER", SLOT:GetID()) or GetInventoryItemID("PLAYER", SLOT:GetID())
 
 					if ItemID ~= nil and GetDetailedItemLevelInfo then
-						local t1, t2, rarity, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 = GetItemInfo(ItemID)
-						local ilvl, _, baseilvl = GetDetailedItemLevelInfo(ItemID)
+						local _, _, rarity = GetItemInfo(ItemID)
+						local ilvl = GetDetailedItemLevelInfo(ItemID)
 						local color = ITEM_QUALITY_COLORS[rarity]
 						local current, maximum = GetInventoryItemDurability(i)
 
@@ -5228,7 +5217,7 @@ function MAISetup()
 				local max = 16 -- when only mainhand
 
 				if GetInventoryItemID("PLAYER", 17) then
-					local t1, t2, rarity, ilvl, t5, t6, t7, t8, t9, t10, t11, t12, t13 = GetItemInfo(GetInventoryItemLink("PLAYER", 17))
+					local t1 = GetItemInfo(GetInventoryItemLink("PLAYER", 17))
 
 					-- when 2x 1handed
 					if t1 then
@@ -5305,8 +5294,8 @@ function MAISetup()
 							local ItemID = GetInventoryItemLink("TARGET", SLOT:GetID()) --GetInventoryItemID("PLAYER", SLOT:GetID())
 
 							if ItemID and GetDetailedItemLevelInfo then
-								local t1, t2, rarity, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 = GetItemInfo(ItemID)
-								local ilvl, _, baseilvl = GetDetailedItemLevelInfo(ItemID)
+								local _, _, rarity = GetItemInfo(ItemID)
+								local ilvl = GetDetailedItemLevelInfo(ItemID)
 								local color = ITEM_QUALITY_COLORS[rarity]
 
 								if ilvl and color then
@@ -5319,7 +5308,6 @@ function MAISetup()
 									if not MAIGV("nochanges") then
 										if MAIGV("PaperDollFrame" .. "showilvl") then
 											SLOT.text:SetText(color.hex .. ilvl)
-										else
 										end
 
 										if MAIGV("showitemqualtity", true) then
@@ -5355,7 +5343,7 @@ function MAISetup()
 						local ItemID = GetInventoryItemLink("TARGET", 17)
 
 						if GetItemInfo and GetInventoryItemID and ItemID ~= nil then
-							local t1, t2, rarity, ilvl, t5, t6, t7, t8, t9, t10, t11, t12, t13 = GetItemInfo(ItemID)
+							local t1 = GetItemInfo(ItemID)
 
 							-- when 2x 1handed
 							if t1 then
@@ -5408,8 +5396,8 @@ function MAISetup()
 						MAIAddIlvl(SLOT, i)
 
 						if slotLink and GetDetailedItemLevelInfo then
-							local t1, t2, rarity, t4, t5, t6, t7, t8, t9, t10, t11, classID, subclassID = GetItemInfo(slotLink)
-							local ilvl, _, baseilvl = GetDetailedItemLevelInfo(slotLink)
+							local _, _, rarity, _, _, _, _, _, _, _, _, classID, subclassID = GetItemInfo(slotLink)
+							local ilvl = GetDetailedItemLevelInfo(slotLink)
 							local color = ITEM_QUALITY_COLORS[rarity]
 
 							if ilvl and color then
@@ -5483,22 +5471,18 @@ function MAISetup()
 			MAINL = MAINL + 1
 		else
 			-- WARLOCK ARMOR
-			if spellid1 == 687 then
-				if MAIIsSpellKnown(706, "MAIAddStanceButton WARLOCK") then
-					spellid1 = 706 -- UPGRADE ARMOR
-				end
+			if spellid1 == 687 and MAIIsSpellKnown(706, "MAIAddStanceButton WARLOCK") then
+				spellid1 = 706 -- UPGRADE ARMOR
 			end
 
 			-- MAGE ARMOR
-			if spellid1 == 168 then
-				if MAIIsSpellKnown(7302, "MAIAddStanceButton MAGE") then
-					spellid1 = 7302 -- UPGRADE ARMOR
-				end
+			if spellid1 == 168 and MAIIsSpellKnown(7302, "MAIAddStanceButton MAGE") then
+				spellid1 = 7302 -- UPGRADE ARMOR
 			end
 
 			if MAIGV("StanceBar" .. "Enabled") and MAIGV("StanceBar" .. "allclasses") then
-				local spellname1, _, texture1 = GetSpellInfo(spellid1)
-				local spellname2, _, texture2 = GetSpellInfo(spellid2)
+				local spellname1 = GetSpellInfo(spellid1)
+				local spellname2 = GetSpellInfo(spellid2)
 				local b = CreateFrame("CheckButton", "MAIStanceButton" .. stanceid, MAIStanceBar, "SecureActionButtonTemplate") --"SecureActionButtonTemplate")--"ActionBarButtonTemplate")
 				b.spellid1 = spellid1
 				b.spellid2 = spellid2
@@ -5518,7 +5502,7 @@ function MAISetup()
 
 				function b:SetSpell(sid1, sid2)
 					local name1, _, texture1 = GetSpellInfo(sid1)
-					local name2, _, texture2 = GetSpellInfo(sid2)
+					local name2 = GetSpellInfo(sid2)
 					b.Icon:SetTexture(texture1)
 					b.spellid1 = sid1
 					b.spellid2 = sid2
@@ -5598,17 +5582,15 @@ function MAISetup()
 				end)
 
 				b:HookScript("OnUpdate", function(self)
-					if IsMouseButtonDown("RightButton") or IsMouseButtonDown("LeftButton") then
-						if dragframe == self then
-							C_Timer.After(0.01, function()
-								if dragframe == self and not GetCursorInfo() then
-									dragframe:SetSpell(dragspellid1, dragspellid2)
-									dragframe = nil
-									dragspellid1 = nil
-									dragspellid2 = nil
-								end
-							end)
-						end
+					if (IsMouseButtonDown("RightButton") or IsMouseButtonDown("LeftButton")) and dragframe == self then
+						C_Timer.After(0.01, function()
+							if dragframe == self and not GetCursorInfo() then
+								dragframe:SetSpell(dragspellid1, dragspellid2)
+								dragframe = nil
+								dragspellid1 = nil
+								dragspellid2 = nil
+							end
+						end)
 					end
 				end)
 
@@ -5645,15 +5627,15 @@ function MAISetup()
 
 				function b:MAIThink()
 					if MAIIsSpellKnown(spellid1, "MAIThink") and MAIGV("StanceBar" .. "allclasses") and (not b.allclassesplus or (b.allclassesplus and MAIGV("StanceBar" .. "allclassesplus"))) then
-						local spellname1, _, texture1 = GetSpellInfo(b.spellid1)
-						local spellname2, _, texture2 = GetSpellInfo(b.spellid2)
+						local _, _, texture1 = GetSpellInfo(b.spellid1)
+						local _, _, texture2 = GetSpellInfo(b.spellid2)
 						local start, dura = b.start, b.dura
 						local sbsid1 = 0
 						local sbsid2 = 0
 						local i = 1
 
 						while true do
-							local spellName, test, spellID = GetSpellBookItemName(i, BOOKTYPE_SPELL)
+							local spellName, _, spellID = GetSpellBookItemName(i, BOOKTYPE_SPELL)
 
 							--strfind(spellName, spellname) then
 							if spellName and spellName == spellname1 and spellID and MAIIsSpellKnown(spellID, "SetSpell #3") then
@@ -5671,7 +5653,7 @@ function MAISetup()
 							i = 1
 
 							while true do
-								local spellName, test, spellID = GetSpellBookItemName(i, BOOKTYPE_SPELL)
+								local spellName, _, spellID = GetSpellBookItemName(i, BOOKTYPE_SPELL)
 
 								--strfind(spellName, spellname) then
 								if spellName and spellName == spellname2 and spellID and MAIIsSpellKnown(spellID, "SetSpell #4") then
@@ -5690,8 +5672,8 @@ function MAISetup()
 						spellname2, _, texture2 = GetSpellInfo(b.sbsid2)
 						local hasbuff = false
 
-						for i = 1, 40 do
-							local name, t2, t3, t4, duration, expirationTime, t7, t8, t9, spe = UnitBuff("PLAYER", i)
+						for id = 1, 40 do
+							local name, _, _, _, duration, expirationTime, _, _, _, spe = UnitBuff("PLAYER", id)
 
 							if name ~= nil and name == spellname2 and sbsid2 == spe then
 								hasbuff = 1
@@ -5705,8 +5687,8 @@ function MAISetup()
 						end
 
 						if not hasbuff then
-							for i = 1, 40 do
-								local name, t2, t3, t4, duration, expirationTime, t7, t8, t9, spe = UnitBuff("PLAYER", i)
+							for id = 1, 40 do
+								local name, _, _, _, duration, expirationTime, _, _, _, spe = UnitBuff("PLAYER", id)
 
 								if name ~= nil and name == spellname1 and sbsid1 == spe then
 									hasbuff = 1
@@ -5724,14 +5706,12 @@ function MAISetup()
 							b.Icon:SetTexture(texture1)
 						end
 
-						if spellname1 and UnitExists("PET") and UnitCreatureFamily("PET") then
-							if string.find(spellname1, UnitCreatureFamily("PET")) then
-								hasbuff = 1
-							end
+						if spellname1 and UnitExists("PET") and UnitCreatureFamily("PET") and string.find(spellname1, UnitCreatureFamily("PET")) then
+							hasbuff = 1
 						end
 
-						for i = 1, 4 do
-							local haveTotem, totemName, startTime, duration = GetTotemInfo(i)
+						for id = 1, 4 do
+							local haveTotem, totemName, startTime, duration = GetTotemInfo(id)
 
 							if haveTotem and totemName and spellname1 and string.find(totemName, spellname1) then
 								start = startTime
@@ -5804,13 +5784,12 @@ function MAISetup()
 				b:MAIThink()
 
 				b:SetScript("OnEnter", function(self, ...)
-					local spellname1, _, texture1 = GetSpellInfo(b.spellid1)
 					GameTooltip:SetOwner(self, "ANCHOR_TOP")
 					local spellbookid = 0
 					local i = 1
 
 					while true do
-						local spell, spellSub, spellid = GetSpellBookItemName(i, BOOKTYPE_SPELL)
+						local spell, _, spellid = GetSpellBookItemName(i, BOOKTYPE_SPELL)
 
 						if spellid and spellid == b.spellid1 then
 							spellbookid = i
@@ -5840,7 +5819,7 @@ function MAISetup()
 		end
 	end
 
-	local localizedClass, englishClass, classIndex = UnitClass("PLAYER")
+	local _, englishClass, _ = UnitClass("PLAYER")
 
 	if MAIGV("CLASSES") == nil then
 		MAISV("CLASSES", {})
@@ -5849,12 +5828,10 @@ function MAISetup()
 			if type(classtab) == "table" then
 				for index, classdb in pairs(classtab) do
 					for id, spelltab in pairs(classdb) do
-						if spelltab[1] == nil then
-							if spelltab[2] and spelltab[2] ~= "fake" then
-								print("[MAI] |cFFFF0000" .. classname .. "-DB is broken, resetting it.")
-								MAIGV("CLASSES")[classname] = {}
-								MAIGV("CLASSES")[classname .. "VERSION"] = 0
-							end
+						if spelltab[1] == nil and spelltab[2] and spelltab[2] ~= "fake" then
+							print("[MAI] |cFFFF0000" .. classname .. "-DB is broken, resetting it.")
+							MAIGV("CLASSES")[classname] = {}
+							MAIGV("CLASSES")[classname .. "VERSION"] = 0
 						end
 					end
 				end
@@ -6381,7 +6358,7 @@ function MAISetup()
 		for i, text in pairs(texts) do
 			if text then
 				if text.GetRegions then
-					for i, tex in pairs({text:GetRegions()}) do
+					for id, tex in pairs({text:GetRegions()}) do
 						if tex.SetTextColor then
 							hooksecurefunc(tex, "SetTextColor", function(self, color)
 								if self.maisettextcolor then return end
@@ -6953,10 +6930,10 @@ end
 local maidebugxpbar = false
 local maixpready = false
 
-local function OnEventXP(self, event, ...)
+local function OnEventXP(sel, event, ...)
 	if MAILoaded then
 		if event == "CHAT_MSG_ADDON" then
-			local prefix, values, channel, target = ...
+			local prefix, values, _, target = ...
 
 			-- new xp values
 			if prefix == XPPREFIX and MAIGV("XPTAB") then
@@ -7000,14 +6977,12 @@ local function OnEventXP(self, event, ...)
 
 				for i = 1, 4 do
 					local PartyFrame = _G["PartyMemberFrame" .. i]
-					local PartyFrameTexture = _G["PartyMemberFrame" .. i .. "Texture"]
 					local PartyPortrait = _G["PartyMemberFrame" .. i .. "Portrait"]
 					local ManaBar = _G["PartyMemberFrame" .. i .. "ManaBar"]
-					local Portrait = _G["PartyMemberFrame" .. i .. "Portrait"]
 
 					if maidebugxpbar then
 						hooksecurefunc(PartyFrame, "Hide", function(self)
-							if self.mahide then return end
+							if sel.mahide then return end
 							self.mahide = true
 							self:Show()
 							self.mahide = false
@@ -7067,22 +7042,22 @@ local function OnEventXP(self, event, ...)
 								self:ClearAllPoints()
 
 								if parent == PartyFrame then
-									local py = 4
+									local pfy = 4
 
 									-- DUnitFrames
 									if DUFTAB then
-										py = -6
+										pfy = -6
 
 										if xpbar and xpbar:IsVisible() then
-											py = -18
+											pfy = -18
 										end
 									else
 										if xpbar and xpbar:IsVisible() then
-											py = -8
+											pfy = -8
 										end
 									end
 
-									self:SetPoint("BOTTOMLEFT", parent, "BOTTOMRIGHT", -80, py)
+									self:SetPoint("BOTTOMLEFT", parent, "BOTTOMRIGHT", -80, pfy)
 								else
 									self:SetPoint("LEFT", parent, "RIGHT", 4, 0)
 								end
@@ -7150,9 +7125,9 @@ local function OnEventXP(self, event, ...)
 						function PartyFrameXPBar.think()
 							if UnitExists("PARTY" .. i) and UnitLevel("PARTY" .. i) < MAIGetMaxLevel() then
 								PartyFrameXPBar:Show()
-								local c = GetQuestDifficultyColor(UnitLevel("PARTY" .. i))
+								local qdc = GetQuestDifficultyColor(UnitLevel("PARTY" .. i))
 								PartyFrameXPBar.levelText:SetText(UnitLevel("PARTY" .. i))
-								PartyFrameXPBar.levelText:SetTextColor(c.r, c.g, c.b, 1)
+								PartyFrameXPBar.levelText:SetTextColor(qdc.r, qdc.g, qdc.b, 1)
 								local xp = MAIUnitXP("PARTY" .. i, 0)
 								local xpmax = MAIUnitXPMax("PARTY" .. i, 1)
 
@@ -7204,19 +7179,17 @@ local function OnEventXP(self, event, ...)
 			end
 		end
 
-		if event == "PLAYER_ENTERING_WORLD" or event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_XP_UPDATE" then
-			if maixpready then
-				if event == "PLAYER_ENTERING_WORLD" or event == "GROUP_ROSTER_UPDATE" then
-					MAIUpdatePartyXPAPI() -- "connect to the party members"
-				end
+		if (event == "PLAYER_ENTERING_WORLD" or event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_XP_UPDATE") and maixpready then
+			if event == "PLAYER_ENTERING_WORLD" or event == "GROUP_ROSTER_UPDATE" then
+				MAIUpdatePartyXPAPI() -- "connect to the party members"
+			end
 
-				local message = UnitXP("PLAYER") .. ";" .. UnitXPMax("PLAYER") -- send xp
+			local message = UnitXP("PLAYER") .. ";" .. UnitXPMax("PLAYER") -- send xp
 
-				if IsInRaid(LE_PARTY_CATEGORY_INSTANCE) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-					C_ChatInfo.SendAddonMessage(XPPREFIX, message, "INSTANCE_CHAT")
-				elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
-					C_ChatInfo.SendAddonMessage(XPPREFIX, message, "PARTY")
-				end
+			if IsInRaid(LE_PARTY_CATEGORY_INSTANCE) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+				C_ChatInfo.SendAddonMessage(XPPREFIX, message, "INSTANCE_CHAT")
+			elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
+				C_ChatInfo.SendAddonMessage(XPPREFIX, message, "PARTY")
 			end
 		end
 	end
