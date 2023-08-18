@@ -1,6 +1,6 @@
 -- By D4KiR
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
-MAIVERSION = "1.3.35"
+MAIVERSION = "1.3.36"
 FLATBORDER = 0.068
 
 local MAICOLORBACKGROUNDHEADER = {0.2, 0.2, 0.2, 0.7}
@@ -3132,37 +3132,33 @@ function MAIElementSetup(element)
 						-- SNAP TO GRID
 						if MAIGV("snaptogrid") then
 							if ofsx >= 0 then
-								if ofsx % 10 == 0 then
-								elseif ofsx % snapgrid <= snapgrid / 2 then
+								if ofsx % 10 ~= 0 and ofsx % snapgrid <= snapgrid / 2 then
 									-- nothing
 									ofsx = ofsx - (ofsx % snapgrid)
-								else
+								elseif ofsx % 10 ~= 0 then
 									ofsx = ofsx + (snapgrid - ofsx % snapgrid)
 								end
 							else
-								if ofsx % 10 == 0 then
-								elseif -ofsx % snapgrid <= snapgrid / 2 then
+								if ofsx % 10 ~= 0 and -ofsx % snapgrid <= snapgrid / 2 then
 									-- nothing
 									ofsx = ofsx + (snapgrid - ofsx % snapgrid)
-								else
+								elseif ofsx % 10 ~= 0 then
 									ofsx = ofsx - (ofsx % snapgrid)
 								end
 							end
 
 							if ofsy >= 0 then
-								if ofsy % 10 == 0 then
-								elseif ofsy % snapgrid <= snapgrid / 2 then
+								if ofsy % 10 ~= 0 and ofsy % snapgrid <= snapgrid / 2 then
 									-- nothing
 									ofsy = ofsy - (ofsy % snapgrid)
-								else
+								elseif ofsy % 10 ~= 0 then
 									ofsy = ofsy + (snapgrid - ofsy % snapgrid)
 								end
 							else
-								if ofsy % 10 == 0 then
-								elseif -ofsy % snapgrid <= snapgrid / 2 then
+								if ofsy % 10 ~= 0 and -ofsy % snapgrid <= snapgrid / 2 then
 									-- nothing
 									ofsy = ofsy + (snapgrid - ofsy % snapgrid)
-								else
+								elseif ofsy % 10 ~= 0 then
 									ofsy = ofsy - (ofsy % snapgrid)
 								end
 							end
@@ -4793,11 +4789,6 @@ function MAIIgnoreBlizz(frame)
 	if type(frame) == "string" then
 		--UIPARENT_MANAGED_FRAME_POSITIONS[frame] = nil
 		frame = _G[frame]
-	end
-
-	if type(frame) == "table" and type(frame.IsObjectType) == "function" and frame:IsObjectType("Frame") then
-		local name = frame:GetName()
-		if name then end --UIPARENT_MANAGED_FRAME_POSITIONS[name] = nil
 	end
 end
 
@@ -6841,7 +6832,7 @@ function MAISetupLFGSortSearchResult()
 							bdama = rTab["DAMAGER"] <= rdama
 
 							if btank and bheal and bdama then
-							else -- good
+							else
 								-- bad
 								accept = false
 							end
