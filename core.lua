@@ -1,6 +1,6 @@
 -- By D4KiR
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
-MAIVERSION = "1.3.37"
+MAIVERSION = "1.3.38"
 FLATBORDER = 0.068
 
 local MAICOLORBACKGROUNDHEADER = {0.2, 0.2, 0.2, 0.7}
