@@ -1,17 +1,12 @@
 -- By D4KiR
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
-MAIVERSION = "1.3.40"
+MAIVERSION = "1.3.42"
 FLATBORDER = 0.068
-
 local MAICOLORBACKGROUNDHEADER = {0.2, 0.2, 0.2, 0.7}
-
 local MAICOLORBACKGROUND = {0.0, 0.0, 0.0, 0.7}
-
 MAIDEBUG = false
-
 function MAICheckIfSame(src, dest)
 	if dest == nil then return true end
-
 	for i, v in pairs(src) do
 		if src[i] ~= nil and dest[i] ~= nil and src[i] ~= dest[i] and i ~= "ILVL" and i ~= "XPTAB" and i ~= "menu" and i ~= "toggler" then
 			if type(src[i]) == "number" and type(dest[i]) == "number" then
@@ -34,10 +29,8 @@ end
 function MAICopy_Table(orig)
 	local orig_type = type(orig)
 	local copy
-
 	if orig_type == "table" then
 		copy = {}
-
 		for orig_key, orig_value in next, orig, nil do
 			copy[MAICopy_Table(orig_key)] = MAICopy_Table(orig_value)
 		end
@@ -61,26 +54,26 @@ function MAICreateSlider(parent, name, key, vval, x, y, vmin, vmax, steps, form,
 	SL:SetObeyStepOnDrag(true)
 	SL:SetValueStep(steps)
 	SL:SetValue(MAIGV(name .. key, vval))
+	SL:SetScript(
+		"OnValueChanged",
+		function(self, val)
+			--val = val - val % steps
+			val = tonumber(string.format("%" .. form, val))
+			if val and val ~= MAIGV(name .. key) then
+				if key == "count" then
+					MAISV(name .. "rows", 1)
+					LibDD:UIDropDownMenu_SetText(_G[name .. "rowscb"], MAIGV(name .. "rows"))
+				end
 
-	SL:SetScript("OnValueChanged", function(self, val)
-		--val = val - val % steps
-		val = tonumber(string.format("%" .. form, val))
-
-		if val and val ~= MAIGV(name .. key) then
-			if key == "count" then
-				MAISV(name .. "rows", 1)
-				LibDD:UIDropDownMenu_SetText(_G[name .. "rowscb"], MAIGV(name .. "rows"))
-			end
-
-			MAISV(name .. key, val)
-			SL.Text:SetText(MAIGT(lstr) .. ": " .. val)
-			MAIUpdateActionButton()
-
-			if MAIUpdateMAIMicroButtons then
-				MAIUpdateMAIMicroButtons()
+				MAISV(name .. key, val)
+				SL.Text:SetText(MAIGT(lstr) .. ": " .. val)
+				MAIUpdateActionButton()
+				if MAIUpdateMAIMicroButtons then
+					MAIUpdateMAIMicroButtons()
+				end
 			end
 		end
-	end)
+	)
 
 	return SL
 end
@@ -103,10 +96,12 @@ function MAIAddChatCheckBox(name, value, x, y)
 	cb:SetSize(20, 20)
 	cb:SetPoint("TOPLEFT", x, y)
 	cb:SetChecked(MAIGV("ChatFrame1" .. name))
-
-	cb:SetScript("OnClick", function(self)
-		MAISV("ChatFrame1" .. name, not MAIGV("ChatFrame1" .. name))
-	end)
+	cb:SetScript(
+		"OnClick",
+		function(self)
+			MAISV("ChatFrame1" .. name, not MAIGV("ChatFrame1" .. name))
+		end
+	)
 
 	local function MAIUpdateChatCheckbox()
 		if cb:GetChecked() ~= MAIGV("ChatFrame1" .. name) then
@@ -122,7 +117,6 @@ function MAIAddChatCheckBox(name, value, x, y)
 	cb.text:SetFont(STANDARD_TEXT_FONT, 10, "")
 	cb.text:SetPoint("LEFT", cb, "RIGHT", 0, 0)
 	cb.text:SetText(MAIGT(name))
-
 	if MAIGV("nochanges") then
 		cb:SetChecked(false)
 		cb:Disable()
@@ -131,7 +125,6 @@ function MAIAddChatCheckBox(name, value, x, y)
 end
 
 local maiuicolortab = {}
-
 function MAIGetUIColor()
 	if MAIGV("MAIUIColorR") ~= nil and MAIGV("MAIUIColorG") ~= nil and MAIGV("MAIUIColorB") ~= nil and not MAIGV("nochanges") then
 		return MAIGV("MAIUIColorR"), MAIGV("MAIUIColorG"), MAIGV("MAIUIColorB")
@@ -142,7 +135,6 @@ end
 
 function MAIRegisterUIColor(ele)
 	if ele == nil then return end
-
 	if MAIGV("UIColorEnabled", true) and not MAIGV("nochanges") then
 		tinsert(maiuicolortab, ele)
 		ele:SetVertexColor(MAIGetUIColor())
@@ -158,7 +150,6 @@ function MAIUIColorUpdate()
 end
 
 local maiframecolortab = {}
-
 function MAIGetFrameColor()
 	if MAIGV("MAIFrameColorR") ~= nil and MAIGV("MAIFrameColorG") ~= nil and MAIGV("MAIFrameColorB") ~= nil and not MAIGV("nochanges") then
 		return MAIGV("MAIFrameColorR"), MAIGV("MAIFrameColorG"), MAIGV("MAIFrameColorB")
@@ -186,7 +177,6 @@ local MAINL = 0
 local MAIStanceBar = CreateFrame("FRAME", "MAIStanceBar", StanceBar)
 MAIStanceBar:SetSize(30, 30)
 MAIStanceBar:SetPoint("BOTTOMLEFT", StanceBar, "BOTTOMLEFT", 0, 0)
-
 if false then
 	MAIStanceBar.texture = MAIStanceBar:CreateTexture(nil, "BACKGROUND")
 	MAIStanceBar.texture:SetAllPoints(MAIStanceBar)
@@ -213,14 +203,11 @@ function MAIUpdateStanceBarSize()
 	local list = {}
 	local x = 1
 	local y = 1
-
 	for i = 1, 40 do
 		local b = _G["MAIStanceButton" .. i]
-
 		if b and b.spellid1 and MAIIsSpellKnown(b.spellid1, "MAIUpdateStanceBarSize 1") then
 			list[y] = list[y] or {}
 			list[y] = x
-
 			if b.nl then
 				y = y + 1
 			end
@@ -230,10 +217,8 @@ function MAIUpdateStanceBarSize()
 	end
 
 	local dir = "RIGHT"
-
 	for i = 1, 40 do
 		local b = _G["MAIStanceButton" .. i]
-
 		if b then
 			if (not b.allclassesplus or (b.allclassesplus and MAIGV("StanceBar" .. "allclassesplus"))) and b.spellid1 and MAIIsSpellKnown(b.spellid1, "MAIUpdateStanceBarSize 2") then
 				if b.hr then
@@ -247,14 +232,12 @@ function MAIUpdateStanceBarSize()
 
 				local ofsx = 0
 				local ofsy = MAINL + nl * (30 + MAIGV("StanceBar" .. "spacing"))
-
 				if dir == "RIGHT" then
 					ofsx = btns * 30 + btns * MAIGV("StanceBar" .. "spacing") + hr * MAIGV("StanceBar" .. "spacing")
 				end
 
 				b:SetPoint("BOTTOMLEFT", ofsx, ofsy)
 				btns = btns + 1
-
 				if btns > maxw then
 					maxw = btns
 				end
@@ -267,7 +250,6 @@ function MAIUpdateStanceBarSize()
 	local sw = 30 * maxw + MAIGV("StanceBar" .. "spacing") * (maxw - 1) + hr * MAIGV("StanceBar" .. "spacing")
 	local sh = 30 + nl * (30 + MAIGV("StanceBar" .. "spacing"))
 	local _, englishClass, _ = UnitClass("PLAYER")
-
 	if englishClass == "HUNTER" or englishClass == "SHAMAN" or englishClass == "MAGE" or englishClass == "WARLOCK" then
 		StanceBar:SetSize(sw, sh)
 	end
@@ -300,10 +282,8 @@ local ELEMENTS = {}
 local ELENAMES = {}
 local NOTGOOD = {}
 local NOCHANGES = {}
-
 function MAIAddElement(tab)
 	tinsert(ELENAMES, tab.name)
-
 	if tab.name == nil then
 		MAIERR("[MAIAddElement] FAILED: No Name specified")
 
@@ -328,7 +308,6 @@ function MAIAddElement(tab)
 	element.forcedrag = tab.forcedrag
 	element.notgood = tab.notgood
 	element.nochanges = tab.nochanges or false
-
 	if tab.notgood then
 		NOTGOOD[tab.name] = true
 	end
@@ -348,7 +327,6 @@ end
 function MAISetupPlayerPowerBarAlt()
 	function UnitPowerBarAltStatus_UpdateText(self)
 		local powerBar = self:GetParent()
-
 		if powerBar.displayedValue and self:IsShown() then
 			TextStatusBar_UpdateTextStringWithValues(self, self.text, floor(powerBar.displayedValue), powerBar.minPower, powerBar.maxPower)
 		end
@@ -362,14 +340,17 @@ function MAISetupPlayerPowerBarAlt()
 	end
 
 	UnitPowerBarAltStatus_ToggleFrame(PlayerPowerBarAltStatusFrame)
-
 	if MAIGV("PlayerPowerBarAlt" .. "hideartwork") then
-		hooksecurefunc(PlayerPowerBarAlt.frame, "Show", function(self)
-			if self.mashow then return end
-			self.mashow = true
-			self:Hide()
-			self.mashow = false
-		end)
+		hooksecurefunc(
+			PlayerPowerBarAlt.frame,
+			"Show",
+			function(self)
+				if self.mashow then return end
+				self.mashow = true
+				self:Hide()
+				self.mashow = false
+			end
+		)
 
 		PlayerPowerBarAlt.frame:Hide()
 	end
@@ -378,17 +359,18 @@ end
 MAIMoneyBar = CreateFrame("FRAME", "MAIMoneyBar", UIParent)
 MAIMoneyBar:SetSize(180, 20)
 MAIMoneyBar:SetPoint("CENTER")
-
 function MAISetupMAIMoneyBar()
 	MAIMoneyBar.text = MAIMoneyBar:CreateFontString(nil, "ARTWORK")
 	MAIMoneyBar.text:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
 	MAIMoneyBar.text:SetPoint("CENTER", MAIMoneyBar, "CENTER", 0, 0)
 	MAIMoneyBar.text:SetText(GetCoinTextureString(GetMoney()))
 	MAIMoneyBar:RegisterEvent("PLAYER_MONEY")
-
-	MAIMoneyBar:SetScript("OnEvent", function(self, ...)
-		MAIMoneyBar.text:SetText(GetCoinTextureString(GetMoney()))
-	end)
+	MAIMoneyBar:SetScript(
+		"OnEvent",
+		function(self, ...)
+			MAIMoneyBar.text:SetText(GetCoinTextureString(GetMoney()))
+		end
+	)
 
 	if MAIBUILD ~= "RETAIL" then
 		GOLD_AMOUNT_SYMBOL = "|TInterface\\MoneyFrame\\UI-GoldIcon:12:12:2:0|t"
@@ -400,17 +382,14 @@ end
 --[[local FACTION_HORDE = 0
 local FACTION_ALLIANCE = 1]]
 local spirittime = nil
-
 function MAISetupUIWidgetTopCenterContainerFrame()
 	UIWidgetTopCenterContainerFrame.textSpiri = UIWidgetTopCenterContainerFrame:CreateFontString(nil, "OVERLAY")
 	UIWidgetTopCenterContainerFrame.textSpiri:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
 	UIWidgetTopCenterContainerFrame.textSpiri:SetPoint("TOP", UIWidgetTopCenterContainerFrame, "TOP", 0, 16)
 	UIWidgetTopCenterContainerFrame.textSpiri:SetText("")
-
 	function MAIThinkBG()
 		if UnitInBattleground("PLAYER") then
 			RequestBattlefieldScoreData()
-
 			--[[
 			local _, _, _, _, numHorde = GetBattlefieldTeamInfo(FACTION_HORDE)
 			local _, _, _, _, numAlliance = GetBattlefieldTeamInfo(FACTION_ALLIANCE)
@@ -423,7 +402,6 @@ function MAISetupUIWidgetTopCenterContainerFrame()
 				spirittime = GetAreaSpiritHealerTime()
 			elseif spirittime then
 				spirittime = spirittime - 0.1
-
 				if spirittime <= 0 then
 					spirittime = 30
 				end
@@ -450,186 +428,145 @@ end
 function MAISetupGroupLootFrame()
 	for i = 2, 4 do
 		local lf = _G["GroupLootFrame" .. i]
-
 		-- Position
-		hooksecurefunc(lf, "SetPoint", function(self, ...)
-			if self.setpoint then return end
-			self.setpoint = true
-			self:ClearAllPoints()
-			self:SetPoint("BOTTOM", _G["GroupLootFrame" .. i - 1], "TOP", 0, 3)
-			self.setpoint = false
-		end)
+		hooksecurefunc(
+			lf,
+			"SetPoint",
+			function(self, ...)
+				if self.setpoint then return end
+				self.setpoint = true
+				self:ClearAllPoints()
+				self:SetPoint("BOTTOM", _G["GroupLootFrame" .. i - 1], "TOP", 0, 3)
+				self.setpoint = false
+			end
+		)
 
 		lf:SetPoint("BOTTOM")
-
 		-- SCALE
-		hooksecurefunc(lf, "SetScale", function(self, ...)
-			if self.setscale then return end
-			self.setscale = true
-			self:SetScale(_G["GroupLootFrame" .. i - 1]:GetScale())
-			self.setscale = false
-		end)
+		hooksecurefunc(
+			lf,
+			"SetScale",
+			function(self, ...)
+				if self.setscale then return end
+				self.setscale = true
+				self:SetScale(_G["GroupLootFrame" .. i - 1]:GetScale())
+				self.setscale = false
+			end
+		)
 
 		lf:SetScale(1)
 	end
 end
 
 local MAIFRAMES = {}
-
 tinsert(MAIFRAMES, {"GameMenuFrame", 1})
-
 tinsert(MAIFRAMES, {"InterfaceOptionsFrame", 1})
-
 tinsert(MAIFRAMES, {"QuickKeybindFrame", 1})
-
 tinsert(MAIFRAMES, {"VideoOptionsFrame", 1})
-
 tinsert(MAIFRAMES, {"KeyBindingFrame", 1})
-
 tinsert(MAIFRAMES, {"MacroFrame", 1})
-
 tinsert(MAIFRAMES, {"AddonList", 1})
-
 tinsert(MAIFRAMES, {"ContainerFrame" .. 1, 1, true, nil, true})
-
 for i = 2, 5 do
 	tinsert(MAIFRAMES, {"ContainerFrame" .. i, 1, true, "ContainerFrame" .. i - 1, true})
 end
 
 tinsert(MAIFRAMES, {"LFGParentFrame", 1})
-
 tinsert(MAIFRAMES, {"LootFrame", 1})
-
 tinsert(MAIFRAMES, {"CharacterFrame", 1})
-
 tinsert(MAIFRAMES, {"InspectFrame", 1})
-
 tinsert(MAIFRAMES, {"SpellBookFrame", 1})
-
 tinsert(MAIFRAMES, {"PlayerTalentFrame", 1})
-
 tinsert(MAIFRAMES, {"FriendsFrame", 1})
-
 tinsert(MAIFRAMES, {"HelpFrame", 1})
-
 tinsert(MAIFRAMES, {"TradeSkillFrame", 1})
-
 tinsert(MAIFRAMES, {"QuestLogFrame", 1})
-
 tinsert(MAIFRAMES, {"WorldMapFrame", 1})
-
 tinsert(MAIFRAMES, {"ChallengesKeystoneFrame", 1})
-
 tinsert(MAIFRAMES, {"CovenantMissionFrame", 1})
-
 tinsert(MAIFRAMES, {"OrderHallMissionFrame", 1})
-
 tinsert(MAIFRAMES, {"PVPMatchScoreboard", 1})
-
 tinsert(MAIFRAMES, {"GossipFrame", 1})
-
 tinsert(MAIFRAMES, {"MerchantFrame", 1})
-
 tinsert(MAIFRAMES, {"PetStableFrame", 1})
-
 tinsert(MAIFRAMES, {"QuestFrame", 1})
-
 tinsert(MAIFRAMES, {"ClassTrainerFrame", 1})
-
 tinsert(MAIFRAMES, {"AchievementFrame", 1})
-
 tinsert(MAIFRAMES, {"CommunitiesFrame", 1})
-
 tinsert(MAIFRAMES, {"PVEFrame", 1})
-
 tinsert(MAIFRAMES, {"EncounterJournal", 1})
-
 --[[tinsert(MAIFRAMES, {
 	"CollectionsJournal",
 	1
 })]]
 tinsert(MAIFRAMES, {"WeeklyRewardsFrame", 1})
-
 tinsert(MAIFRAMES, {"BankFrame", 1})
-
 if MAIBUILD ~= "RETAIL" then
 	tinsert(MAIFRAMES, {"WardrobeFrame", 1})
 end
 
 tinsert(MAIFRAMES, {"DressUpFrame", 1})
-
 tinsert(MAIFRAMES, {"MailFrame", 1})
-
 tinsert(MAIFRAMES, {"OpenMailFrame", 1})
-
 tinsert(MAIFRAMES, {"AuctionHouseFrame", 1})
-
 tinsert(MAIFRAMES, {"AnimaDiversionFrame", 1})
-
 tinsert(MAIFRAMES, {"CovenantSanctumFrame", 1})
-
 tinsert(MAIFRAMES, {"SoulbindViewer", 1})
-
 tinsert(MAIFRAMES, {"GarrisonLandingPage", 1})
-
 tinsert(MAIFRAMES, {"PlayerChoiceFrame", 1, true})
-
 local currentFrame = nil
 local currentFrameName = nil
 local scaler = CreateFrame("FRAME")
-
-scaler:SetScript("OnUpdate", function()
-	if currentFrame and not currentFrame:IsShown() then
-		currentFrame:SetAlpha(1)
-		currentFrame = nil
-		currentFrameName = nil
-		GameTooltip:Hide()
-	end
-
-	if currentFrame then
-		local curMouseX, curMouseY = GetCursorPosition()
-
-		-- Only try to scale once there was at least one previous position
-		if scaler.prevMouseX and scaler.prevMouseY then
-			if curMouseY > scaler.prevMouseY then
-				-- Add to scale
-				local newScale = math.min(currentFrame:GetScale() + 0.006, 1.5)
-				-- Scale
-				currentFrame:SetScale(newScale)
-				MAISV(currentFrameName .. "scale", newScale)
-			elseif curMouseY < scaler.prevMouseY then
-				-- Subtract from scale
-				local newScale = math.max(currentFrame:GetScale() - 0.006, 0.5)
-				-- Scale
-				currentFrame:SetScale(newScale)
-				MAISV(currentFrameName .. "scale", newScale)
-			end
+scaler:SetScript(
+	"OnUpdate",
+	function()
+		if currentFrame and not currentFrame:IsShown() then
+			currentFrame:SetAlpha(1)
+			currentFrame = nil
+			currentFrameName = nil
+			GameTooltip:Hide()
 		end
 
-		GameTooltip:SetOwner(currentFrame)
-		GameTooltip:SetText(math.floor(currentFrame:GetScale() * 100) .. "%")
-		-- Update previous mouse position
-		scaler.prevMouseX = curMouseX
-		scaler.prevMouseY = curMouseY
+		if currentFrame then
+			local curMouseX, curMouseY = GetCursorPosition()
+			-- Only try to scale once there was at least one previous position
+			if scaler.prevMouseX and scaler.prevMouseY then
+				if curMouseY > scaler.prevMouseY then
+					-- Add to scale
+					local newScale = math.min(currentFrame:GetScale() + 0.006, 1.5)
+					-- Scale
+					currentFrame:SetScale(newScale)
+					MAISV(currentFrameName .. "scale", newScale)
+				elseif curMouseY < scaler.prevMouseY then
+					-- Subtract from scale
+					local newScale = math.max(currentFrame:GetScale() - 0.006, 0.5)
+					-- Scale
+					currentFrame:SetScale(newScale)
+					MAISV(currentFrameName .. "scale", newScale)
+				end
+			end
+
+			GameTooltip:SetOwner(currentFrame)
+			GameTooltip:SetText(math.floor(currentFrame:GetScale() * 100) .. "%")
+			-- Update previous mouse position
+			scaler.prevMouseX = curMouseX
+			scaler.prevMouseY = curMouseY
+		end
 	end
-end)
+)
 
 local frameinit = {}
-
 function MAIMoveFrames()
 	if not InCombatLockdown() then
 		local allsetup = true
-
 		for i, mf in pairs(MAIFRAMES) do
 			local name = mf[1]
 			local frame = _G[name]
 			local scale = mf[2]
 			local dontscale = mf[3]
-
 			--local mainparent = mf[4]
 			if frame and frameinit[name] == nil then
 				frameinit[name] = true
-
 				if scale ~= 1 then
 					frame:SetScale(scale)
 				end
@@ -640,22 +577,22 @@ function MAIMoveFrames()
 					frame:EnableMouse(true)
 					frame:SetClampedToScreen(true)
 					frame:RegisterForDrag("LeftButton", "RightButton")
-
 					--frame:SetResizable(true)
-					frame:SetScript("OnDragStart", function(self, btn)
-						frame:SetUserPlaced(false)
-						frame:SetAlpha(0.34)
-						frame.ismoving = true
-
-						if btn == "RightButton" then
-							--frame:RegisterForDrag("RightButton")
-							frame.iscaling = true
-							currentFrame = frame
-							currentFrameName = name
-							frame.prevMouseX = nil
-							frame.prevMouseY = nil
-							GameTooltip:Hide()
-							--[[
+					frame:SetScript(
+						"OnDragStart",
+						function(self, btn)
+							frame:SetUserPlaced(false)
+							frame:SetAlpha(0.34)
+							frame.ismoving = true
+							if btn == "RightButton" then
+								--frame:RegisterForDrag("RightButton")
+								frame.iscaling = true
+								currentFrame = frame
+								currentFrameName = name
+								frame.prevMouseX = nil
+								frame.prevMouseY = nil
+								GameTooltip:Hide()
+								--[[
 							MAISV( name .. "scale", 1 )
 							frame:SetScale( MAIGV( name .. "scale" ) )
 
@@ -666,13 +603,14 @@ function MAIMoveFrames()
 							MAISV( mf[1] .. "ofsy", nil )
 
 							MAIMSG( "RESETTED", name, ", please reload" )]]
-						elseif btn == "LeftButton" then
-							if not InCombatLockdown() then
-								--frame:RegisterForDrag("LeftButton")
-								self:StartMoving()
+							elseif btn == "LeftButton" then
+								if not InCombatLockdown() then
+									--frame:RegisterForDrag("LeftButton")
+									self:StartMoving()
+								end
 							end
 						end
-					end)
+					)
 
 					--elseif btn == "LeftButton" then
 					--MAIMSG( MAIGT("draghelp") )
@@ -694,50 +632,53 @@ function MAIMoveFrames()
 						end
 					end
 
-					frame:SetScript("OnDragStop", function(self)
-						frame:SetAlpha(1)
-
-						if frame.ismoving then
-							frame.ismoving = false
-							frame:StopMovingOrSizing()
-							frame:UpdateValues()
-							frame:SetUserPlaced(false)
-
-							if strfind(name, "ContainerFrame") == 1 then
-								C_UI.Reload()
-							end
-						end
-
-						if frame.isscaling then
-							frame.isscaling = false
-						end
-
-						currentFrame = nil
-						currentFrameName = nil
-					end)
-
-					hooksecurefunc(frame, "SetPoint", function(self, ...)
-						if self.setpoint then return end
-						self.setpoint = true
-
-						if not InCombatLockdown() then
-							if MAIGV(mf[1] .. "parent") == nil then
-								MAISV(mf[1] .. "parent", UIParent)
+					frame:SetScript(
+						"OnDragStop",
+						function(self)
+							frame:SetAlpha(1)
+							if frame.ismoving then
+								frame.ismoving = false
+								frame:StopMovingOrSizing()
+								frame:UpdateValues()
+								frame:SetUserPlaced(false)
+								if strfind(name, "ContainerFrame") == 1 then
+									C_UI.Reload()
+								end
 							end
 
-							if MAIGV(mf[1] .. "point") and MAIGV(mf[1] .. "relativePoint") and self:GetPoint() then
-								self:ClearAllPoints()
+							if frame.isscaling then
+								frame.isscaling = false
+							end
 
-								if type(MAIGV(mf[1] .. "parent")) == "table" then
-									MAISV(mf[1] .. "parent", "UIParent")
+							currentFrame = nil
+							currentFrameName = nil
+						end
+					)
+
+					hooksecurefunc(
+						frame,
+						"SetPoint",
+						function(self, ...)
+							if self.setpoint then return end
+							self.setpoint = true
+							if not InCombatLockdown() then
+								if MAIGV(mf[1] .. "parent") == nil then
+									MAISV(mf[1] .. "parent", UIParent)
 								end
 
-								self:SetPoint(MAIGV(mf[1] .. "point"), MAIGV(mf[1] .. "parent"), MAIGV(mf[1] .. "relativePoint"), MAIGV(mf[1] .. "ofsx"), MAIGV(mf[1] .. "ofsy"))
-							end
-						end
+								if MAIGV(mf[1] .. "point") and MAIGV(mf[1] .. "relativePoint") and self:GetPoint() then
+									self:ClearAllPoints()
+									if type(MAIGV(mf[1] .. "parent")) == "table" then
+										MAISV(mf[1] .. "parent", "UIParent")
+									end
 
-						self.setpoint = false
-					end)
+									self:SetPoint(MAIGV(mf[1] .. "point"), MAIGV(mf[1] .. "parent"), MAIGV(mf[1] .. "relativePoint"), MAIGV(mf[1] .. "ofsx"), MAIGV(mf[1] .. "ofsy"))
+								end
+							end
+
+							self.setpoint = false
+						end
+					)
 
 					if not dontscale and MAIGV(name .. "Scale") then
 						if MAIGV(name .. "scale") then
@@ -753,14 +694,12 @@ function MAIMoveFrames()
 					end
 
 					local p1, p2, p3, p4, p5 = frame:GetPoint()
-
 					if frame.GetPoint and frame:GetPoint() then
 						frame:ClearAllPoints()
 						frame:SetPoint(p1, p2, p3, p4, p5)
 					end
 
 					frame.maialpha = 1
-
 					function frame:MAIThink()
 						if MouseIsOver(frame) or GetUnitSpeed("PLAYER") == 0 or UnitOnTaxi("PLAYER") then
 							frame.maialpha = MAIMathC(frame.maialpha + 0.05, 0.34, 1)
@@ -780,15 +719,18 @@ function MAIMoveFrames()
 						WorldMapFrame.ScrollContainer.Child.TiledBackground:Hide()
 					end
 
-					hooksecurefunc(WorldMapFrame.BlackoutFrame, "Show", function(self)
-						if self.mashow then return end
-						self.mashow = true
-						self:Hide()
-						self.mashow = false
-					end)
+					hooksecurefunc(
+						WorldMapFrame.BlackoutFrame,
+						"Show",
+						function(self)
+							if self.mashow then return end
+							self.mashow = true
+							self:Hide()
+							self.mashow = false
+						end
+					)
 
 					WorldMapFrame.BlackoutFrame:Hide()
-
 					WorldMapFrame.ScrollContainer.GetCursorPosition = function(f)
 						local x, y = MapCanvasScrollControllerMixin.GetCursorPosition(f)
 						local s = WorldMapFrame:GetScale()
@@ -798,20 +740,22 @@ function MAIMoveFrames()
 
 					-- TBC, ERA
 					if MAIBUILD ~= "RETAIL" then
-						WorldMapFrame.ScrollContainer:HookScript("OnMouseWheel", function(self, delta)
-							local x, y = self:GetNormalizedCursorPosition()
-							local nextZoomOutScale, nextZoomInScale = self:GetCurrentZoomRange()
-
-							if delta == 1 then
-								if nextZoomInScale > self:GetCanvasScale() then
-									self:InstantPanAndZoom(nextZoomInScale, x, y)
-								end
-							else
-								if nextZoomOutScale < self:GetCanvasScale() then
-									self:InstantPanAndZoom(nextZoomOutScale, x, y)
+						WorldMapFrame.ScrollContainer:HookScript(
+							"OnMouseWheel",
+							function(self, delta)
+								local x, y = self:GetNormalizedCursorPosition()
+								local nextZoomOutScale, nextZoomInScale = self:GetCurrentZoomRange()
+								if delta == 1 then
+									if nextZoomInScale > self:GetCanvasScale() then
+										self:InstantPanAndZoom(nextZoomInScale, x, y)
+									end
+								else
+									if nextZoomOutScale < self:GetCanvasScale() then
+										self:InstantPanAndZoom(nextZoomOutScale, x, y)
+									end
 								end
 							end
-						end)
+						)
 					end
 				end
 			else
@@ -829,100 +773,121 @@ end
 
 -- ELEMENTS
 function MAIGetElementList()
-	MAIAddElement({
-		["name"] = "minimapbuttons",
-		["lstr"] = "minimapbuttons",
-		["setup"] = MAISetupMinimapButtons,
-		["sw"] = 30 * 6,
-		["sh"] = 30 * 2,
-		["nochanges"] = true
-	})
+	MAIAddElement(
+		{
+			["name"] = "minimapbuttons",
+			["lstr"] = "minimapbuttons",
+			["setup"] = MAISetupMinimapButtons,
+			["sw"] = 30 * 6,
+			["sh"] = 30 * 2,
+			["nochanges"] = true
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "Minimap",
-		["lstr"] = MINIMAP_LABEL,
-		["setup"] = MAISetupMinimap
-	})
+	MAIAddElement(
+		{
+			["name"] = "Minimap",
+			["lstr"] = MINIMAP_LABEL,
+			["setup"] = MAISetupMinimap
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "PlayerFrame",
-		["lstr"] = "playerframe",
-		["setmovable"] = true,
-		["setuserplaced"] = true,
-		["setup"] = MAISetupPlayerFrame
-	})
+	MAIAddElement(
+		{
+			["name"] = "PlayerFrame",
+			["lstr"] = "playerframe",
+			["setmovable"] = true,
+			["setuserplaced"] = true,
+			["setup"] = MAISetupPlayerFrame
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "TargetFrame",
-		["lstr"] = "targetframe",
-		["setmovable"] = true,
-		["setuserplaced"] = true,
-		["setup"] = MAISetupTargetFrame
-	})
+	MAIAddElement(
+		{
+			["name"] = "TargetFrame",
+			["lstr"] = "targetframe",
+			["setmovable"] = true,
+			["setuserplaced"] = true,
+			["setup"] = MAISetupTargetFrame
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "TargetFrameToT",
-		["lstr"] = "targetframetot",
-		["setmovable"] = true,
-		["setuserplaced"] = true,
-		["setup"] = MAISetupTargetFrameToT,
-		["notgood"] = true,
-		["nochanges"] = true
-	})
+	MAIAddElement(
+		{
+			["name"] = "TargetFrameToT",
+			["lstr"] = "targetframetot",
+			["setmovable"] = true,
+			["setuserplaced"] = true,
+			["setup"] = MAISetupTargetFrameToT,
+			["notgood"] = true,
+			["nochanges"] = true
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "FocusFrame",
-		["lstr"] = "focusframe",
-		["setmovable"] = true,
-		["setuserplaced"] = true,
-		["setup"] = MAISetupFocusFrame
-	})
+	MAIAddElement(
+		{
+			["name"] = "FocusFrame",
+			["lstr"] = "focusframe",
+			["setmovable"] = true,
+			["setuserplaced"] = true,
+			["setup"] = MAISetupFocusFrame
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "PetFrame",
-		["lstr"] = "petframe",
-		["setmovable"] = true,
-		["setuserplaced"] = true,
-		["forcedrag"] = true,
-		["setup"] = MAISetupPetFrame,
-		["notgood"] = true,
-		["nochanges"] = true
-	})
-
-	MAIAddElement({
-		["name"] = "MAIBossList",
-		["lstr"] = "bossframe",
-		["setmovable"] = true,
-		["setuserplaced"] = true,
-		["setup"] = MAISetupBossFrame
-	})
-
-	for i = 1, 4 do
-		MAIAddElement({
-			["name"] = "PartyMemberFrame" .. i,
-			["lstr"] = "PartyMemberFrame" .. i,
-			["setup"] = "MAISetupPartyMemberFrame" .. i,
+	MAIAddElement(
+		{
+			["name"] = "PetFrame",
+			["lstr"] = "petframe",
 			["setmovable"] = true,
 			["setuserplaced"] = true,
 			["forcedrag"] = true,
+			["setup"] = MAISetupPetFrame,
 			["notgood"] = true,
 			["nochanges"] = true
-		})
+		}
+	)
+
+	MAIAddElement(
+		{
+			["name"] = "MAIBossList",
+			["lstr"] = "bossframe",
+			["setmovable"] = true,
+			["setuserplaced"] = true,
+			["setup"] = MAISetupBossFrame
+		}
+	)
+
+	for i = 1, 4 do
+		MAIAddElement(
+			{
+				["name"] = "PartyMemberFrame" .. i,
+				["lstr"] = "PartyMemberFrame" .. i,
+				["setup"] = "MAISetupPartyMemberFrame" .. i,
+				["setmovable"] = true,
+				["setuserplaced"] = true,
+				["forcedrag"] = true,
+				["notgood"] = true,
+				["nochanges"] = true
+			}
+		)
 	end
 
 	if ObjectiveTrackerFrame == nil then
 		ObjectiveTrackerFrame = CreateFrame("FRAME", "ObjectiveTrackerFrame", UIParent)
 		ObjectiveTrackerFrame:SetSize(224, 600)
 		ObjectiveTrackerFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -85, -180)
-
 		if QuestWatchFrame then
-			hooksecurefunc(QuestWatchFrame, "SetPoint", function(self, ...)
-				if self.masetpoint then return end
-				self.masetpoint = true
-				QuestWatchFrame:ClearAllPoints()
-				QuestWatchFrame:SetPoint("TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", 0, 0)
-				self.masetpoint = false
-			end)
+			hooksecurefunc(
+				QuestWatchFrame,
+				"SetPoint",
+				function(self, ...)
+					if self.masetpoint then return end
+					self.masetpoint = true
+					QuestWatchFrame:ClearAllPoints()
+					QuestWatchFrame:SetPoint("TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", 0, 0)
+					self.masetpoint = false
+				end
+			)
 
 			QuestWatchFrame:ClearAllPoints()
 			QuestWatchFrame:SetPoint("TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", 0, 0)
@@ -930,13 +895,17 @@ function MAIGetElementList()
 		end
 
 		if WatchFrame then
-			hooksecurefunc(WatchFrame, "SetPoint", function(self, ...)
-				if self.masetpoint then return end
-				self.masetpoint = true
-				WatchFrame:ClearAllPoints()
-				WatchFrame:SetPoint("TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", 0, 0)
-				self.masetpoint = false
-			end)
+			hooksecurefunc(
+				WatchFrame,
+				"SetPoint",
+				function(self, ...)
+					if self.masetpoint then return end
+					self.masetpoint = true
+					WatchFrame:ClearAllPoints()
+					WatchFrame:SetPoint("TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", 0, 0)
+					self.masetpoint = false
+				end
+			)
 
 			WatchFrame:ClearAllPoints()
 			WatchFrame:SetPoint("TOPLEFT", ObjectiveTrackerFrame, "TOPLEFT", 0, 0)
@@ -944,113 +913,138 @@ function MAIGetElementList()
 		end
 	end
 
-	MAIAddElement({
-		["name"] = "ObjectiveTrackerFrame",
-		["lstr"] = "questtracker",
-		["setup"] = MAISetupObjectiveTrackerFrame,
-		["sw"] = 235,
-		["sh"] = 600,
-		["anchor"] = "TOPLEFT",
-		["forcedrag"] = true
-	})
+	MAIAddElement(
+		{
+			["name"] = "ObjectiveTrackerFrame",
+			["lstr"] = "questtracker",
+			["setup"] = MAISetupObjectiveTrackerFrame,
+			["sw"] = 235,
+			["sh"] = 600,
+			["anchor"] = "TOPLEFT",
+			["forcedrag"] = true
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "TemporaryEnchantFrame",
-		["lstr"] = "temporaryenchantframe",
-		["setup"] = MAISetupTemporaryEnchantFrame,
-		["notgood"] = true
-	})
+	MAIAddElement(
+		{
+			["name"] = "TemporaryEnchantFrame",
+			["lstr"] = "temporaryenchantframe",
+			["setup"] = MAISetupTemporaryEnchantFrame,
+			["notgood"] = true
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "MAIDebuffFrame",
-		["lstr"] = "debuffframe",
-		["setup"] = MAISetupDebuffFrame,
-		["notgood"] = true
-	})
+	MAIAddElement(
+		{
+			["name"] = "MAIDebuffFrame",
+			["lstr"] = "debuffframe",
+			["setup"] = MAISetupDebuffFrame,
+			["notgood"] = true
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "MAIBuffFrame",
-		["lstr"] = "buffframe",
-		["setup"] = MAISetupBuffFrame
-	})
+	MAIAddElement(
+		{
+			["name"] = "MAIBuffFrame",
+			["lstr"] = "buffframe",
+			["setup"] = MAISetupBuffFrame
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "MawBuffsBelowMinimapFrame",
-		["lstr"] = "animapowers",
-		["setup"] = MAISetupMawBuffsBelowMinimapFrame
-	})
+	MAIAddElement(
+		{
+			["name"] = "MawBuffsBelowMinimapFrame",
+			["lstr"] = "animapowers",
+			["setup"] = MAISetupMawBuffsBelowMinimapFrame
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "DurabilityFrame",
-		["lstr"] = DURABILITY,
-		["setup"] = MAISetupDurabilityFrame
-	})
+	MAIAddElement(
+		{
+			["name"] = "DurabilityFrame",
+			["lstr"] = DURABILITY,
+			["setup"] = MAISetupDurabilityFrame
+		}
+	)
 
 	if Arena_LoadUI and (MAITAB["ArenaEnemyFramesEnabled"] or MAITAB["ArenaPrepFramesEnabled"]) then
 		Arena_LoadUI()
 	end
 
-	MAIAddElement({
-		["name"] = "ArenaEnemyFrames",
-		["lstr"] = ARENA_TEAM,
-		["sw"] = 100,
-		["sh"] = 40,
-		["setmovable"] = true,
-		["setuserplaced"] = true,
-		["forcedrag"] = true,
-		["setup"] = MAISetupArenaEnemyFrames,
-		["notgood"] = true,
-		["nochanges"] = true
-	})
-
-	for i = 1, 5 do
-		MAIAddElement({
-			["name"] = "ArenaEnemyFrame" .. i .. "CastingBar",
-			["lstr"] = "ArenaEnemyFrame" .. i .. "CastingBar",
+	MAIAddElement(
+		{
+			["name"] = "ArenaEnemyFrames",
+			["lstr"] = ARENA_TEAM,
+			["sw"] = 100,
+			["sh"] = 40,
+			["setmovable"] = true,
+			["setuserplaced"] = true,
+			["forcedrag"] = true,
+			["setup"] = MAISetupArenaEnemyFrames,
 			["notgood"] = true,
 			["nochanges"] = true
-		})
+		}
+	)
+
+	for i = 1, 5 do
+		MAIAddElement(
+			{
+				["name"] = "ArenaEnemyFrame" .. i .. "CastingBar",
+				["lstr"] = "ArenaEnemyFrame" .. i .. "CastingBar",
+				["notgood"] = true,
+				["nochanges"] = true
+			}
+		)
 	end
 
-	MAIAddElement({
-		["name"] = "ArenaPrepFrames",
-		["lstr"] = ARENA_TEAM .. " (" .. PREVIEW .. ")",
-		["sw"] = 100,
-		["sh"] = 40,
-		["setmovable"] = true,
-		["setuserplaced"] = true,
-		["forcedrag"] = true,
-		["setup"] = MAISetupArenaPrepFrames,
-		["notgood"] = true,
-		["nochanges"] = true
-	})
+	MAIAddElement(
+		{
+			["name"] = "ArenaPrepFrames",
+			["lstr"] = ARENA_TEAM .. " (" .. PREVIEW .. ")",
+			["sw"] = 100,
+			["sh"] = 40,
+			["setmovable"] = true,
+			["setuserplaced"] = true,
+			["forcedrag"] = true,
+			["setup"] = MAISetupArenaPrepFrames,
+			["notgood"] = true,
+			["nochanges"] = true
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "VehicleSeatIndicator",
-		["lstr"] = "vehicleseats"
-	})
+	MAIAddElement(
+		{
+			["name"] = "VehicleSeatIndicator",
+			["lstr"] = "vehicleseats"
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "CastingBarFrame",
-		["lstr"] = "castingbar",
-		["setup"] = MAISetupCastingBar
-	})
+	MAIAddElement(
+		{
+			["name"] = "CastingBarFrame",
+			["lstr"] = "castingbar",
+			["setup"] = MAISetupCastingBar
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "ArcheologyDigsiteProgressBar",
-		["lstr"] = "archeologydigsiteprogressbar",
-		["setup"] = MAISetupArcheologyDigsiteProgressBar
-	})
+	MAIAddElement(
+		{
+			["name"] = "ArcheologyDigsiteProgressBar",
+			["lstr"] = "archeologydigsiteprogressbar",
+			["setup"] = MAISetupArcheologyDigsiteProgressBar
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "MAIMicroButtons",
-		["lstr"] = "micromenu",
-		["setup"] = MAISetupMAIMicroButtons
-	})
+	MAIAddElement(
+		{
+			["name"] = "MAIMicroButtons",
+			["lstr"] = "micromenu",
+			["setup"] = MAISetupMAIMicroButtons
+		}
+	)
 
 	for i = 1, MAIMAXBAR or 12 do
 		local lstr = MAIGT("actionbar") .. " " .. i
-
 		if i == 1 then
 			lstr = lstr .. " (" .. "MainBar" .. ")"
 		elseif i == 2 then
@@ -1066,7 +1060,6 @@ function MAIGetElementList()
 		else
 			lstr = lstr .. " (" .. "Custom Bar" .. ")"
 			local _, englishClass = UnitClass("PLAYER")
-
 			if englishClass == "DRUID" then
 				if i == 7 then
 					lstr = lstr .. " (" .. "CAT-FORM" .. ")"
@@ -1086,238 +1079,304 @@ function MAIGetElementList()
 			end
 		end
 
-		MAIAddElement({
-			["name"] = "ActionBar" .. i,
-			["lstr"] = lstr,
-			["setup"] = MAISetupActionButtons,
-			["forcedrag"] = i == 1,
-			["notgood"] = i == 2,
-			["nochanges"] = (i == 2) or i > 6
-		})
+		MAIAddElement(
+			{
+				["name"] = "ActionBar" .. i,
+				["lstr"] = lstr,
+				["setup"] = MAISetupActionButtons,
+				["forcedrag"] = i == 1,
+				["notgood"] = i == 2,
+				["nochanges"] = (i == 2) or i > 6
+			}
+		)
 	end
 
-	MAIAddElement({
-		["name"] = "PetBar",
-		["lstr"] = "petactionbar",
-		["setup"] = MAISetupPetbar
-	})
+	MAIAddElement(
+		{
+			["name"] = "PetBar",
+			["lstr"] = "petactionbar",
+			["setup"] = MAISetupPetbar
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "StanceBar",
-		["lstr"] = "stancebar",
-		["setup"] = MAISetupStanceBar
-	})
+	MAIAddElement(
+		{
+			["name"] = "StanceBar",
+			["lstr"] = "stancebar",
+			["setup"] = MAISetupStanceBar
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "MultiCastActionBarFrame",
-		["lstr"] = "TotemActionBar",
-		["setup"] = MAISetupMultiCastActionBarFrame
-	})
+	MAIAddElement(
+		{
+			["name"] = "MultiCastActionBarFrame",
+			["lstr"] = "TotemActionBar",
+			["setup"] = MAISetupMultiCastActionBarFrame
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "ExtraActionButton1",
-		["lstr"] = "extraaction",
-		["setup"] = MAISetupExtraActionButton,
-		["sw"] = 52,
-		["sh"] = 52
-	})
+	MAIAddElement(
+		{
+			["name"] = "ExtraActionButton1",
+			["lstr"] = "extraaction",
+			["setup"] = MAISetupExtraActionButton,
+			["sw"] = 52,
+			["sh"] = 52
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "ZoneAbilityFrame",
-		["lstr"] = "zoneability",
-		["setup"] = MAISetupZoneAbilityFrame,
-		["sw"] = 256,
-		["sh"] = 128
-	})
+	MAIAddElement(
+		{
+			["name"] = "ZoneAbilityFrame",
+			["lstr"] = "zoneability",
+			["setup"] = MAISetupZoneAbilityFrame,
+			["sw"] = 256,
+			["sh"] = 128
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "BagBar",
-		["lstr"] = INVTYPE_BAG,
-		["setup"] = MAISetupBagBar
-	})
+	MAIAddElement(
+		{
+			["name"] = "BagBar",
+			["lstr"] = INVTYPE_BAG,
+			["setup"] = MAISetupBagBar
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "MirrorTimer1",
-		["lstr"] = "timer",
-		["setup"] = MAISetupMirrorTimer1,
-		["sw"] = 206,
-		["sh"] = 26
-	})
+	MAIAddElement(
+		{
+			["name"] = "MirrorTimer1",
+			["lstr"] = "timer",
+			["setup"] = MAISetupMirrorTimer1,
+			["sw"] = 206,
+			["sh"] = 26
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "AlertFrame",
-		["lstr"] = "alerts",
-		["sw"] = 60,
-		["sh"] = 60
-	})
+	MAIAddElement(
+		{
+			["name"] = "AlertFrame",
+			["lstr"] = "alerts",
+			["sw"] = 60,
+			["sh"] = 60
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "BNToastFrame",
-		["lstr"] = "BattleNet Friends Notification",
-		["sw"] = 60,
-		["sh"] = 60
-	})
+	MAIAddElement(
+		{
+			["name"] = "BNToastFrame",
+			["lstr"] = "BattleNet Friends Notification",
+			["sw"] = 60,
+			["sh"] = 60
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "MAIStatusBar",
-		["lstr"] = "statusbar",
-		["setup"] = MAISetupStatusBar
-	})
+	MAIAddElement(
+		{
+			["name"] = "MAIStatusBar",
+			["lstr"] = "statusbar",
+			["setup"] = MAISetupStatusBar
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "MAISkills",
-		["lstr"] = "skills",
-		["setup"] = MAISetupSkills
-	})
+	MAIAddElement(
+		{
+			["name"] = "MAISkills",
+			["lstr"] = "skills",
+			["setup"] = MAISetupSkills
+		}
+	)
 
 	if TalkingHead_LoadUI then
 		TalkingHead_LoadUI()
-
-		MAIAddElement({
-			["name"] = "TalkingHeadFrame",
-			["lstr"] = "talkinghead",
-			["sw"] = 570,
-			["sh"] = 155
-		})
+		MAIAddElement(
+			{
+				["name"] = "TalkingHeadFrame",
+				["lstr"] = "talkinghead",
+				["sw"] = 570,
+				["sh"] = 155
+			}
+		)
 	end
 
-	MAIAddElement({
-		["name"] = "ChatFrame1",
-		["lstr"] = CHAT
-	})
+	MAIAddElement(
+		{
+			["name"] = "ChatFrame1",
+			["lstr"] = CHAT
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "PlayerPowerBarAlt",
-		["lstr"] = getglobal("ALTERNATE_RESOURCE_TEXT"),
-		["setup"] = MAISetupPlayerPowerBarAlt,
-		["setmovable"] = true,
-		["setuserplaced"] = true,
-		["sw"] = 40,
-		["sh"] = 40
-	})
+	MAIAddElement(
+		{
+			["name"] = "PlayerPowerBarAlt",
+			["lstr"] = getglobal("ALTERNATE_RESOURCE_TEXT"),
+			["setup"] = MAISetupPlayerPowerBarAlt,
+			["setmovable"] = true,
+			["setuserplaced"] = true,
+			["sw"] = 40,
+			["sh"] = 40
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "UIWidgetPowerBarContainerFrame",
-		["lstr"] = "UIWidgetPowerBarContainerFrame",
-		["setup"] = MAISetupUIWidgetPowerBarContainerFrame,
-		["sw"] = 40,
-		["sh"] = 40
-	})
+	MAIAddElement(
+		{
+			["name"] = "UIWidgetPowerBarContainerFrame",
+			["lstr"] = "UIWidgetPowerBarContainerFrame",
+			["setup"] = MAISetupUIWidgetPowerBarContainerFrame,
+			["sw"] = 40,
+			["sh"] = 40
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "MAIMoneyBar",
-		["lstr"] = "MAIMoneyBar",
-		["setup"] = MAISetupMAIMoneyBar,
-		["nochanges"] = true
-	})
+	MAIAddElement(
+		{
+			["name"] = "MAIMoneyBar",
+			["lstr"] = "MAIMoneyBar",
+			["setup"] = MAISetupMAIMoneyBar,
+			["nochanges"] = true
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "UIWidgetTopCenterContainerFrame",
-		["lstr"] = "UIWidgetTopCenter",
-		["setup"] = MAISetupUIWidgetTopCenterContainerFrame,
-		["sw"] = 140,
-		["sh"] = 60
-	})
+	MAIAddElement(
+		{
+			["name"] = "UIWidgetTopCenterContainerFrame",
+			["lstr"] = "UIWidgetTopCenter",
+			["setup"] = MAISetupUIWidgetTopCenterContainerFrame,
+			["sw"] = 140,
+			["sh"] = 60
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "UIWidgetBelowMinimapContainerFrame",
-		["lstr"] = "UIWidgetBelowMinimap",
-		--["setup"] = MAISetupUIWidgetBelowMinimapContainerFrame,
-		["sw"] = 140,
-		["sh"] = 60
-	})
+	MAIAddElement(
+		{
+			["name"] = "UIWidgetBelowMinimapContainerFrame",
+			["lstr"] = "UIWidgetBelowMinimap",
+			--["setup"] = MAISetupUIWidgetBelowMinimapContainerFrame,
+			["sw"] = 140,
+			["sh"] = 60
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "GV",
-		["lstr"] = "GV",
-		["setup"] = MAISetupGV,
-		["nochanges"] = true
-	})
+	MAIAddElement(
+		{
+			["name"] = "GV",
+			["lstr"] = "GV",
+			["setup"] = MAISetupGV,
+			["nochanges"] = true
+		}
+	)
 
 	if PlayerChoice_LoadUI then
 		PlayerChoice_LoadUI()
-
-		MAIAddElement({
-			["name"] = "TorghastPlayerChoiceToggleButton",
-			["lstr"] = "TorghastPlayerChoiceToggleButton"
-		})
+		MAIAddElement(
+			{
+				["name"] = "TorghastPlayerChoiceToggleButton",
+				["lstr"] = "TorghastPlayerChoiceToggleButton"
+			}
+		)
 	end
 
-	MAIAddElement({
-		["name"] = "TargetFrameSpellBar",
-		["lstr"] = "TargetFrameSpellBar",
-		["setup"] = MAISetupTargetFrameSpellBar,
-		["setmovable"] = true,
-		["setuserplaced"] = true,
-		["notgood"] = true,
-		["nochanges"] = true
-	})
+	MAIAddElement(
+		{
+			["name"] = "TargetFrameSpellBar",
+			["lstr"] = "TargetFrameSpellBar",
+			["setup"] = MAISetupTargetFrameSpellBar,
+			["setmovable"] = true,
+			["setuserplaced"] = true,
+			["notgood"] = true,
+			["nochanges"] = true
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "FocusFrameSpellBar",
-		["lstr"] = "FocusFrameSpellBar",
-		["setup"] = MAISetupFocusFrameSpellBar,
-		["setmovable"] = true,
-		["setuserplaced"] = true,
-		["notgood"] = true,
-		["nochanges"] = true
-	})
+	MAIAddElement(
+		{
+			["name"] = "FocusFrameSpellBar",
+			["lstr"] = "FocusFrameSpellBar",
+			["setup"] = MAISetupFocusFrameSpellBar,
+			["setmovable"] = true,
+			["setuserplaced"] = true,
+			["notgood"] = true,
+			["nochanges"] = true
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "GroupLootFrame1",
-		["lstr"] = "GroupLootFrame1",
-		["setup"] = MAISetupGroupLootFrame
-	})
+	MAIAddElement(
+		{
+			["name"] = "GroupLootFrame1",
+			["lstr"] = "GroupLootFrame1",
+			["setup"] = MAISetupGroupLootFrame
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "MainMenuBarVehicleLeaveButton",
-		["lstr"] = LEAVE_VEHICLE,
-		["setup"] = MAISetupMainMenuBarVehicleLeaveButton
-	})
+	MAIAddElement(
+		{
+			["name"] = "MainMenuBarVehicleLeaveButton",
+			["lstr"] = LEAVE_VEHICLE,
+			["setup"] = MAISetupMainMenuBarVehicleLeaveButton
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "GryphonLeft",
-		["lstr"] = "gryphonleft",
-		["setup"] = MAISetupGryphonLeft
-	})
+	MAIAddElement(
+		{
+			["name"] = "GryphonLeft",
+			["lstr"] = "gryphonleft",
+			["setup"] = MAISetupGryphonLeft
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "GryphonRight",
-		["lstr"] = "gryphonright",
-		["setup"] = MAISetupGryphonRight
-	})
+	MAIAddElement(
+		{
+			["name"] = "GryphonRight",
+			["lstr"] = "gryphonright",
+			["setup"] = MAISetupGryphonRight
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "GameTooltip",
-		["lstr"] = "tooltip",
-		["setup"] = MAISetupGameTooltip,
-		["sw"] = 60,
-		["sh"] = 60
-	})
+	MAIAddElement(
+		{
+			["name"] = "GameTooltip",
+			["lstr"] = "tooltip",
+			["setup"] = MAISetupGameTooltip,
+			["sw"] = 60,
+			["sh"] = 60
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "FPSFrame",
-		["lstr"] = string.upper(getglobal("FPS_ABBR")),
-		["setup"] = MAISetupFPSFrame
-	})
+	MAIAddElement(
+		{
+			["name"] = "FPSFrame",
+			["lstr"] = string.upper(getglobal("FPS_ABBR")),
+			["setup"] = MAISetupFPSFrame
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "PingFrame",
-		["lstr"] = "PING",
-		["setup"] = MAISetupPingFrame
-	})
+	MAIAddElement(
+		{
+			["name"] = "PingFrame",
+			["lstr"] = "PING",
+			["setup"] = MAISetupPingFrame
+		}
+	)
 
-	MAIAddElement({
-		["name"] = "UIErrorsFrame",
-		["lstr"] = "UIErrorsFrame"
-	})
+	MAIAddElement(
+		{
+			["name"] = "UIErrorsFrame",
+			["lstr"] = "UIErrorsFrame"
+		}
+	)
 end
 
 -- ELEMENTS
 -- SETTINGS
 local ELESETTINGS = {
 	["UnitFrames"] = {
-		"PlayerFrame", "TargetFrame", "FocusFrame", "ArenaEnemyFrames", "ArenaPrepFrames", "MAIBossList", ["UnitFramesAdvanced"] = {"PetFrame", "TargetFrameToT", "TargetFrameSpellBar", "FocusFrameSpellBar",}
+		"PlayerFrame",
+		"TargetFrame",
+		"FocusFrame",
+		"ArenaEnemyFrames",
+		"ArenaPrepFrames",
+		"MAIBossList",
+		["UnitFramesAdvanced"] = {"PetFrame", "TargetFrameToT", "TargetFrameSpellBar", "FocusFrameSpellBar",}
 	},
 	["Interface"] = {
 		["ActionBars"] = {"ActionBar" .. 1, "ActionBar" .. 2, "ActionBar" .. 3, "ActionBar" .. 4, "ActionBar" .. 5, "ActionBar" .. 6, "ActionBar" .. 7, "ActionBar" .. 8, "ActionBar" .. 9, "ActionBar" .. 10, "PetBar", "StanceBar", "MultiCastActionBarFrame", "ExtraActionButton1", "ZoneAbilityFrame", "MainMenuBarVehicleLeaveButton", "GryphonLeft", "GryphonRight",},
@@ -1341,7 +1400,6 @@ end
 
 function MAISortUnderTable(tab)
 	table.sort(tab, MAIisGreaterThan)
-
 	for i, v in pairs(tab) do
 		if type(v) == "table" then
 			MAISortUnderTable(v)
@@ -1356,7 +1414,6 @@ local btnh = 24
 local bbr = 10
 local sbr = 2
 local py = 0
-
 function MAISetupMAIMENU()
 	if MAIGV("nochanges") == nil then
 		MAISV("nochanges", false)
@@ -1373,31 +1430,34 @@ function MAISetupMAIMENU()
 	MAIMENUMOVING:EnableMouse(true)
 	MAIMENUMOVING:RegisterForDrag("LeftButton")
 	MAIMENUMOVING.isMoving = false
-
-	MAIMENUMOVING:SetScript("OnDragStart", function(self)
-		self.isMoving = true
-		self:StartMoving()
-	end)
-
-	MAIMENUMOVING:SetScript("OnDragStop", function(self)
-		self.isMoving = false
-		self:StopMovingOrSizing()
-		local point, _, relativePoint, ofsx, ofsy = self:GetPoint()
-
-		if point then
-			MAISV("MAIMENUMOVING" .. "point", point)
-			MAISV("MAIMENUMOVING" .. "relativePoint", relativePoint)
-			MAISV("MAIMENUMOVING" .. "ofsx", MAIMathR(ofsx, 0))
-			MAISV("MAIMENUMOVING" .. "ofsy", MAIMathR(ofsy, 0))
+	MAIMENUMOVING:SetScript(
+		"OnDragStart",
+		function(self)
+			self.isMoving = true
+			self:StartMoving()
 		end
-	end)
+	)
+
+	MAIMENUMOVING:SetScript(
+		"OnDragStop",
+		function(self)
+			self.isMoving = false
+			self:StopMovingOrSizing()
+			local point, _, relativePoint, ofsx, ofsy = self:GetPoint()
+			if point then
+				MAISV("MAIMENUMOVING" .. "point", point)
+				MAISV("MAIMENUMOVING" .. "relativePoint", relativePoint)
+				MAISV("MAIMENUMOVING" .. "ofsx", MAIMathR(ofsx, 0))
+				MAISV("MAIMENUMOVING" .. "ofsy", MAIMathR(ofsy, 0))
+			end
+		end
+	)
 
 	if true then
 		local point = MAIGV("MAIMENUMOVING" .. "point")
 		local relativePoint = MAIGV("MAIMENUMOVING" .. "relativePoint")
 		local ofsx = MAIGV("MAIMENUMOVING" .. "ofsx")
 		local ofsy = MAIGV("MAIMENUMOVING" .. "ofsy")
-
 		if point then
 			MAIMENUMOVING:ClearAllPoints()
 			MAIMENUMOVING:SetPoint(point, UIParent, relativePoint, ofsx, ofsy)
@@ -1414,49 +1474,56 @@ function MAISetupMAIMENU()
 	MAIMENUMOVING.TOGGLE:SetSize(btnw, btnh)
 	MAIMENUMOVING.TOGGLE:SetText("TOGGLE")
 	MAIMENUMOVING.TOGGLE:SetPoint("TOPLEFT", MAIMENUMOVING, "TOPLEFT", bbr, Y)
-
-	MAIMENUMOVING.TOGGLE:SetScript("OnClick", function()
-		MAIToggleDragger()
-	end)
+	MAIMENUMOVING.TOGGLE:SetScript(
+		"OnClick",
+		function()
+			MAIToggleDragger()
+		end
+	)
 
 	MAIMENUMOVING.RELOAD = CreateFrame("Button", "MAIMENUMOVING.RELOAD", MAIMENUMOVING, "UIPanelButtonTemplate")
 	MAIMENUMOVING.RELOAD:SetSize(btnw, btnh)
 	MAIMENUMOVING.RELOAD:SetText(getglobal("RELOADUI"))
 	MAIMENUMOVING.RELOAD:SetPoint("TOPLEFT", MAIMENUMOVING, "TOPLEFT", bbr + btnw + sbr, Y)
-
-	MAIMENUMOVING.RELOAD:SetScript("OnClick", function()
-		C_UI.Reload()
-	end)
+	MAIMENUMOVING.RELOAD:SetScript(
+		"OnClick",
+		function()
+			C_UI.Reload()
+		end
+	)
 
 	Y = Y - (btnh + sbr)
 	MAIMENUMOVING.MOVEALL = CreateFrame("Button", "MAIMENUMOVING.MOVEALL", MAIMENUMOVING, "UIPanelButtonTemplate")
 	MAIMENUMOVING.MOVEALL:SetSize(btnw, btnh)
 	MAIMENUMOVING.MOVEALL:SetText(MAIGT("moveall"))
 	MAIMENUMOVING.MOVEALL:SetPoint("TOPLEFT", MAIMENUMOVING, "TOPLEFT", bbr, Y)
+	MAIMENUMOVING.MOVEALL:SetScript(
+		"OnClick",
+		function()
+			for i, v in pairs(ELEMENTS) do
+				MAISV(v.name .. "move", true)
+			end
 
-	MAIMENUMOVING.MOVEALL:SetScript("OnClick", function()
-		for i, v in pairs(ELEMENTS) do
-			MAISV(v.name .. "move", true)
+			C_UI.Reload()
 		end
-
-		C_UI.Reload()
-	end)
+	)
 
 	MAIMENUMOVING.UNMOVEALL = CreateFrame("Button", "MAIMENUMOVING.UNMOVEALL", MAIMENUMOVING, "UIPanelButtonTemplate")
 	MAIMENUMOVING.UNMOVEALL:SetSize(btnw, btnh)
 	MAIMENUMOVING.UNMOVEALL:SetText(MAIGT("movenothing"))
 	MAIMENUMOVING.UNMOVEALL:SetPoint("TOPLEFT", MAIMENUMOVING, "TOPLEFT", bbr + btnw + sbr, Y)
+	MAIMENUMOVING.UNMOVEALL:SetScript(
+		"OnClick",
+		function()
+			for i, v in pairs(ELEMENTS) do
+				MAISV(v.name .. "move", false)
+			end
 
-	MAIMENUMOVING.UNMOVEALL:SetScript("OnClick", function()
-		for i, v in pairs(ELEMENTS) do
-			MAISV(v.name .. "move", false)
+			C_UI.Reload()
 		end
-
-		C_UI.Reload()
-	end)
+	)
 
 	Y = Y - 30
-
 	if MAIGV("hideunmoved") then
 		MAISV("hideunmoved", true)
 	end
@@ -1465,19 +1532,20 @@ function MAISetupMAIMENU()
 	CBHideUnmoved:SetSize(btnh, btnh)
 	CBHideUnmoved:SetPoint("TOPLEFT", MAIMENUMOVING, "TOPLEFT", bbr, Y)
 	CBHideUnmoved:SetChecked(MAIGV("hideunmoved"))
-
-	CBHideUnmoved:SetScript("OnClick", function(self)
-		local newval = self:GetChecked()
-		MAISV("hideunmoved", newval)
-		MAITHINKER.force = true
-	end)
+	CBHideUnmoved:SetScript(
+		"OnClick",
+		function(self)
+			local newval = self:GetChecked()
+			MAISV("hideunmoved", newval)
+			MAITHINKER.force = true
+		end
+	)
 
 	CBHideUnmoved.text = CBHideUnmoved:CreateFontString(nil, "ARTWORK")
 	CBHideUnmoved.text:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
 	CBHideUnmoved.text:SetPoint("LEFT", CBHideUnmoved, "RIGHT", 0, 0)
 	CBHideUnmoved.text:SetText(getglobal("HIDE") .. " (" .. getglobal("NPE_MOVE") .. ": " .. getglobal("OFF") .. ")")
 	Y = Y - 20
-
 	if MAIGV("hidehidden") then
 		MAISV("hidehidden", true)
 	end
@@ -1486,19 +1554,20 @@ function MAISetupMAIMENU()
 	CBHideHidden:SetSize(btnh, btnh)
 	CBHideHidden:SetPoint("TOPLEFT", MAIMENUMOVING, "TOPLEFT", bbr, Y)
 	CBHideHidden:SetChecked(MAIGV("hidehidden"))
-
-	CBHideHidden:SetScript("OnClick", function(self)
-		local newval = self:GetChecked()
-		MAISV("hidehidden", newval)
-		MAITHINKER.force = true
-	end)
+	CBHideHidden:SetScript(
+		"OnClick",
+		function(self)
+			local newval = self:GetChecked()
+			MAISV("hidehidden", newval)
+			MAITHINKER.force = true
+		end
+	)
 
 	CBHideHidden.text = CBHideHidden:CreateFontString(nil, "ARTWORK")
 	CBHideHidden.text:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
 	CBHideHidden.text:SetPoint("LEFT", CBHideHidden, "RIGHT", 0, 0)
 	CBHideHidden.text:SetText(getglobal("HIDE") .. " (" .. MAIGT("hidden") .. ")")
 	Y = Y - 20
-
 	if MAIGV("snaptogrid") == nil then
 		MAISV("snaptogrid", true)
 	end
@@ -1507,11 +1576,13 @@ function MAISetupMAIMENU()
 	CBSnapToGrid:SetSize(btnh, btnh)
 	CBSnapToGrid:SetPoint("TOPLEFT", MAIMENUMOVING, "TOPLEFT", bbr, Y)
 	CBSnapToGrid:SetChecked(MAIGV("snaptogrid"))
-
-	CBSnapToGrid:SetScript("OnClick", function(self)
-		local newval = self:GetChecked()
-		MAISV("snaptogrid", newval)
-	end)
+	CBSnapToGrid:SetScript(
+		"OnClick",
+		function(self)
+			local newval = self:GetChecked()
+			MAISV("snaptogrid", newval)
+		end
+	)
 
 	CBSnapToGrid.text = CBSnapToGrid:CreateFontString(nil, "ARTWORK")
 	CBSnapToGrid.text:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
@@ -1522,24 +1593,28 @@ function MAISetupMAIMENU()
 	MAIMENU:EnableMouse(true)
 	MAIMENU:RegisterForDrag("LeftButton")
 	MAIMENU.isMoving = false
-
-	MAIMENU:SetScript("OnDragStart", function(self)
-		self.isMoving = true
-		self:StartMoving()
-	end)
-
-	MAIMENU:SetScript("OnDragStop", function(self)
-		self.isMoving = false
-		self:StopMovingOrSizing()
-		local point, _, relativePoint, ofsx, ofsy = self:GetPoint()
-
-		if point then
-			MAISV("MAIMENU" .. "point", point)
-			MAISV("MAIMENU" .. "relativePoint", relativePoint)
-			MAISV("MAIMENU" .. "ofsx", MAIMathR(ofsx, 0))
-			MAISV("MAIMENU" .. "ofsy", MAIMathR(ofsy, 0))
+	MAIMENU:SetScript(
+		"OnDragStart",
+		function(self)
+			self.isMoving = true
+			self:StartMoving()
 		end
-	end)
+	)
+
+	MAIMENU:SetScript(
+		"OnDragStop",
+		function(self)
+			self.isMoving = false
+			self:StopMovingOrSizing()
+			local point, _, relativePoint, ofsx, ofsy = self:GetPoint()
+			if point then
+				MAISV("MAIMENU" .. "point", point)
+				MAISV("MAIMENU" .. "relativePoint", relativePoint)
+				MAISV("MAIMENU" .. "ofsx", MAIMathR(ofsx, 0))
+				MAISV("MAIMENU" .. "ofsy", MAIMathR(ofsy, 0))
+			end
+		end
+	)
 
 	MAIMENU:SetSize(bbr + btnw + sbr + btnw + bbr, 200)
 	--MAIMENU
@@ -1558,281 +1633,302 @@ function MAISetupMAIMENU()
 	MAIMENU.CLOSE:SetSize(btnh, btnh)
 	MAIMENU.CLOSE:SetText(getglobal("CLOSEUI"))
 	MAIMENU.CLOSE:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", MAIMENU:GetWidth() - btnh - sbr, -sbr)
-
-	MAIMENU.CLOSE:SetScript("OnClick", function()
-		MAIMENU:Hide()
-		MAIMENUMOVING:Hide()
-		MAISV("menu", false)
-		MAISV("toggler", false)
-	end)
+	MAIMENU.CLOSE:SetScript(
+		"OnClick",
+		function()
+			MAIMENU:Hide()
+			MAIMENUMOVING:Hide()
+			MAISV("menu", false)
+			MAISV("toggler", false)
+		end
+	)
 
 	py = py - sbr - btnh - sbr - bbr
 	MAIMENU.PROFILES = CreateFrame("Button", "MAIMENU.PROFILES", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.PROFILES:SetSize(btnw, btnh)
 	MAIMENU.PROFILES:SetText(MAIGT("profile") .. ": " .. MAIGCP())
 	MAIMENU.PROFILES:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr, py)
-
-	MAIMENU.PROFILES:SetScript("OnClick", function()
-		if MAIProfiles == nil then
-			local categoryOrder = {}
-
-			for k in pairs(MAITAB["PROFILES"]) do
-				if strEmpty(k) then
-					MAIMSG("|cFFFF0000ONE PROFILE HAS INVALID NAME: " .. tostring(k))
-				else
-					tinsert(categoryOrder, k)
-				end
-			end
-
-			table.sort(categoryOrder)
-			MAIProfiles = CreateFrame("Frame", "MAIProfiles", UIParent)
-			MAIProfiles:SetFrameStrata("FULLSCREEN")
-			MAIProfiles:SetSize(btnw * 2 + 3 * bbr, 200)
-			MAIProfiles:IsUserPlaced(true)
-			MAIProfiles:SetClampedToScreen(true)
-			MAIProfiles:SetMovable(true)
-			MAIProfiles:EnableMouse(true)
-			MAIProfiles:RegisterForDrag("LeftButton")
-			MAIProfiles:SetScript("OnDragStart", MAIProfiles.StartMoving)
-
-			MAIProfiles:SetScript("OnDragStop", function(self)
-				self:StopMovingOrSizing()
-				local point, _, relativePoint, ofsx, ofsy = self:GetPoint()
-				MAISV("MAIProfiles" .. "point", point)
-				MAISV("MAIProfiles" .. "relativePoint", relativePoint)
-				MAISV("MAIProfiles" .. "ofsx", MAIMathR(ofsx, 0))
-				MAISV("MAIProfiles" .. "ofsy", MAIMathR(ofsy, 0))
-			end)
-
-			local point = MAIGV("MAIProfiles" .. "point") or "CENTER"
-			local relativePoint = MAIGV("MAIProfiles" .. "relativePoint") or "CENTER"
-			local ofsx = MAIGV("MAIProfiles" .. "ofsx") or 250
-			local ofsy = MAIGV("MAIProfiles" .. "ofsy") or -250
-			MAIProfiles:SetPoint(point, UIParent, relativePoint, ofsx, ofsy)
-			MAIProfiles.texture = MAIProfiles:CreateTexture(nil, "BACKGROUND")
-			MAIProfiles.texture:SetAllPoints(MAIProfiles)
-			MAIProfiles.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
-			MAIProfiles.textureHeader = MAIProfiles:CreateTexture(nil, "BACKGROUND")
-			MAIProfiles.textureHeader:SetSize(MAIProfiles:GetWidth(), sbr + btnh + sbr)
-			MAIProfiles.textureHeader:SetPoint("TOPLEFT", MAIProfiles, "TOPLEFT", 0, 0)
-			MAIProfiles.textureHeader:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-			MAIProfiles.textheader = MAIProfiles:CreateFontString(nil, "ARTWORK")
-			MAIProfiles.textheader:SetFont(STANDARD_TEXT_FONT, 14, "")
-			MAIProfiles.textheader:SetPoint("LEFT", MAIProfiles, "TOPLEFT", 5, -15)
-			MAIProfiles.textheader:SetText(MAIGT("profiles"))
-			local b = CreateFrame("Button", "close", MAIProfiles, "UIPanelButtonTemplate")
-			b:SetSize(26, 26)
-			b:SetPoint("TOPRIGHT", MAIProfiles, "TOPRIGHT", 0, 0)
-
-			b:SetScript("OnClick", function()
-				MAIProfiles:Hide()
-			end)
-
-			b:SetText("X")
-			local add = CreateFrame("Button", "addprof", MAIProfiles, "UIPanelButtonTemplate")
-			add:SetSize(btnw, btnh)
-			add:SetPoint("TOPLEFT", MAIProfiles, "TOPLEFT", btnw, -2)
-			add:SetText(MAIGT("addprofile"))
-
-			add:SetScript("OnClick", function()
-				MAIAddProfiles = CreateFrame("Frame", "MAIAddProfiles", UIParent)
-				MAIAddProfiles:SetFrameStrata("FULLSCREEN_DIALOG")
-				MAIAddProfiles:SetSize(400, 200)
-				MAIAddProfiles:SetPoint("Center", 0, 0)
-				MAIAddProfiles:IsUserPlaced(true)
-				MAIAddProfiles:SetClampedToScreen(true)
-				MAIAddProfiles:SetMovable(true)
-				MAIAddProfiles:EnableMouse(true)
-				MAIAddProfiles:RegisterForDrag("LeftButton")
-				MAIAddProfiles:SetScript("OnDragStart", MAIAddProfiles.StartMoving)
-
-				MAIAddProfiles:SetScript("OnDragStop", function(self)
-					self:StopMovingOrSizing()
-				end)
-
-				MAIAddProfiles.texture = MAIAddProfiles:CreateTexture(nil, "BACKGROUND")
-				MAIAddProfiles.texture:SetAllPoints(MAIAddProfiles)
-				MAIAddProfiles.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
-				MAIAddProfiles.textureHeader = MAIAddProfiles:CreateTexture(nil, "BACKGROUND")
-				MAIAddProfiles.textureHeader:SetSize(MAIAddProfiles:GetWidth(), sbr + btnh + sbr)
-				MAIAddProfiles.textureHeader:SetPoint("TOPLEFT", MAIAddProfiles, "TOPLEFT", 0, 0)
-				MAIAddProfiles.textureHeader:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-				MAIAddProfiles.textheader = MAIAddProfiles:CreateFontString(nil, "ARTWORK")
-				MAIAddProfiles.textheader:SetFont(STANDARD_TEXT_FONT, 14, "")
-				MAIAddProfiles.textheader:SetPoint("LEFT", MAIAddProfiles, "TOPLEFT", 5, -15)
-				MAIAddProfiles.textheader:SetText(MAIGT("addprofile"))
-
-				MAIAddProfiles.cb = MAICreateDropdown({
-					["name"] = "cbprof",
-					["parent"] = MAIAddProfiles,
-					["title"] = MAIGT("inheritfrom"),
-					["items"] = categoryOrder,
-					["defaultVal"] = "",
-					["changeFunc"] = function(dropdown_frame, dropdown_val)
-						MAIAddProfiles.cb.value = dropdown_val
-					end
-				})
-
-				MAIAddProfiles.cb:SetPoint("TOPLEFT", MAIAddProfiles, "TOPLEFT", -10, -40)
-				MAIAddProfiles.cb.value = ""
-				MAIAddProfiles.editbox = CreateFrame("EditBox", nil, MAIAddProfiles, "InputBoxTemplate")
-				MAIAddProfiles.editbox:SetSize(200, 24)
-				MAIAddProfiles.editbox:SetPoint("TOPLEFT", MAIAddProfiles, "TOPLEFT", 10, -72)
-				MAIAddProfiles.editbox:SetText(MAIGT("Profile"))
-				MAIAddProfiles.add = CreateFrame("Button", "addprofile", MAIAddProfiles, "UIPanelButtonTemplate")
-				MAIAddProfiles.add:SetSize(btnw, btnh)
-				MAIAddProfiles.add:SetPoint("TOPLEFT", MAIAddProfiles, "TOPLEFT", 2, -72 - 24 - 10)
-				MAIAddProfiles.add:SetText(MAIGT("addprofile"))
-
-				MAIAddProfiles.add:SetScript("OnClick", function()
-					local newpro = MAIAddProfiles.editbox:GetText()
-
-					if newpro and not strEmpty(newpro) and MAITAB["PROFILES"][newpro] == nil then
-						local from = MAIAddProfiles.cb.value
-
-						if strEmpty(from) then
-							MAITAB["PROFILES"][newpro] = {}
-						else
-							MAITAB["PROFILES"][newpro] = MAITAB["PROFILES"][from]
-						end
-
-						MAISCP(newpro)
-						C_UI.Reload()
+	MAIMENU.PROFILES:SetScript(
+		"OnClick",
+		function()
+			if MAIProfiles == nil then
+				local categoryOrder = {}
+				for k in pairs(MAITAB["PROFILES"]) do
+					if strEmpty(k) then
+						MAIMSG("|cFFFF0000ONE PROFILE HAS INVALID NAME: " .. tostring(k))
 					else
-						if newpro and strEmpty(newpro) then
-							MAIMSG("|cFFFF0000The Profilename is empty!")
-						elseif MAITAB["PROFILES"][newpro] ~= nil then
-							MAIMSG("|cFFFF0000Profile: " .. tostring(newpro) .. " already exists!")
-						end
+						tinsert(categoryOrder, k)
 					end
-				end)
-			end)
-
-			MAIProfiles.SF = CreateFrame("ScrollFrame", "MAIProfiles_SF", MAIProfiles, "UIPanelScrollFrameTemplate")
-			MAIProfiles.SF:SetPoint("TOPLEFT", MAIProfiles, 2, -28 - 2)
-			MAIProfiles.SF:SetPoint("BOTTOMRIGHT", MAIProfiles, -24, 2)
-			MAIProfiles.SC = CreateFrame("Frame", "MAIProfiles_SC", MAIProfiles.SF)
-			MAIProfiles.SC:SetSize(400, 400)
-			MAIProfiles.SC:SetPoint("TOPLEFT", MAIProfiles.SF, "TOPLEFT", 0, 0)
-			MAIProfiles.SF:SetScrollChild(MAIProfiles.SC)
-			local count = 0
-
-			for index, name in pairs(categoryOrder) do
-				local prof = CreateFrame("Button", name, MAIProfiles.SC, "UIPanelButtonTemplate")
-				prof:SetSize(btnw, btnh)
-				prof:SetPoint("TOPLEFT", MAIProfiles.SC, "TOPLEFT", 0, -count * btnh)
-
-				if name == MAIGCP() then
-					prof:SetText(MAIGT("current") .. ": " .. name)
-				else
-					prof:SetText(name)
 				end
 
-				prof:SetScript("OnClick", function()
-					MAISCP(name)
-					C_UI.Reload()
-				end)
+				table.sort(categoryOrder)
+				MAIProfiles = CreateFrame("Frame", "MAIProfiles", UIParent)
+				MAIProfiles:SetFrameStrata("FULLSCREEN")
+				MAIProfiles:SetSize(btnw * 2 + 3 * bbr, 200)
+				MAIProfiles:IsUserPlaced(true)
+				MAIProfiles:SetClampedToScreen(true)
+				MAIProfiles:SetMovable(true)
+				MAIProfiles:EnableMouse(true)
+				MAIProfiles:RegisterForDrag("LeftButton")
+				MAIProfiles:SetScript("OnDragStart", MAIProfiles.StartMoving)
+				MAIProfiles:SetScript(
+					"OnDragStop",
+					function(self)
+						self:StopMovingOrSizing()
+						local point, _, relativePoint, ofsx, ofsy = self:GetPoint()
+						MAISV("MAIProfiles" .. "point", point)
+						MAISV("MAIProfiles" .. "relativePoint", relativePoint)
+						MAISV("MAIProfiles" .. "ofsx", MAIMathR(ofsx, 0))
+						MAISV("MAIProfiles" .. "ofsy", MAIMathR(ofsy, 0))
+					end
+				)
 
-				if name ~= "DEFAULT" then
-					local rem = CreateFrame("Button", name .. "rem", MAIProfiles.SC, "UIPanelButtonTemplate")
-					rem:SetSize(btnw / 2, btnh)
-					rem:SetPoint("TOPLEFT", MAIProfiles.SC, "TOPLEFT", btnw, -count * btnh)
-					rem:SetText(MAIGT("remove"))
+				local point = MAIGV("MAIProfiles" .. "point") or "CENTER"
+				local relativePoint = MAIGV("MAIProfiles" .. "relativePoint") or "CENTER"
+				local ofsx = MAIGV("MAIProfiles" .. "ofsx") or 250
+				local ofsy = MAIGV("MAIProfiles" .. "ofsy") or -250
+				MAIProfiles:SetPoint(point, UIParent, relativePoint, ofsx, ofsy)
+				MAIProfiles.texture = MAIProfiles:CreateTexture(nil, "BACKGROUND")
+				MAIProfiles.texture:SetAllPoints(MAIProfiles)
+				MAIProfiles.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
+				MAIProfiles.textureHeader = MAIProfiles:CreateTexture(nil, "BACKGROUND")
+				MAIProfiles.textureHeader:SetSize(MAIProfiles:GetWidth(), sbr + btnh + sbr)
+				MAIProfiles.textureHeader:SetPoint("TOPLEFT", MAIProfiles, "TOPLEFT", 0, 0)
+				MAIProfiles.textureHeader:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+				MAIProfiles.textheader = MAIProfiles:CreateFontString(nil, "ARTWORK")
+				MAIProfiles.textheader:SetFont(STANDARD_TEXT_FONT, 14, "")
+				MAIProfiles.textheader:SetPoint("LEFT", MAIProfiles, "TOPLEFT", 5, -15)
+				MAIProfiles.textheader:SetText(MAIGT("profiles"))
+				local b = CreateFrame("Button", "close", MAIProfiles, "UIPanelButtonTemplate")
+				b:SetSize(26, 26)
+				b:SetPoint("TOPRIGHT", MAIProfiles, "TOPRIGHT", 0, 0)
+				b:SetScript(
+					"OnClick",
+					function()
+						MAIProfiles:Hide()
+					end
+				)
 
-					rem:SetScript("OnClick", function()
-						MAITAB["PROFILES"][name] = nil
+				b:SetText("X")
+				local add = CreateFrame("Button", "addprof", MAIProfiles, "UIPanelButtonTemplate")
+				add:SetSize(btnw, btnh)
+				add:SetPoint("TOPLEFT", MAIProfiles, "TOPLEFT", btnw, -2)
+				add:SetText(MAIGT("addprofile"))
+				add:SetScript(
+					"OnClick",
+					function()
+						MAIAddProfiles = CreateFrame("Frame", "MAIAddProfiles", UIParent)
+						MAIAddProfiles:SetFrameStrata("FULLSCREEN_DIALOG")
+						MAIAddProfiles:SetSize(400, 200)
+						MAIAddProfiles:SetPoint("Center", 0, 0)
+						MAIAddProfiles:IsUserPlaced(true)
+						MAIAddProfiles:SetClampedToScreen(true)
+						MAIAddProfiles:SetMovable(true)
+						MAIAddProfiles:EnableMouse(true)
+						MAIAddProfiles:RegisterForDrag("LeftButton")
+						MAIAddProfiles:SetScript("OnDragStart", MAIAddProfiles.StartMoving)
+						MAIAddProfiles:SetScript(
+							"OnDragStop",
+							function(self)
+								self:StopMovingOrSizing()
+							end
+						)
 
-						if name == MAIGCP() then
-							MAISCP("DEFAULT")
+						MAIAddProfiles.texture = MAIAddProfiles:CreateTexture(nil, "BACKGROUND")
+						MAIAddProfiles.texture:SetAllPoints(MAIAddProfiles)
+						MAIAddProfiles.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
+						MAIAddProfiles.textureHeader = MAIAddProfiles:CreateTexture(nil, "BACKGROUND")
+						MAIAddProfiles.textureHeader:SetSize(MAIAddProfiles:GetWidth(), sbr + btnh + sbr)
+						MAIAddProfiles.textureHeader:SetPoint("TOPLEFT", MAIAddProfiles, "TOPLEFT", 0, 0)
+						MAIAddProfiles.textureHeader:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+						MAIAddProfiles.textheader = MAIAddProfiles:CreateFontString(nil, "ARTWORK")
+						MAIAddProfiles.textheader:SetFont(STANDARD_TEXT_FONT, 14, "")
+						MAIAddProfiles.textheader:SetPoint("LEFT", MAIAddProfiles, "TOPLEFT", 5, -15)
+						MAIAddProfiles.textheader:SetText(MAIGT("addprofile"))
+						MAIAddProfiles.cb = MAICreateDropdown(
+							{
+								["name"] = "cbprof",
+								["parent"] = MAIAddProfiles,
+								["title"] = MAIGT("inheritfrom"),
+								["items"] = categoryOrder,
+								["defaultVal"] = "",
+								["changeFunc"] = function(dropdown_frame, dropdown_val)
+									MAIAddProfiles.cb.value = dropdown_val
+								end
+							}
+						)
+
+						MAIAddProfiles.cb:SetPoint("TOPLEFT", MAIAddProfiles, "TOPLEFT", -10, -40)
+						MAIAddProfiles.cb.value = ""
+						MAIAddProfiles.editbox = CreateFrame("EditBox", nil, MAIAddProfiles, "InputBoxTemplate")
+						MAIAddProfiles.editbox:SetSize(200, 24)
+						MAIAddProfiles.editbox:SetPoint("TOPLEFT", MAIAddProfiles, "TOPLEFT", 10, -72)
+						MAIAddProfiles.editbox:SetText(MAIGT("Profile"))
+						MAIAddProfiles.add = CreateFrame("Button", "addprofile", MAIAddProfiles, "UIPanelButtonTemplate")
+						MAIAddProfiles.add:SetSize(btnw, btnh)
+						MAIAddProfiles.add:SetPoint("TOPLEFT", MAIAddProfiles, "TOPLEFT", 2, -72 - 24 - 10)
+						MAIAddProfiles.add:SetText(MAIGT("addprofile"))
+						MAIAddProfiles.add:SetScript(
+							"OnClick",
+							function()
+								local newpro = MAIAddProfiles.editbox:GetText()
+								if newpro and not strEmpty(newpro) and MAITAB["PROFILES"][newpro] == nil then
+									local from = MAIAddProfiles.cb.value
+									if strEmpty(from) then
+										MAITAB["PROFILES"][newpro] = {}
+									else
+										MAITAB["PROFILES"][newpro] = MAITAB["PROFILES"][from]
+									end
+
+									MAISCP(newpro)
+									C_UI.Reload()
+								else
+									if newpro and strEmpty(newpro) then
+										MAIMSG("|cFFFF0000The Profilename is empty!")
+									elseif MAITAB["PROFILES"][newpro] ~= nil then
+										MAIMSG("|cFFFF0000Profile: " .. tostring(newpro) .. " already exists!")
+									end
+								end
+							end
+						)
+					end
+				)
+
+				MAIProfiles.SF = CreateFrame("ScrollFrame", "MAIProfiles_SF", MAIProfiles, "UIPanelScrollFrameTemplate")
+				MAIProfiles.SF:SetPoint("TOPLEFT", MAIProfiles, 2, -28 - 2)
+				MAIProfiles.SF:SetPoint("BOTTOMRIGHT", MAIProfiles, -24, 2)
+				MAIProfiles.SC = CreateFrame("Frame", "MAIProfiles_SC", MAIProfiles.SF)
+				MAIProfiles.SC:SetSize(400, 400)
+				MAIProfiles.SC:SetPoint("TOPLEFT", MAIProfiles.SF, "TOPLEFT", 0, 0)
+				MAIProfiles.SF:SetScrollChild(MAIProfiles.SC)
+				local count = 0
+				for index, name in pairs(categoryOrder) do
+					local prof = CreateFrame("Button", name, MAIProfiles.SC, "UIPanelButtonTemplate")
+					prof:SetSize(btnw, btnh)
+					prof:SetPoint("TOPLEFT", MAIProfiles.SC, "TOPLEFT", 0, -count * btnh)
+					if name == MAIGCP() then
+						prof:SetText(MAIGT("current") .. ": " .. name)
+					else
+						prof:SetText(name)
+					end
+
+					prof:SetScript(
+						"OnClick",
+						function()
+							MAISCP(name)
+							C_UI.Reload()
 						end
+					)
 
-						C_UI.Reload()
-					end)
-				end
+					if name ~= "DEFAULT" then
+						local rem = CreateFrame("Button", name .. "rem", MAIProfiles.SC, "UIPanelButtonTemplate")
+						rem:SetSize(btnw / 2, btnh)
+						rem:SetPoint("TOPLEFT", MAIProfiles.SC, "TOPLEFT", btnw, -count * btnh)
+						rem:SetText(MAIGT("remove"))
+						rem:SetScript(
+							"OnClick",
+							function()
+								MAITAB["PROFILES"][name] = nil
+								if name == MAIGCP() then
+									MAISCP("DEFAULT")
+								end
 
-				--[[local exp = CreateFrame("Button", name .. "exp", MAIProfiles.SC, "UIPanelButtonTemplate")
+								C_UI.Reload()
+							end
+						)
+					end
+
+					--[[local exp = CreateFrame("Button", name .. "exp", MAIProfiles.SC, "UIPanelButtonTemplate")
 				exp:SetSize( btnw / 2, btnh )
 				exp:SetPoint( "TOPLEFT", MAIProfiles.SC, "TOPLEFT", btnw + btnw/2, - count * btnh )
 				exp:SetText( MAIGT( "share" ) .. " (WIP)" )]]
-				count = count + 1
+					count = count + 1
+				end
+			elseif MAIProfiles:IsShown() then
+				MAIProfiles:Hide()
+			else
+				MAIProfiles:Show()
 			end
-		elseif MAIProfiles:IsShown() then
-			MAIProfiles:Hide()
-		else
-			MAIProfiles:Show()
 		end
-	end)
+	)
 
 	MAIMENU.DISCORD = CreateFrame("Button", "MAIMENU.DISCORD", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.DISCORD:SetSize(btnw, btnh)
 	MAIMENU.DISCORD:SetText("DISCORD")
 	MAIMENU.DISCORD:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr + btnw + sbr, py)
 	local discordwin = nil
+	MAIMENU.DISCORD:SetScript(
+		"OnClick",
+		function()
+			if discordwin == nil then
+				discordwin = CreateFrame("Frame", "discordwin", UIParent)
+				discordwin:SetSize(215, 45)
+				discordwin:SetPoint("CENTER", 0, 0)
+				discordwin.textureheader = discordwin:CreateTexture(nil, "ARTWORK")
+				discordwin.textureheader:SetDrawLayer("ARTWORK", 7)
+				discordwin.textureheader:SetAllPoints()
+				discordwin.textureheader:SetColorTexture(0.1, 0.1, 0.1, 0.8)
+				discordwin.textheader = discordwin:CreateFontString(nil, "ARTWORK")
+				discordwin.textheader:SetFont(STANDARD_TEXT_FONT, 8, "")
+				discordwin.textheader:SetPoint("LEFT", discordwin, "TOPLEFT", 5, -10)
+				discordwin.textheader:SetText("Move And Improve: Discord")
+				local b = CreateFrame("Button", "close", discordwin, "UIPanelButtonTemplate")
+				b:SetSize(20, 20) -- width, height
+				b:SetPoint("TOPRIGHT", discordwin, "TOPRIGHT", 0, 0)
+				b:SetScript(
+					"OnClick",
+					function()
+						discordwin:Hide()
+						discordwin.visible = false
+					end
+				)
 
-	MAIMENU.DISCORD:SetScript("OnClick", function()
-		if discordwin == nil then
-			discordwin = CreateFrame("Frame", "discordwin", UIParent)
-			discordwin:SetSize(215, 45)
-			discordwin:SetPoint("CENTER", 0, 0)
-			discordwin.textureheader = discordwin:CreateTexture(nil, "ARTWORK")
-			discordwin.textureheader:SetDrawLayer("ARTWORK", 7)
-			discordwin.textureheader:SetAllPoints()
-			discordwin.textureheader:SetColorTexture(0.1, 0.1, 0.1, 0.8)
-			discordwin.textheader = discordwin:CreateFontString(nil, "ARTWORK")
-			discordwin.textheader:SetFont(STANDARD_TEXT_FONT, 8, "")
-			discordwin.textheader:SetPoint("LEFT", discordwin, "TOPLEFT", 5, -10)
-			discordwin.textheader:SetText("Move And Improve: Discord")
-			local b = CreateFrame("Button", "close", discordwin, "UIPanelButtonTemplate")
-			b:SetSize(20, 20) -- width, height
-			b:SetPoint("TOPRIGHT", discordwin, "TOPRIGHT", 0, 0)
-
-			b:SetScript("OnClick", function()
+				b:SetText("X")
+				discordwin.editbox = CreateFrame("EditBox", nil, discordwin, "InputBoxTemplate")
+				discordwin.editbox:SetSize(200, 24)
+				discordwin.editbox:SetPoint("LEFT", discordwin, "TOPLEFT", 10, -30)
+				discordwin.editbox:SetText("https://discord.gg/UeBsafs")
+				discordwin.visible = true
+			elseif discordwin.visible then
 				discordwin:Hide()
 				discordwin.visible = false
-			end)
-
-			b:SetText("X")
-			discordwin.editbox = CreateFrame("EditBox", nil, discordwin, "InputBoxTemplate")
-			discordwin.editbox:SetSize(200, 24)
-			discordwin.editbox:SetPoint("LEFT", discordwin, "TOPLEFT", 10, -30)
-			discordwin.editbox:SetText("https://discord.gg/UeBsafs")
-			discordwin.visible = true
-		elseif discordwin.visible then
-			discordwin:Hide()
-			discordwin.visible = false
-			discordwin.editbox:SetText("https://discord.gg/UeBsafs")
-		else
-			discordwin:Show()
-			discordwin.visible = true
-			discordwin.editbox:SetText("https://discord.gg/UeBsafs")
+				discordwin.editbox:SetText("https://discord.gg/UeBsafs")
+			else
+				discordwin:Show()
+				discordwin.visible = true
+				discordwin.editbox:SetText("https://discord.gg/UeBsafs")
+			end
 		end
-	end)
+	)
 
 	py = py - sbr - btnh - sbr - bbr
 	MAIMENU.TOGGLE = CreateFrame("Button", "MAIMENU.TOGGLE", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.TOGGLE:SetSize(btnw, btnh)
 	MAIMENU.TOGGLE:SetText("TOGGLE")
 	MAIMENU.TOGGLE:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr, py)
-
-	MAIMENU.TOGGLE:SetScript("OnClick", function()
-		MAIToggleDragger()
-	end)
+	MAIMENU.TOGGLE:SetScript(
+		"OnClick",
+		function()
+			MAIToggleDragger()
+		end
+	)
 
 	MAIMENU.DEBUGFSTACK = CreateFrame("Button", "MAIMENU.DEBUGFSTACK", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.DEBUGFSTACK:SetSize(btnw, btnh)
 	MAIMENU.DEBUGFSTACK:SetText("DEBUG: /fstack")
 	MAIMENU.DEBUGFSTACK:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr + btnw + sbr, py)
-
-	MAIMENU.DEBUGFSTACK:SetScript("OnClick", function()
-		SlashCmdList["FRAMESTACK"]()
-	end)
+	MAIMENU.DEBUGFSTACK:SetScript(
+		"OnClick",
+		function()
+			SlashCmdList["FRAMESTACK"]()
+		end
+	)
 
 	py = py - sbr - btnh - sbr
 	MAIMENU.ELEMENTS = CreateFrame("Button", "MAIMENU.RELOAD", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.ELEMENTS:SetSize(btnw, btnh)
 	local mcur = 0
 	local mmax = 0
-
 	for i, v in pairs(ELEMENTS) do
 		if _G[v.name] ~= nil then
 			mmax = mmax + 1
@@ -1845,160 +1941,160 @@ function MAISetupMAIMENU()
 
 	MAIMENU.ELEMENTS:SetText(mcur .. "/" .. mmax .. " " .. MAIGT("elements"))
 	MAIMENU.ELEMENTS:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr, py)
+	MAIMENU.ELEMENTS:SetScript(
+		"OnClick",
+		function()
+			MAIMENU.CLOSE:Click()
+			if MAIMENUELEMENTS == nil then
+				MAIMENUELEMENTS = CreateFrame("FRAME", "MAIMENUELEMENTS", UIParent)
+				MAIMENUELEMENTS:SetSize(bbr + btnw + bbr + btnw + 9 * bbr, 600)
+				MAIMENUELEMENTS:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+				MAIMENUELEMENTS.texture = MAIMENUELEMENTS:CreateTexture(nil, "BACKGROUND")
+				MAIMENUELEMENTS.texture:SetAllPoints(MAIMENUELEMENTS)
+				MAIMENUELEMENTS.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
+				MAIMENUELEMENTS.textureHeader = MAIMENUELEMENTS:CreateTexture(nil, "BACKGROUND")
+				MAIMENUELEMENTS.textureHeader:SetSize(MAIMENUELEMENTS:GetWidth(), sbr + btnh + sbr)
+				MAIMENUELEMENTS.textureHeader:SetPoint("TOPLEFT", MAIMENUELEMENTS, "TOPLEFT", 0, 0)
+				MAIMENUELEMENTS.textureHeader:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+				MAIMENUELEMENTS.textheader = MAIMENUELEMENTS:CreateFontString(nil, "ARTWORK")
+				MAIMENUELEMENTS.textheader:SetFont(STANDARD_TEXT_FONT, 14, "")
+				MAIMENUELEMENTS.textheader:SetPoint("LEFT", MAIMENUELEMENTS, "TOPLEFT", 5, -15)
+				MAIMENUELEMENTS.textheader:SetText(MAIGT("elements") .. " [Select atleast 1]")
+				MAIMENUELEMENTS:SetClampedToScreen(true)
+				MAIMENUELEMENTS:SetMovable(true)
+				MAIMENUELEMENTS:EnableMouse(true)
+				MAIMENUELEMENTS:RegisterForDrag("LeftButton")
+				MAIMENUELEMENTS:SetScript("OnDragStart", MAIMENUELEMENTS.StartMoving)
+				MAIMENUELEMENTS:SetScript("OnDragStop", MAIMENUELEMENTS.StopMovingOrSizing)
+				MAIMENUELEMENTS.CLOSE = CreateFrame("Button", "MAIMENUELEMENTS.CLOSE", MAIMENUELEMENTS, "UIPanelButtonTemplate") --"UIPanelCloseButton")
+				MAIMENUELEMENTS.CLOSE:SetSize(btnw, btnh)
+				MAIMENUELEMENTS.CLOSE:SetText(SAVE)
+				MAIMENUELEMENTS.CLOSE:SetPoint("TOPLEFT", MAIMENUELEMENTS, "TOPLEFT", MAIMENUELEMENTS:GetWidth() - btnw - sbr, -sbr)
+				MAIMENUELEMENTS.CLOSE:SetScript(
+					"OnClick",
+					function()
+						MAIMENUELEMENTS:Hide()
+						MAISV("menu", true)
+						MAISV("toggler", false)
+						C_UI.Reload()
+						C_Timer.After(0.1, MAIOpenMenu)
+					end
+				)
 
-	MAIMENU.ELEMENTS:SetScript("OnClick", function()
-		MAIMENU.CLOSE:Click()
-
-		if MAIMENUELEMENTS == nil then
-			MAIMENUELEMENTS = CreateFrame("FRAME", "MAIMENUELEMENTS", UIParent)
-			MAIMENUELEMENTS:SetSize(bbr + btnw + bbr + btnw + 9 * bbr, 600)
-			MAIMENUELEMENTS:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-			MAIMENUELEMENTS.texture = MAIMENUELEMENTS:CreateTexture(nil, "BACKGROUND")
-			MAIMENUELEMENTS.texture:SetAllPoints(MAIMENUELEMENTS)
-			MAIMENUELEMENTS.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
-			MAIMENUELEMENTS.textureHeader = MAIMENUELEMENTS:CreateTexture(nil, "BACKGROUND")
-			MAIMENUELEMENTS.textureHeader:SetSize(MAIMENUELEMENTS:GetWidth(), sbr + btnh + sbr)
-			MAIMENUELEMENTS.textureHeader:SetPoint("TOPLEFT", MAIMENUELEMENTS, "TOPLEFT", 0, 0)
-			MAIMENUELEMENTS.textureHeader:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-			MAIMENUELEMENTS.textheader = MAIMENUELEMENTS:CreateFontString(nil, "ARTWORK")
-			MAIMENUELEMENTS.textheader:SetFont(STANDARD_TEXT_FONT, 14, "")
-			MAIMENUELEMENTS.textheader:SetPoint("LEFT", MAIMENUELEMENTS, "TOPLEFT", 5, -15)
-			MAIMENUELEMENTS.textheader:SetText(MAIGT("elements") .. " [Select atleast 1]")
-			MAIMENUELEMENTS:SetClampedToScreen(true)
-			MAIMENUELEMENTS:SetMovable(true)
-			MAIMENUELEMENTS:EnableMouse(true)
-			MAIMENUELEMENTS:RegisterForDrag("LeftButton")
-			MAIMENUELEMENTS:SetScript("OnDragStart", MAIMENUELEMENTS.StartMoving)
-			MAIMENUELEMENTS:SetScript("OnDragStop", MAIMENUELEMENTS.StopMovingOrSizing)
-			MAIMENUELEMENTS.CLOSE = CreateFrame("Button", "MAIMENUELEMENTS.CLOSE", MAIMENUELEMENTS, "UIPanelButtonTemplate") --"UIPanelCloseButton")
-			MAIMENUELEMENTS.CLOSE:SetSize(btnw, btnh)
-			MAIMENUELEMENTS.CLOSE:SetText(SAVE)
-			MAIMENUELEMENTS.CLOSE:SetPoint("TOPLEFT", MAIMENUELEMENTS, "TOPLEFT", MAIMENUELEMENTS:GetWidth() - btnw - sbr, -sbr)
-
-			MAIMENUELEMENTS.CLOSE:SetScript("OnClick", function()
-				MAIMENUELEMENTS:Hide()
-				MAISV("menu", true)
-				MAISV("toggler", false)
-				C_UI.Reload()
-				C_Timer.After(0.1, MAIOpenMenu)
-			end)
-
-			MAIMENUELEMENTS.SCROLL = CreateFrame("ScrollFrame", "MAIMENUELEMENTS.SCROLL", MAIMENUELEMENTS, "UIPanelScrollFrameTemplate")
-			MAIMENUELEMENTS.SCROLL:SetSize(MAIMENUELEMENTS:GetWidth() - 24, MAIMENUELEMENTS:GetHeight() - (sbr + btnh + sbr))
-			MAIMENUELEMENTS.SCROLL:SetPoint("TOPLEFT", MAIMENUELEMENTS, "TOPLEFT", 0, -(sbr + btnh + sbr))
-			MAIMENUELEMENTS.SCROLLCHILD = CreateFrame("Frame", "MAIMENUELEMENTS.SCROLLCHILD", MAIMENUELEMENTS)
-			MAIMENUELEMENTS.SCROLLCHILD:SetSize(MAIMENUELEMENTS.SCROLL:GetWidth(), 2000)
-			MAIMENUELEMENTS.SCROLLCHILD:SetPoint("TOPLEFT", MAIMENUELEMENTS, "TOPLEFT", 0, -sbr - btnh - sbr)
-			MAIMENUELEMENTS.SCROLL:SetScrollChild(MAIMENUELEMENTS.SCROLLCHILD)
-
-			function MAIRecTab(tab, bo)
-				for i, v in pairs(tab) do
-					if type(v) == "table" and _G[i .. "btn"] then
-						MAISV(i .. "Enabled", bo)
-						_G[i .. "btn"]:SetChecked(bo)
-						MAIRecTab(v, bo)
-					elseif _G[v .. "btn"] then
-						MAISV(v .. "Enabled", bo)
-						_G[v .. "btn"]:SetChecked(bo)
+				MAIMENUELEMENTS.SCROLL = CreateFrame("ScrollFrame", "MAIMENUELEMENTS.SCROLL", MAIMENUELEMENTS, "UIPanelScrollFrameTemplate")
+				MAIMENUELEMENTS.SCROLL:SetSize(MAIMENUELEMENTS:GetWidth() - 24, MAIMENUELEMENTS:GetHeight() - (sbr + btnh + sbr))
+				MAIMENUELEMENTS.SCROLL:SetPoint("TOPLEFT", MAIMENUELEMENTS, "TOPLEFT", 0, -(sbr + btnh + sbr))
+				MAIMENUELEMENTS.SCROLLCHILD = CreateFrame("Frame", "MAIMENUELEMENTS.SCROLLCHILD", MAIMENUELEMENTS)
+				MAIMENUELEMENTS.SCROLLCHILD:SetSize(MAIMENUELEMENTS.SCROLL:GetWidth(), 2000)
+				MAIMENUELEMENTS.SCROLLCHILD:SetPoint("TOPLEFT", MAIMENUELEMENTS, "TOPLEFT", 0, -sbr - btnh - sbr)
+				MAIMENUELEMENTS.SCROLL:SetScrollChild(MAIMENUELEMENTS.SCROLLCHILD)
+				function MAIRecTab(tab, bo)
+					for i, v in pairs(tab) do
+						if type(v) == "table" and _G[i .. "btn"] then
+							MAISV(i .. "Enabled", bo)
+							_G[i .. "btn"]:SetChecked(bo)
+							MAIRecTab(v, bo)
+						elseif _G[v .. "btn"] then
+							MAISV(v .. "Enabled", bo)
+							_G[v .. "btn"]:SetChecked(bo)
+						end
 					end
 				end
-			end
 
-			function MAICreateSettingsCheckBox(ele, x, y, tab, notgood)
-				local line = CreateFrame("FRAME", lstr, MAIMENUELEMENTS.SCROLLCHILD)
-				line:SetSize(MAIMENUELEMENTS.SCROLL:GetWidth(), btnh)
-				line:SetPoint("TOPLEFT", MAIMENUELEMENTS.SCROLLCHILD, "TOPLEFT", x, y)
-				line.btn = CreateFrame("CheckButton", ele .. "btn", line, "UICheckButtonTemplate") --CreateFrame("CheckButton", "moversettingsmove", mover, "UICheckButtonTemplate")
-				line.btn:SetSize(btnh, btnh)
-				line.btn:SetPoint("TOPLEFT", line, "TOPLEFT", 0, 0)
+				function MAICreateSettingsCheckBox(ele, x, y, tab, notgood)
+					local line = CreateFrame("FRAME", lstr, MAIMENUELEMENTS.SCROLLCHILD)
+					line:SetSize(MAIMENUELEMENTS.SCROLL:GetWidth(), btnh)
+					line:SetPoint("TOPLEFT", MAIMENUELEMENTS.SCROLLCHILD, "TOPLEFT", x, y)
+					line.btn = CreateFrame("CheckButton", ele .. "btn", line, "UICheckButtonTemplate") --CreateFrame("CheckButton", "moversettingsmove", mover, "UICheckButtonTemplate")
+					line.btn:SetSize(btnh, btnh)
+					line.btn:SetPoint("TOPLEFT", line, "TOPLEFT", 0, 0)
+					line.btn:SetScript(
+						"OnClick",
+						function(self)
+							if MAILoaded then
+								if self:GetChecked() then
+									MAISV(ele .. "Enabled", true)
+								else
+									MAISV(ele .. "Enabled", false)
+								end
 
-				line.btn:SetScript("OnClick", function(self)
-					if MAILoaded then
-						if self:GetChecked() then
-							MAISV(ele .. "Enabled", true)
-						else
-							MAISV(ele .. "Enabled", false)
+								if tab ~= nil then
+									MAIRecTab(tab, MAIGV(ele .. "Enabled"))
+								end
+
+								MAITHINKER.force = true
+							end
 						end
+					)
 
-						if tab ~= nil then
-							MAIRecTab(tab, MAIGV(ele .. "Enabled"))
-						end
-
-						MAITHINKER.force = true
+					if MAILoaded and MAIGV(ele .. "Enabled") == nil then
+						MAISV(ele .. "Enabled", false)
 					end
-				end)
 
-				if MAILoaded and MAIGV(ele .. "Enabled") == nil then
-					MAISV(ele .. "Enabled", false)
+					if MAILoaded and MAIGV(ele .. "Enabled") then
+						line.btn:SetChecked(true)
+					end
+
+					line.text = line:CreateFontString(nil, "ARTWORK")
+					line.text:SetFont(STANDARD_TEXT_FONT, 14, "THINOUTLINE")
+					line.text:SetPoint("LEFT", line, "LEFT", btnh, 0)
+					line.text:SetText(MAIGT(ele))
+					if NOTGOOD[ele] then
+						line.text:SetTextColor(1, 0.4, 0.4, 1)
+					elseif ele == "MAIBuffFrame" then
+						line.text:SetTextColor(1, 1, 0.4, 1)
+					end
+
+					if MAIGV("nochanges") and NOCHANGES[ele] then
+						line.btn:Disable()
+						line.text:SetTextColor(0.4, 0.4, 0.4, 1)
+					end
 				end
 
-				if MAILoaded and MAIGV(ele .. "Enabled") then
-					line.btn:SetChecked(true)
-				end
-
-				line.text = line:CreateFontString(nil, "ARTWORK")
-				line.text:SetFont(STANDARD_TEXT_FONT, 14, "THINOUTLINE")
-				line.text:SetPoint("LEFT", line, "LEFT", btnh, 0)
-				line.text:SetText(MAIGT(ele))
-
-				if NOTGOOD[ele] then
-					line.text:SetTextColor(1, 0.4, 0.4, 1)
-				elseif ele == "MAIBuffFrame" then
-					line.text:SetTextColor(1, 1, 0.4, 1)
-				end
-
-				if MAIGV("nochanges") and NOCHANGES[ele] then
-					line.btn:Disable()
-					line.text:SetTextColor(0.4, 0.4, 0.4, 1)
-				end
-			end
-
-			local cpy = 0
-
-			function MAICreateLines(tab, x)
-				for i, v in pairs(tab) do
-					if type(v) == "table" then
-						MAICreateSettingsCheckBox(i, x, cpy, v, true)
-						cpy = cpy - 24
-						MAICreateLines(v, x + bbr)
-					else
-						if tContains(ELENAMES, v) then
-							MAICreateSettingsCheckBox(v, x, cpy, nil, true)
+				local cpy = 0
+				function MAICreateLines(tab, x)
+					for i, v in pairs(tab) do
+						if type(v) == "table" then
+							MAICreateSettingsCheckBox(i, x, cpy, v, true)
 							cpy = cpy - 24
+							MAICreateLines(v, x + bbr)
+						else
+							if tContains(ELENAMES, v) then
+								MAICreateSettingsCheckBox(v, x, cpy, nil, true)
+								cpy = cpy - 24
+							end
 						end
 					end
 				end
-			end
 
-			if ObjectiveTrackerFrame then
-				tinsert(ELESETTINGS["Interface"], "ObjectiveTrackerFrame")
-			end
+				if ObjectiveTrackerFrame then
+					tinsert(ELESETTINGS["Interface"], "ObjectiveTrackerFrame")
+				end
 
-			for i = 1, 4 do
-				tinsert(ELESETTINGS["UnitFrames"]["UnitFramesAdvanced"], "PartyMemberFrame" .. i)
-			end
+				for i = 1, 4 do
+					tinsert(ELESETTINGS["UnitFrames"]["UnitFramesAdvanced"], "PartyMemberFrame" .. i)
+				end
 
-			MAISortUnderTable(ELESETTINGS)
-			MAICreateLines(ELESETTINGS, bbr)
-			MAIMENUELEMENTS.SCROLLCHILD:SetHeight(math.abs(cpy))
-		else
-			if MAIMENUELEMENTS:IsVisible() then
-				MAIMENUELEMENTS:Hide()
+				MAISortUnderTable(ELESETTINGS)
+				MAICreateLines(ELESETTINGS, bbr)
+				MAIMENUELEMENTS.SCROLLCHILD:SetHeight(math.abs(cpy))
 			else
-				MAIMENUELEMENTS:Show()
+				if MAIMENUELEMENTS:IsVisible() then
+					MAIMENUELEMENTS:Hide()
+				else
+					MAIMENUELEMENTS:Show()
+				end
 			end
 		end
-	end)
+	)
 
 	MAIMENU.FRAMES = CreateFrame("Button", "MAIMENU.RELOAD", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.FRAMES:SetSize(btnw, btnh)
 	local mfcur = 0
 	local mfmax = 0
-
 	for i, v in pairs(MAIFRAMES) do
 		local name = v[1]
 		mfmax = mfmax + 1
-
 		if MAIGV(name .. "Enabled") then
 			mfcur = mfcur + 1
 		end
@@ -2006,215 +2102,221 @@ function MAISetupMAIMENU()
 
 	MAIMENU.FRAMES:SetText(mfcur .. "/" .. mfmax .. " " .. MAIGT("frames"))
 	MAIMENU.FRAMES:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr + btnw + sbr, py)
-
-	MAIMENU.FRAMES:SetScript("OnClick", function()
-		MAIMENU.CLOSE:Click()
-
-		if MAIMENUFRAMES == nil then
-			MAIMENUFRAMES = CreateFrame("FRAME", "MAIMENUFRAMES", UIParent)
-			MAIMENUFRAMES:SetSize(bbr + btnw + bbr + btnw + 9 * bbr, 600)
-			MAIMENUFRAMES:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-			MAIMENUFRAMES.texture = MAIMENUFRAMES:CreateTexture(nil, "BACKGROUND")
-			MAIMENUFRAMES.texture:SetAllPoints(MAIMENUFRAMES)
-			MAIMENUFRAMES.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
-			MAIMENUFRAMES.textureHeader = MAIMENUFRAMES:CreateTexture(nil, "BACKGROUND")
-			MAIMENUFRAMES.textureHeader:SetSize(MAIMENUFRAMES:GetWidth(), sbr + btnh + sbr + btnh + sbr)
-			MAIMENUFRAMES.textureHeader:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", 0, 0)
-			MAIMENUFRAMES.textureHeader:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-			MAIMENUFRAMES.textheader = MAIMENUFRAMES:CreateFontString(nil, "ARTWORK")
-			MAIMENUFRAMES.textheader:SetFont(STANDARD_TEXT_FONT, 14, "")
-			MAIMENUFRAMES.textheader:SetPoint("LEFT", MAIMENUFRAMES, "TOPLEFT", 5, -15)
-			MAIMENUFRAMES.textheader:SetText(MAIGT("frames"))
-			MAIMENUFRAMES.textheader2 = MAIMENUFRAMES:CreateFontString(nil, "ARTWORK")
-			MAIMENUFRAMES.textheader2:SetFont(STANDARD_TEXT_FONT, 14, "")
-			MAIMENUFRAMES.textheader2:SetPoint("LEFT", MAIMENUFRAMES, "TOPLEFT", 5, -40)
-			MAIMENUFRAMES.textheader2:SetText("[" .. MAIGT("moveframes") .. "] [" .. MAIGT("scaleframes") .. "]")
-
-			function MAIFramesAllEnabled(bo)
-				for i, v in pairs(MAIFRAMES) do
-					local name = v[1]
-					MAISV(name .. "Enabled", bo)
-					_G[name .. "btn"]:SetChecked(bo)
-				end
-			end
-
-			function MAIFramesAllScale(bo)
-				for i, v in pairs(MAIFRAMES) do
-					local name = v[1]
-
-					if _G[name .. "btn2"] then
-						MAISV(name .. "Scale", bo)
-						_G[name .. "btn2"]:SetChecked(bo)
+	MAIMENU.FRAMES:SetScript(
+		"OnClick",
+		function()
+			MAIMENU.CLOSE:Click()
+			if MAIMENUFRAMES == nil then
+				MAIMENUFRAMES = CreateFrame("FRAME", "MAIMENUFRAMES", UIParent)
+				MAIMENUFRAMES:SetSize(bbr + btnw + bbr + btnw + 9 * bbr, 600)
+				MAIMENUFRAMES:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+				MAIMENUFRAMES.texture = MAIMENUFRAMES:CreateTexture(nil, "BACKGROUND")
+				MAIMENUFRAMES.texture:SetAllPoints(MAIMENUFRAMES)
+				MAIMENUFRAMES.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
+				MAIMENUFRAMES.textureHeader = MAIMENUFRAMES:CreateTexture(nil, "BACKGROUND")
+				MAIMENUFRAMES.textureHeader:SetSize(MAIMENUFRAMES:GetWidth(), sbr + btnh + sbr + btnh + sbr)
+				MAIMENUFRAMES.textureHeader:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", 0, 0)
+				MAIMENUFRAMES.textureHeader:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+				MAIMENUFRAMES.textheader = MAIMENUFRAMES:CreateFontString(nil, "ARTWORK")
+				MAIMENUFRAMES.textheader:SetFont(STANDARD_TEXT_FONT, 14, "")
+				MAIMENUFRAMES.textheader:SetPoint("LEFT", MAIMENUFRAMES, "TOPLEFT", 5, -15)
+				MAIMENUFRAMES.textheader:SetText(MAIGT("frames"))
+				MAIMENUFRAMES.textheader2 = MAIMENUFRAMES:CreateFontString(nil, "ARTWORK")
+				MAIMENUFRAMES.textheader2:SetFont(STANDARD_TEXT_FONT, 14, "")
+				MAIMENUFRAMES.textheader2:SetPoint("LEFT", MAIMENUFRAMES, "TOPLEFT", 5, -40)
+				MAIMENUFRAMES.textheader2:SetText("[" .. MAIGT("moveframes") .. "] [" .. MAIGT("scaleframes") .. "]")
+				function MAIFramesAllEnabled(bo)
+					for i, v in pairs(MAIFRAMES) do
+						local name = v[1]
+						MAISV(name .. "Enabled", bo)
+						_G[name .. "btn"]:SetChecked(bo)
 					end
 				end
-			end
 
-			MAIMENUFRAMES.btn = CreateFrame("CheckButton", "all" .. "btn", MAIMENUFRAMES, "UICheckButtonTemplate") --CreateFrame("CheckButton", "moversettingsmove", mover, "UICheckButtonTemplate")
-			MAIMENUFRAMES.btn:SetSize(btnh, btnh)
-			MAIMENUFRAMES.btn:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", bbr, -btnh - 30)
-
-			MAIMENUFRAMES.btn:SetScript("OnClick", function(self)
-				if MAILoaded then
-					MAIFramesAllEnabled(self:GetChecked())
-				end
-			end)
-
-			MAIMENUFRAMES.btn2 = CreateFrame("CheckButton", "all" .. "btn", MAIMENUFRAMES, "UICheckButtonTemplate") --CreateFrame("CheckButton", "moversettingsmove", mover, "UICheckButtonTemplate")
-			MAIMENUFRAMES.btn2:SetSize(btnh, btnh)
-			MAIMENUFRAMES.btn2:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", bbr + btnh, -btnh - 30)
-
-			MAIMENUFRAMES.btn2:SetScript("OnClick", function(self)
-				if MAILoaded then
-					MAIFramesAllScale(self:GetChecked())
-				end
-			end)
-
-			MAIMENUFRAMES.text = MAIMENUFRAMES:CreateFontString(nil, "ARTWORK")
-			MAIMENUFRAMES.text:SetFont(STANDARD_TEXT_FONT, 14, "THINOUTLINE")
-			MAIMENUFRAMES.text:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", bbr + btnh + btnh, -btnh - 30 - btnh / 4)
-			MAIMENUFRAMES.text:SetText(MAIGT("all"))
-			MAIMENUFRAMES:SetClampedToScreen(true)
-			MAIMENUFRAMES:SetMovable(true)
-			MAIMENUFRAMES:EnableMouse(true)
-			MAIMENUFRAMES:RegisterForDrag("LeftButton")
-			MAIMENUFRAMES:SetScript("OnDragStart", MAIMENUFRAMES.StartMoving)
-			MAIMENUFRAMES:SetScript("OnDragStop", MAIMENUFRAMES.StopMovingOrSizing)
-			MAIMENUFRAMES.CLOSE = CreateFrame("Button", "MAIMENUFRAMES.CLOSE", MAIMENUFRAMES, "UIPanelCloseButton")
-			MAIMENUFRAMES.CLOSE:SetSize(btnh, btnh)
-			MAIMENUFRAMES.CLOSE:SetText(getglobal("CLOSEUI"))
-			MAIMENUFRAMES.CLOSE:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", MAIMENUFRAMES:GetWidth() - btnh - sbr, -sbr)
-
-			MAIMENUFRAMES.CLOSE:SetScript("OnClick", function()
-				MAIMENUFRAMES:Hide()
-				MAISV("menu", true)
-				MAISV("toggler", false)
-				C_UI.Reload()
-				C_Timer.After(0.1, MAIOpenMenu)
-			end)
-
-			MAIMENUFRAMES.SCROLL = CreateFrame("ScrollFrame", "MAIMENUFRAMES.SCROLL", MAIMENUFRAMES, "UIPanelScrollFrameTemplate")
-			MAIMENUFRAMES.SCROLL:SetSize(MAIMENUFRAMES:GetWidth() - 24, MAIMENUFRAMES:GetHeight() - (sbr + btnh + sbr + btnh + sbr + btnh + sbr))
-			MAIMENUFRAMES.SCROLL:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", 0, -(sbr + btnh + sbr + btnh + sbr + btnh + sbr))
-			MAIMENUFRAMES.SCROLLCHILD = CreateFrame("Frame", "MAIMENUFRAMES.SCROLLCHILD", MAIMENUFRAMES)
-			MAIMENUFRAMES.SCROLLCHILD:SetSize(MAIMENUFRAMES.SCROLL:GetWidth(), 2000)
-			MAIMENUFRAMES.SCROLLCHILD:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", 0, -sbr - btnh - sbr)
-			MAIMENUFRAMES.SCROLL:SetScrollChild(MAIMENUFRAMES.SCROLLCHILD)
-
-			function MAICreateSettingsCheckBox(ele, x, y, notgood, notscale)
-				local line = CreateFrame("FRAME", lstr, MAIMENUFRAMES.SCROLLCHILD)
-				line:SetSize(MAIMENUFRAMES.SCROLL:GetWidth(), btnh)
-				line:SetPoint("TOPLEFT", MAIMENUFRAMES.SCROLLCHILD, "TOPLEFT", x, y)
-
-				if MAILoaded and MAIGV(ele .. "Enabled") == nil then
-					MAISV(ele .. "Enabled", false)
-				end
-
-				if MAILoaded and MAIGV(ele .. "Scale") == nil then
-					MAISV(ele .. "Scale", false)
-				end
-
-				line.btn = CreateFrame("CheckButton", ele .. "btn", line, "UICheckButtonTemplate") --CreateFrame("CheckButton", "moversettingsmove", mover, "UICheckButtonTemplate")
-				line.btn:SetSize(btnh, btnh)
-				line.btn:SetPoint("TOPLEFT", line, "TOPLEFT", 0, 0)
-
-				line.btn:SetScript("OnClick", function(self)
-					if MAILoaded then
-						if self:GetChecked() then
-							MAISV(ele .. "Enabled", true)
-						else
-							MAISV(ele .. "Enabled", false)
+				function MAIFramesAllScale(bo)
+					for i, v in pairs(MAIFRAMES) do
+						local name = v[1]
+						if _G[name .. "btn2"] then
+							MAISV(name .. "Scale", bo)
+							_G[name .. "btn2"]:SetChecked(bo)
 						end
-
-						MAITHINKER.force = true
 					end
-				end)
-
-				if MAILoaded and MAIGV(ele .. "Enabled") then
-					line.btn:SetChecked(true)
 				end
 
-				if not notscale then
-					line.btn2 = CreateFrame("CheckButton", ele .. "btn2", line, "UICheckButtonTemplate") --CreateFrame("CheckButton", "moversettingsmove", mover, "UICheckButtonTemplate")
-					line.btn2:SetSize(btnh, btnh)
-					line.btn2:SetPoint("TOPLEFT", line, "TOPLEFT", btnh, 0)
-
-					line.btn2:SetScript("OnClick", function(self)
+				MAIMENUFRAMES.btn = CreateFrame("CheckButton", "all" .. "btn", MAIMENUFRAMES, "UICheckButtonTemplate") --CreateFrame("CheckButton", "moversettingsmove", mover, "UICheckButtonTemplate")
+				MAIMENUFRAMES.btn:SetSize(btnh, btnh)
+				MAIMENUFRAMES.btn:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", bbr, -btnh - 30)
+				MAIMENUFRAMES.btn:SetScript(
+					"OnClick",
+					function(self)
 						if MAILoaded then
-							if self:GetChecked() then
-								MAISV(ele .. "Scale", true)
-							else
-								MAISV(ele .. "Scale", false)
-							end
-
-							MAITHINKER.force = true
+							MAIFramesAllEnabled(self:GetChecked())
 						end
-					end)
-
-					if MAILoaded and MAIGV(ele .. "Scale") then
-						line.btn2:SetChecked(true)
 					end
-				else
-					MAISV(ele .. "Scale", false)
-				end
+				)
 
-				line.btn3 = CreateFrame("Button", ele .. "btn3", line, "UIPanelButtonTemplate")
-				line.btn3:SetText(getglobal("RESET"))
-				line.btn3:SetSize(btnh * 4, btnh)
-				line.btn3:SetPoint("LEFT", line, "RIGHT", -btnh * 4 - 2, 0)
-
-				line.btn3:SetScript("OnClick", function(self)
-					if MAILoaded then
-						MAISV(ele .. "Scale", true)
-						MAISV(ele .. "point", nil)
-						MAISV(ele .. "parent", nil)
-						MAISV(ele .. "relativePoint", nil)
-						MAISV(ele .. "ofsx", nil)
-						MAISV(ele .. "ofsy", nil)
-						MAITHINKER.force = true
+				MAIMENUFRAMES.btn2 = CreateFrame("CheckButton", "all" .. "btn", MAIMENUFRAMES, "UICheckButtonTemplate") --CreateFrame("CheckButton", "moversettingsmove", mover, "UICheckButtonTemplate")
+				MAIMENUFRAMES.btn2:SetSize(btnh, btnh)
+				MAIMENUFRAMES.btn2:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", bbr + btnh, -btnh - 30)
+				MAIMENUFRAMES.btn2:SetScript(
+					"OnClick",
+					function(self)
+						if MAILoaded then
+							MAIFramesAllScale(self:GetChecked())
+						end
 					end
-				end)
+				)
 
-				line.text = line:CreateFontString(nil, "ARTWORK")
-				line.text:SetFont(STANDARD_TEXT_FONT, 14, "THINOUTLINE")
-				line.text:SetPoint("LEFT", line, "LEFT", btnh + btnh, 0)
-				line.text:SetText(MAIGT(ele))
+				MAIMENUFRAMES.text = MAIMENUFRAMES:CreateFontString(nil, "ARTWORK")
+				MAIMENUFRAMES.text:SetFont(STANDARD_TEXT_FONT, 14, "THINOUTLINE")
+				MAIMENUFRAMES.text:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", bbr + btnh + btnh, -btnh - 30 - btnh / 4)
+				MAIMENUFRAMES.text:SetText(MAIGT("all"))
+				MAIMENUFRAMES:SetClampedToScreen(true)
+				MAIMENUFRAMES:SetMovable(true)
+				MAIMENUFRAMES:EnableMouse(true)
+				MAIMENUFRAMES:RegisterForDrag("LeftButton")
+				MAIMENUFRAMES:SetScript("OnDragStart", MAIMENUFRAMES.StartMoving)
+				MAIMENUFRAMES:SetScript("OnDragStop", MAIMENUFRAMES.StopMovingOrSizing)
+				MAIMENUFRAMES.CLOSE = CreateFrame("Button", "MAIMENUFRAMES.CLOSE", MAIMENUFRAMES, "UIPanelCloseButton")
+				MAIMENUFRAMES.CLOSE:SetSize(btnh, btnh)
+				MAIMENUFRAMES.CLOSE:SetText(getglobal("CLOSEUI"))
+				MAIMENUFRAMES.CLOSE:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", MAIMENUFRAMES:GetWidth() - btnh - sbr, -sbr)
+				MAIMENUFRAMES.CLOSE:SetScript(
+					"OnClick",
+					function()
+						MAIMENUFRAMES:Hide()
+						MAISV("menu", true)
+						MAISV("toggler", false)
+						C_UI.Reload()
+						C_Timer.After(0.1, MAIOpenMenu)
+					end
+				)
 
-				if notgood then
-					line.text:SetTextColor(1, 0.4, 0.4, 1)
+				MAIMENUFRAMES.SCROLL = CreateFrame("ScrollFrame", "MAIMENUFRAMES.SCROLL", MAIMENUFRAMES, "UIPanelScrollFrameTemplate")
+				MAIMENUFRAMES.SCROLL:SetSize(MAIMENUFRAMES:GetWidth() - 24, MAIMENUFRAMES:GetHeight() - (sbr + btnh + sbr + btnh + sbr + btnh + sbr))
+				MAIMENUFRAMES.SCROLL:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", 0, -(sbr + btnh + sbr + btnh + sbr + btnh + sbr))
+				MAIMENUFRAMES.SCROLLCHILD = CreateFrame("Frame", "MAIMENUFRAMES.SCROLLCHILD", MAIMENUFRAMES)
+				MAIMENUFRAMES.SCROLLCHILD:SetSize(MAIMENUFRAMES.SCROLL:GetWidth(), 2000)
+				MAIMENUFRAMES.SCROLLCHILD:SetPoint("TOPLEFT", MAIMENUFRAMES, "TOPLEFT", 0, -sbr - btnh - sbr)
+				MAIMENUFRAMES.SCROLL:SetScrollChild(MAIMENUFRAMES.SCROLLCHILD)
+				function MAICreateSettingsCheckBox(ele, x, y, notgood, notscale)
+					local line = CreateFrame("FRAME", lstr, MAIMENUFRAMES.SCROLLCHILD)
+					line:SetSize(MAIMENUFRAMES.SCROLL:GetWidth(), btnh)
+					line:SetPoint("TOPLEFT", MAIMENUFRAMES.SCROLLCHILD, "TOPLEFT", x, y)
+					if MAILoaded and MAIGV(ele .. "Enabled") == nil then
+						MAISV(ele .. "Enabled", false)
+					end
+
+					if MAILoaded and MAIGV(ele .. "Scale") == nil then
+						MAISV(ele .. "Scale", false)
+					end
+
+					line.btn = CreateFrame("CheckButton", ele .. "btn", line, "UICheckButtonTemplate") --CreateFrame("CheckButton", "moversettingsmove", mover, "UICheckButtonTemplate")
+					line.btn:SetSize(btnh, btnh)
+					line.btn:SetPoint("TOPLEFT", line, "TOPLEFT", 0, 0)
+					line.btn:SetScript(
+						"OnClick",
+						function(self)
+							if MAILoaded then
+								if self:GetChecked() then
+									MAISV(ele .. "Enabled", true)
+								else
+									MAISV(ele .. "Enabled", false)
+								end
+
+								MAITHINKER.force = true
+							end
+						end
+					)
+
+					if MAILoaded and MAIGV(ele .. "Enabled") then
+						line.btn:SetChecked(true)
+					end
+
+					if not notscale then
+						line.btn2 = CreateFrame("CheckButton", ele .. "btn2", line, "UICheckButtonTemplate") --CreateFrame("CheckButton", "moversettingsmove", mover, "UICheckButtonTemplate")
+						line.btn2:SetSize(btnh, btnh)
+						line.btn2:SetPoint("TOPLEFT", line, "TOPLEFT", btnh, 0)
+						line.btn2:SetScript(
+							"OnClick",
+							function(self)
+								if MAILoaded then
+									if self:GetChecked() then
+										MAISV(ele .. "Scale", true)
+									else
+										MAISV(ele .. "Scale", false)
+									end
+
+									MAITHINKER.force = true
+								end
+							end
+						)
+
+						if MAILoaded and MAIGV(ele .. "Scale") then
+							line.btn2:SetChecked(true)
+						end
+					else
+						MAISV(ele .. "Scale", false)
+					end
+
+					line.btn3 = CreateFrame("Button", ele .. "btn3", line, "UIPanelButtonTemplate")
+					line.btn3:SetText(getglobal("RESET"))
+					line.btn3:SetSize(btnh * 4, btnh)
+					line.btn3:SetPoint("LEFT", line, "RIGHT", -btnh * 4 - 2, 0)
+					line.btn3:SetScript(
+						"OnClick",
+						function(self)
+							if MAILoaded then
+								MAISV(ele .. "Scale", true)
+								MAISV(ele .. "point", nil)
+								MAISV(ele .. "parent", nil)
+								MAISV(ele .. "relativePoint", nil)
+								MAISV(ele .. "ofsx", nil)
+								MAISV(ele .. "ofsy", nil)
+								MAITHINKER.force = true
+							end
+						end
+					)
+
+					line.text = line:CreateFontString(nil, "ARTWORK")
+					line.text:SetFont(STANDARD_TEXT_FONT, 14, "THINOUTLINE")
+					line.text:SetPoint("LEFT", line, "LEFT", btnh + btnh, 0)
+					line.text:SetText(MAIGT(ele))
+					if notgood then
+						line.text:SetTextColor(1, 0.4, 0.4, 1)
+					end
+
+					if MAIGV("nochanges") and NOCHANGES[ele] then
+						line.btn:Disable()
+						line.text:SetTextColor(0.4, 0.4, 0.4, 1)
+					end
 				end
 
-				if MAIGV("nochanges") and NOCHANGES[ele] then
-					line.btn:Disable()
-					line.text:SetTextColor(0.4, 0.4, 0.4, 1)
+				local cpy = 0
+				function MAICreateLines(tab, x)
+					for i, v in pairs(tab) do
+						MAICreateSettingsCheckBox(v[1], x, cpy, v[5], v[3])
+						cpy = cpy - 24
+					end
 				end
-			end
 
-			local cpy = 0
-
-			function MAICreateLines(tab, x)
-				for i, v in pairs(tab) do
-					MAICreateSettingsCheckBox(v[1], x, cpy, v[5], v[3])
-					cpy = cpy - 24
-				end
-			end
-
-			MAICreateLines(MAIFRAMES, bbr)
-			MAIMENUFRAMES.SCROLLCHILD:SetHeight(math.abs(cpy))
-		else
-			if MAIMENUFRAMES:IsVisible() then
-				MAIMENUFRAMES:Hide()
+				MAICreateLines(MAIFRAMES, bbr)
+				MAIMENUFRAMES.SCROLLCHILD:SetHeight(math.abs(cpy))
 			else
-				MAIMENUFRAMES:Show()
+				if MAIMENUFRAMES:IsVisible() then
+					MAIMENUFRAMES:Hide()
+				else
+					MAIMENUFRAMES:Show()
+				end
 			end
 		end
-	end)
+	)
 
 	if MAIGV("nochanges") then
 		MAIMENU.FRAMES:Disable()
 	end
 
 	py = py - btnh - sbr
-
 	if MAIGV("MAIUIColorR") == nil then
 		MAISV("MAIUIColorR", 1)
 	end
@@ -2248,7 +2350,6 @@ function MAISetupMAIMENU()
 	end
 
 	local maxzoom = 4.0
-
 	if MAIBUILD == "RETAIL" then
 		maxzoom = 2.6
 	end
@@ -2262,30 +2363,27 @@ function MAISetupMAIMENU()
 	end
 
 	local currentlychanging = ""
-
 	function ShowColorPicker(r, g, b, a, changedCallback)
 		ColorPickerFrame:SetColorRGB(r, g, b)
 		ColorPickerFrame.hasOpacity, ColorPickerFrame.opacity = a ~= nil, a
-
 		ColorPickerFrame.previousValues = {r, g, b, a}
-
 		ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = changedCallback, changedCallback, changedCallback
 		ColorPickerFrame:Hide()
 		ColorPickerFrame:Show()
 		ColorPickerFrame:SetScale(2)
-
-		ColorPickerFrame:HookScript("OnHide", function()
-			currentlychanging = ""
-		end)
+		ColorPickerFrame:HookScript(
+			"OnHide",
+			function()
+				currentlychanging = ""
+			end
+		)
 	end
 
 	local iconsize = 0.6
 	local r, g, b = 0, 0, 0
-
 	local function MAIUIColor(restore)
 		if currentlychanging == "MAIUIColor" then
 			local newR, newG, newB, newA
-
 			if restore then
 				newR, newG, newB, newA = unpack(restore)
 			else
@@ -2305,22 +2403,26 @@ function MAISetupMAIMENU()
 	MAIMENU.UIColorEnabled:SetSize(25, 25)
 	MAIMENU.UIColorEnabled:SetPoint("TOPLEFT", bbr, py)
 	MAIMENU.UIColorEnabled:SetChecked(MAIGV("UIColorEnabled", true))
-
-	MAIMENU.UIColorEnabled:SetScript("OnClick", function(self)
-		local newval = self:GetChecked()
-		MAISV("UIColorEnabled", newval)
-		C_UI.Reload()
-	end)
+	MAIMENU.UIColorEnabled:SetScript(
+		"OnClick",
+		function(self)
+			local newval = self:GetChecked()
+			MAISV("UIColorEnabled", newval)
+			C_UI.Reload()
+		end
+	)
 
 	MAIMENU.UIColor = CreateFrame("Button", "MAIMENU.UIColor", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.UIColor:SetSize(btnw - 25, btnh)
 	MAIMENU.UIColor:SetText(MAIGT("elementscolor"))
 	MAIMENU.UIColor:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr + 25, py)
-
-	MAIMENU.UIColor:SetScript("OnClick", function()
-		currentlychanging = "MAIUIColor"
-		ShowColorPicker(MAIGV("MAIUIColorR", 1), MAIGV("MAIUIColorG", 1), MAIGV("MAIUIColorB", 1), nil, MAIUIColor)
-	end)
+	MAIMENU.UIColor:SetScript(
+		"OnClick",
+		function()
+			currentlychanging = "MAIUIColor"
+			ShowColorPicker(MAIGV("MAIUIColorR", 1), MAIGV("MAIUIColorG", 1), MAIGV("MAIUIColorB", 1), nil, MAIUIColor)
+		end
+	)
 
 	MAIMENU.UIColor.texture = MAIMENU.UIColor:CreateTexture(nil, "ARTWORK")
 	MAIMENU.UIColor.texture:SetSize(btnh * iconsize, btnh * iconsize)
@@ -2328,7 +2430,6 @@ function MAISetupMAIMENU()
 	MAIMENU.UIColor.texture:SetTexture("Interface\\AddOns\\D4KiR MoveAndImprove\\media\\white")
 	MAIMENU.UIColor.texture:SetVertexColor(MAIGetUIColor())
 	MAIRegisterUIColor(MAIMENU.UIColor.texture)
-
 	if MAIGV("nochanges") or not MAIGV("UIColorEnabled", true) then
 		MAIMENU.UIColor:Disable()
 	end
@@ -2336,7 +2437,6 @@ function MAISetupMAIMENU()
 	function MAIFrameColor(restore)
 		if currentlychanging == "MAIFrameColor" then
 			local newR, newG, newB, newA
-
 			if restore then
 				newR, newG, newB, newA = unpack(restore)
 			else
@@ -2356,22 +2456,26 @@ function MAISetupMAIMENU()
 	MAIMENU.FrameColorEnabled:SetSize(25, 25)
 	MAIMENU.FrameColorEnabled:SetPoint("TOPLEFT", bbr + btnw + sbr, py)
 	MAIMENU.FrameColorEnabled:SetChecked(MAIGV("FrameColorEnabled", true))
-
-	MAIMENU.FrameColorEnabled:SetScript("OnClick", function(self)
-		local newval = self:GetChecked()
-		MAISV("FrameColorEnabled", newval)
-		C_UI.Reload()
-	end)
+	MAIMENU.FrameColorEnabled:SetScript(
+		"OnClick",
+		function(self)
+			local newval = self:GetChecked()
+			MAISV("FrameColorEnabled", newval)
+			C_UI.Reload()
+		end
+	)
 
 	MAIMENU.FrameColor = CreateFrame("Button", "MAIMENU.FrameColor", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.FrameColor:SetSize(btnw - 25, btnh)
 	MAIMENU.FrameColor:SetText(MAIGT("framescolor"))
 	MAIMENU.FrameColor:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr + btnw + sbr + 25, py)
-
-	MAIMENU.FrameColor:SetScript("OnClick", function()
-		currentlychanging = "MAIFrameColor"
-		ShowColorPicker(MAIGV("MAIFrameColorR", 1), MAIGV("MAIFrameColorG", 1), MAIGV("MAIFrameColorB", 1), nil, MAIFrameColor)
-	end)
+	MAIMENU.FrameColor:SetScript(
+		"OnClick",
+		function()
+			currentlychanging = "MAIFrameColor"
+			ShowColorPicker(MAIGV("MAIFrameColorR", 1), MAIGV("MAIFrameColorG", 1), MAIGV("MAIFrameColorB", 1), nil, MAIFrameColor)
+		end
+	)
 
 	MAIMENU.FrameColor.texture = MAIMENU.FrameColor:CreateTexture(nil, "ARTWORK")
 	MAIMENU.FrameColor.texture:SetSize(btnh * iconsize, btnh * iconsize)
@@ -2379,26 +2483,29 @@ function MAISetupMAIMENU()
 	MAIMENU.FrameColor.texture:SetTexture("Interface\\AddOns\\D4KiR MoveAndImprove\\media\\white")
 	MAIMENU.FrameColor.texture:SetVertexColor(MAIGetFrameColor())
 	MAIRegisterFrameColor(MAIMENU.FrameColor.texture)
-
 	if MAIGV("nochanges") or not MAIGV("FrameColorEnabled", true) then
 		MAIMENU.FrameColor:Disable()
 	end
 
 	py = py - btnh * 1.5 - bbr
 	MAIMENU.ZoomOut = MAICreateSlider(MAIMENU, "MAIMENU.ZoomOut", "MAIZoomOut", MAIGV("ZoomOut"), 10, py, 1.0, maxzoom, 0.1, ".1f", MAIGT("zoomout"))
-
-	MAIMENU.ZoomOut:HookScript("OnValueChanged", function(self, val)
-		MAISV("ZoomOut", MAIMathR(val, 2))
-		ConsoleExec("cameraDistanceMaxZoomFactor " .. MAIGV("ZoomOut"))
-	end)
+	MAIMENU.ZoomOut:HookScript(
+		"OnValueChanged",
+		function(self, val)
+			MAISV("ZoomOut", MAIMathR(val, 2))
+			ConsoleExec("cameraDistanceMaxZoomFactor " .. MAIGV("ZoomOut"))
+		end
+	)
 
 	py = py - btnh * 1.5 - bbr
 	MAIMENU.WorldTextScale = MAICreateSlider(MAIMENU, "MAIMENU.WorldTextScale", "MAIWorldTextScale", MAIGV("WorldTextScale"), 10, py, 0.1, 10.0, 0.1, ".1f", MAIGT("WorldTextScale"))
-
-	MAIMENU.WorldTextScale:HookScript("OnValueChanged", function(self, val)
-		MAISV("WorldTextScale", MAIMathR(val, 2))
-		ConsoleExec("WorldTextScale " .. MAIGV("WorldTextScale"))
-	end)
+	MAIMENU.WorldTextScale:HookScript(
+		"OnValueChanged",
+		function(self, val)
+			MAISV("WorldTextScale", MAIMathR(val, 2))
+			ConsoleExec("WorldTextScale " .. MAIGV("WorldTextScale"))
+		end
+	)
 
 	if MAIGV("nochanges") then
 		MAIMENU.ZoomOut:Disable()
@@ -2408,7 +2515,6 @@ function MAISetupMAIMENU()
 	end
 
 	py = py - btnh - bbr
-
 	if MAIGV("mmicon") == nil then
 		MAISV("mmicon", {})
 	end
@@ -2421,18 +2527,23 @@ function MAISetupMAIMENU()
 	MAIMENU.mmicon:SetSize(20, 20)
 	MAIMENU.mmicon:SetPoint("TOPLEFT", bbr, py)
 	MAIMENU.mmicon:SetChecked(not MAIGV("mmicon")["hide"])
-
-	MAIMENU.mmicon:SetScript("OnClick", function(self)
-		if ToggleMinimapButton then
-			ToggleMinimapButton()
+	MAIMENU.mmicon:SetScript(
+		"OnClick",
+		function(self)
+			if ToggleMinimapButton then
+				ToggleMinimapButton()
+			end
 		end
-	end)
+	)
 
-	MAIMENU.mmicon:SetScript("OnUpdate", function(self)
-		if self:GetChecked() ~= not MAIGV("mmicon")["hide"] then
-			self:SetChecked(not MAIGV("mmicon")["hide"])
+	MAIMENU.mmicon:SetScript(
+		"OnUpdate",
+		function(self)
+			if self:GetChecked() ~= not MAIGV("mmicon")["hide"] then
+				self:SetChecked(not MAIGV("mmicon")["hide"])
+			end
 		end
-	end)
+	)
 
 	MAIMENU.mmicon.text = MAIMENU.mmicon:CreateFontString(nil, "ARTWORK")
 	MAIMENU.mmicon.text:SetFont(STANDARD_TEXT_FONT, 10, "")
@@ -2442,19 +2553,20 @@ function MAISetupMAIMENU()
 	MAIMENU.nochanges:SetSize(20, 20)
 	MAIMENU.nochanges:SetPoint("TOPLEFT", bbr + btnw + sbr, py)
 	MAIMENU.nochanges:SetChecked(MAIGV("nochanges"))
-
-	MAIMENU.nochanges:SetScript("OnClick", function(self)
-		local newval = self:GetChecked()
-		MAISV("nochanges", newval)
-		C_UI.Reload()
-	end)
+	MAIMENU.nochanges:SetScript(
+		"OnClick",
+		function(self)
+			local newval = self:GetChecked()
+			MAISV("nochanges", newval)
+			C_UI.Reload()
+		end
+	)
 
 	MAIMENU.nochanges.text = MAIMENU.nochanges:CreateFontString(nil, "ARTWORK")
 	MAIMENU.nochanges.text:SetFont(STANDARD_TEXT_FONT, 10, "")
 	MAIMENU.nochanges.text:SetPoint("LEFT", MAIMENU.nochanges, "RIGHT", 0, 0)
 	MAIMENU.nochanges.text:SetText("*" .. MAIGT("cry") .. "* " .. MAIGT("nochanges"))
 	py = py - btnh
-
 	if MAIGV("PaperDollFrame" .. "showilvl") == nil then
 		MAISV("PaperDollFrame" .. "showilvl", true)
 	end
@@ -2463,10 +2575,12 @@ function MAISetupMAIMENU()
 	MAIMENU.showilvl:SetSize(20, 20)
 	MAIMENU.showilvl:SetPoint("TOPLEFT", bbr, py)
 	MAIMENU.showilvl:SetChecked(MAIGV("PaperDollFrame" .. "showilvl"))
-
-	MAIMENU.showilvl:SetScript("OnClick", function(self)
-		MAISV("PaperDollFrame" .. "showilvl", not MAIGV("PaperDollFrame" .. "showilvl"))
-	end)
+	MAIMENU.showilvl:SetScript(
+		"OnClick",
+		function(self)
+			MAISV("PaperDollFrame" .. "showilvl", not MAIGV("PaperDollFrame" .. "showilvl"))
+		end
+	)
 
 	local function MAIUpdate()
 		if MAIGV("nochanges") then
@@ -2485,7 +2599,6 @@ function MAISetupMAIMENU()
 	MAIMENU.showilvl.text:SetFont(STANDARD_TEXT_FONT, 10, "")
 	MAIMENU.showilvl.text:SetPoint("LEFT", MAIMENU.showilvl, "RIGHT", 0, 0)
 	MAIMENU.showilvl.text:SetText(MAIGT("showilvl"))
-
 	if MAIGV("nochanges") then
 		MAIMENU.showilvl:SetChecked(false)
 		MAIMENU.showilvl:Disable()
@@ -2496,17 +2609,18 @@ function MAISetupMAIMENU()
 	MAIMENU.frametransparency:SetSize(20, 20)
 	MAIMENU.frametransparency:SetPoint("TOPLEFT", bbr + btnw + sbr, py)
 	MAIMENU.frametransparency:SetChecked(MAIGV("frametransparency", true))
-
-	MAIMENU.frametransparency:SetScript("OnClick", function(self)
-		local newval = self:GetChecked()
-		MAISV("frametransparency", newval)
-	end)
+	MAIMENU.frametransparency:SetScript(
+		"OnClick",
+		function(self)
+			local newval = self:GetChecked()
+			MAISV("frametransparency", newval)
+		end
+	)
 
 	MAIMENU.frametransparency.text = MAIMENU.frametransparency:CreateFontString(nil, "ARTWORK")
 	MAIMENU.frametransparency.text:SetFont(STANDARD_TEXT_FONT, 10, "")
 	MAIMENU.frametransparency.text:SetPoint("LEFT", MAIMENU.frametransparency, "RIGHT", 0, 0)
 	MAIMENU.frametransparency.text:SetText(MAIGT("frametransparency"))
-
 	if MAIGV("nochanges") then
 		MAIMENU.frametransparency:SetChecked(false)
 		MAIMENU.frametransparency:Disable()
@@ -2514,7 +2628,6 @@ function MAISetupMAIMENU()
 	end
 
 	py = py - btnh
-
 	if MAIGV("showitemquality") == nil then
 		MAISV("showitemquality", true)
 	end
@@ -2523,10 +2636,12 @@ function MAISetupMAIMENU()
 	MAIMENU.showitemquality:SetSize(20, 20)
 	MAIMENU.showitemquality:SetPoint("TOPLEFT", bbr, py)
 	MAIMENU.showitemquality:SetChecked(MAIGV("showitemquality"))
-
-	MAIMENU.showitemquality:SetScript("OnClick", function(self)
-		MAISV("showitemquality", not MAIGV("showitemquality"))
-	end)
+	MAIMENU.showitemquality:SetScript(
+		"OnClick",
+		function(self)
+			MAISV("showitemquality", not MAIGV("showitemquality"))
+		end
+	)
 
 	local function MAIUpdate2()
 		if MAIGV("nochanges") then
@@ -2545,7 +2660,6 @@ function MAISetupMAIMENU()
 	MAIMENU.showitemquality.text:SetFont(STANDARD_TEXT_FONT, 10, "")
 	MAIMENU.showitemquality.text:SetPoint("LEFT", MAIMENU.showitemquality, "RIGHT", 0, 0)
 	MAIMENU.showitemquality.text:SetText(MAIGT("showitemquality"))
-
 	if MAIGV("nochanges") then
 		MAIMENU.showitemquality:SetChecked(false)
 		MAIMENU.showitemquality:Disable()
@@ -2564,7 +2678,6 @@ function MAISetupMAIMENU()
 	MAIMENU.blockmessagesheader:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr, py)
 	MAIMENU.blockmessagesheader:SetText(MAIGT("blockwords") .. " (, = seperator/empty = disabled):")
 	py = py - bbr
-
 	if MAIGV("blockwords") == nil then
 		MAISV("blockwords", "BOOST,BUY GOLD")
 	end
@@ -2585,131 +2698,141 @@ function MAISetupMAIMENU()
 	MAIMENU.blockmessages:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr + 5, py)
 	MAIMENU.blockmessages:SetText(MAIGV("blockwords") or "")
 	MAIMENU.blockmessages:SetAutoFocus(false)
-
-	MAIMENU.blockmessages:SetScript("OnTextChanged", function(self, value)
-		self.lastchange = GetTime()
-
-		C_Timer.After(1, function()
-			if self.lastchange < GetTime() - 0.9 and MAIGV("blockwords") ~= self:GetText() then
-				MAISV("blockwords", self:GetText())
-
-				if self:GetText() ~= "" then
-					print("|cFF00FF00" .. "[MAI] " .. "Blockwords changed to: |r")
-
-					for i, v in pairs({string.split(",", MAIGV("blockwords"))}) do
-						if strlen(v) < 3 then
-							print(" • |cFFFF0000" .. v .. " [TO SHORT!]")
+	MAIMENU.blockmessages:SetScript(
+		"OnTextChanged",
+		function(self, value)
+			self.lastchange = GetTime()
+			C_Timer.After(
+				1,
+				function()
+					if self.lastchange < GetTime() - 0.9 and MAIGV("blockwords") ~= self:GetText() then
+						MAISV("blockwords", self:GetText())
+						if self:GetText() ~= "" then
+							print("|cFF00FF00" .. "[MAI] " .. "Blockwords changed to: |r")
+							for i, v in pairs({string.split(",", MAIGV("blockwords"))}) do
+								if strlen(v) < 3 then
+									print(" • |cFFFF0000" .. v .. " [TO SHORT!]")
+								else
+									print(" • |cFF00FF00" .. v)
+								end
+							end
 						else
-							print(" • |cFF00FF00" .. v)
+							print("|cFFFF0000" .. "[MAI] " .. "Blockwords are disabled")
 						end
 					end
-				else
-					print("|cFFFF0000" .. "[MAI] " .. "Blockwords are disabled")
 				end
-			end
-		end)
-	end)
+			)
+		end
+	)
 
 	py = py - sbr - btnh - sbr - bbr
 	MAIMENU.RESET = CreateFrame("Button", "MAIMENU.RESET", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.RESET:SetSize(btnw, btnh)
 	MAIMENU.RESET:SetText(getglobal("RESET"))
 	MAIMENU.RESET:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr, py)
+	MAIMENU.RESET:SetScript(
+		"OnClick",
+		function()
+			local areyousure = CreateFrame("Frame", "AreYouSureReset", UIParent)
+			areyousure:SetSize(bbr + btnw + bbr + btnw + bbr, 30 + bbr + btnh + bbr)
+			areyousure:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
+			areyousure.texture = areyousure:CreateTexture(nil, "BACKGROUND")
+			areyousure.texture:SetAllPoints(areyousure)
+			areyousure.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
+			areyousure.textureHeader = areyousure:CreateTexture(nil, "BACKGROUND")
+			areyousure.textureHeader:SetSize(areyousure:GetWidth(), sbr + btnh + sbr)
+			areyousure.textureHeader:SetPoint("TOPLEFT", areyousure, "TOPLEFT", 0, 0)
+			areyousure.textureHeader:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+			areyousure.textheader = areyousure:CreateFontString(nil, "ARTWORK")
+			areyousure.textheader:SetFont(STANDARD_TEXT_FONT, 14, "")
+			areyousure.textheader:SetPoint("LEFT", areyousure, "TOPLEFT", 5, -15)
+			areyousure.textheader:SetText("Are you sure?")
+			local yes = CreateFrame("Button", "done", areyousure, "UIPanelButtonTemplate")
+			yes:SetSize(btnw, btnh) -- width, height
+			yes:SetText(getglobal("YES"))
+			yes:SetPoint("TOPLEFT", areyousure, "TOPLEFT", bbr, -30 - bbr)
+			yes:SetScript(
+				"OnClick",
+				function()
+					MAITAB = {}
+					C_UI.Reload()
+				end
+			)
 
-	MAIMENU.RESET:SetScript("OnClick", function()
-		local areyousure = CreateFrame("Frame", "AreYouSureReset", UIParent)
-		areyousure:SetSize(bbr + btnw + bbr + btnw + bbr, 30 + bbr + btnh + bbr)
-		areyousure:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
-		areyousure.texture = areyousure:CreateTexture(nil, "BACKGROUND")
-		areyousure.texture:SetAllPoints(areyousure)
-		areyousure.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
-		areyousure.textureHeader = areyousure:CreateTexture(nil, "BACKGROUND")
-		areyousure.textureHeader:SetSize(areyousure:GetWidth(), sbr + btnh + sbr)
-		areyousure.textureHeader:SetPoint("TOPLEFT", areyousure, "TOPLEFT", 0, 0)
-		areyousure.textureHeader:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-		areyousure.textheader = areyousure:CreateFontString(nil, "ARTWORK")
-		areyousure.textheader:SetFont(STANDARD_TEXT_FONT, 14, "")
-		areyousure.textheader:SetPoint("LEFT", areyousure, "TOPLEFT", 5, -15)
-		areyousure.textheader:SetText("Are you sure?")
-		local yes = CreateFrame("Button", "done", areyousure, "UIPanelButtonTemplate")
-		yes:SetSize(btnw, btnh) -- width, height
-		yes:SetText(getglobal("YES"))
-		yes:SetPoint("TOPLEFT", areyousure, "TOPLEFT", bbr, -30 - bbr)
-
-		yes:SetScript("OnClick", function()
-			MAITAB = {}
-			C_UI.Reload()
-		end)
-
-		local no = CreateFrame("Button", "done", areyousure, "UIPanelButtonTemplate")
-		no:SetSize(btnw, btnh) -- width, height
-		no:SetText(getglobal("NO"))
-		no:SetPoint("TOPLEFT", areyousure, "TOPLEFT", bbr + btnw + bbr, -30 - bbr)
-
-		no:SetScript("OnClick", function()
-			areyousure:Hide()
-		end)
-	end)
+			local no = CreateFrame("Button", "done", areyousure, "UIPanelButtonTemplate")
+			no:SetSize(btnw, btnh) -- width, height
+			no:SetText(getglobal("NO"))
+			no:SetPoint("TOPLEFT", areyousure, "TOPLEFT", bbr + btnw + bbr, -30 - bbr)
+			no:SetScript(
+				"OnClick",
+				function()
+					areyousure:Hide()
+				end
+			)
+		end
+	)
 
 	MAIMENU.RELOAD = CreateFrame("Button", "MAIMENU.RELOAD", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.RELOAD:SetSize(btnw, btnh)
 	MAIMENU.RELOAD:SetText(getglobal("RELOADUI"))
 	MAIMENU.RELOAD:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr + btnw + sbr, py)
-
-	MAIMENU.RELOAD:SetScript("OnClick", function()
-		C_UI.Reload()
-	end)
+	MAIMENU.RELOAD:SetScript(
+		"OnClick",
+		function()
+			C_UI.Reload()
+		end
+	)
 
 	py = py - btnh - sbr
 	MAIMENU.CANCEL = CreateFrame("Button", "MAIMENU.CANCEL", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.CANCEL:SetSize(btnw, btnh)
 	MAIMENU.CANCEL:SetText(getglobal("CANCEL"))
 	MAIMENU.CANCEL:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr, py)
+	MAIMENU.CANCEL:SetScript(
+		"OnClick",
+		function()
+			local reload = false
+			if OLDMAITAB ~= nil then
+				if not MAICheckIfSame(MAITAB["PROFILES"][MAIGCP()], OLDMAITAB) then
+					reload = true
+				end
 
-	MAIMENU.CANCEL:SetScript("OnClick", function()
-		local reload = false
-
-		if OLDMAITAB ~= nil then
-			if not MAICheckIfSame(MAITAB["PROFILES"][MAIGCP()], OLDMAITAB) then
-				reload = true
+				MAITAB["PROFILES"][MAIGCP()] = OLDMAITAB
 			end
 
-			MAITAB["PROFILES"][MAIGCP()] = OLDMAITAB
+			MAIMENU:Hide()
+			MAIMENUMOVING:Hide()
+			if MAILoaded then
+				MAISV("menu", false)
+				MAISV("toggler", false)
+			end
+
+			MAIMENU.TOGGLE:SetText(MAIGT("unlock"))
+			MAIMENUMOVING.TOGGLE:SetText(MAIGT("unlock"))
+			if reload then
+				C_UI.Reload()
+			end
 		end
-
-		MAIMENU:Hide()
-		MAIMENUMOVING:Hide()
-
-		if MAILoaded then
-			MAISV("menu", false)
-			MAISV("toggler", false)
-		end
-
-		MAIMENU.TOGGLE:SetText(MAIGT("unlock"))
-		MAIMENUMOVING.TOGGLE:SetText(MAIGT("unlock"))
-
-		if reload then
-			C_UI.Reload()
-		end
-	end)
+	)
 
 	MAIMENU.DONE = CreateFrame("Button", "MAIMENU.DONE", MAIMENU, "UIPanelButtonTemplate")
 	MAIMENU.DONE:SetSize(btnw, btnh)
 	MAIMENU.DONE:SetText(getglobal("DONE") .. " (" .. getglobal("RELOADUI") .. ")")
 	MAIMENU.DONE:SetPoint("TOPLEFT", MAIMENU, "TOPLEFT", bbr + btnw + sbr, py)
-
-	MAIMENU.DONE:SetScript("OnClick", function()
-		MAIMENU:Hide()
-		MAIMENUMOVING:Hide()
-		MAISV("menu", false)
-		MAISV("toggler", false)
-		MAIMENU.TOGGLE:SetText(MAIGT("unlock"))
-		MAIMENUMOVING.TOGGLE:SetText(MAIGT("unlock"))
-
-		if not MAICheckIfSame(MAITAB["PROFILES"][MAIGCP()], OLDMAITAB) then
-			C_UI.Reload()
+	MAIMENU.DONE:SetScript(
+		"OnClick",
+		function()
+			MAIMENU:Hide()
+			MAIMENUMOVING:Hide()
+			MAISV("menu", false)
+			MAISV("toggler", false)
+			MAIMENU.TOGGLE:SetText(MAIGT("unlock"))
+			MAIMENUMOVING.TOGGLE:SetText(MAIGT("unlock"))
+			if not MAICheckIfSame(MAITAB["PROFILES"][MAIGCP()], OLDMAITAB) then
+				C_UI.Reload()
+			end
 		end
-	end)
+	)
 
 	py = py - btnh - bbr
 	MAIMENU:SetSize(bbr + btnw + sbr + btnw + bbr, math.abs(py))
@@ -2717,7 +2840,6 @@ function MAISetupMAIMENU()
 	local relativePoint = MAIGV("MAIMENU" .. "relativePoint")
 	local ofsx = MAIGV("MAIMENU" .. "ofsx")
 	local ofsy = MAIGV("MAIMENU" .. "ofsy")
-
 	if point then
 		MAIMENU:SetPoint(point, nil, relativePoint, ofsx, ofsy)
 	else
@@ -2733,13 +2855,11 @@ function MAISetupMAIMENU()
 	MAIGRID.texture:SetAllPoints(MAIGRID)
 	MAIGRID.texture:SetColorTexture(1, 1, 1, 0)
 	local co = 0
-
 	for y = -MAIMathR(GetScreenHeight() / 2, 0), -GetScreenHeight(), -4 do
 		MAIGRID.texture = MAIGRID:CreateTexture(nil, "ARTWORK")
 		MAIGRID.texture:SetDrawLayer("ARTWORK", 7)
 		MAIGRID.texture:SetSize(GetScreenWidth(), 1)
 		MAIGRID.texture:SetPoint("TOPLEFT", 0, y)
-
 		if y == -MAIMathR(GetScreenHeight() / 2, 0) then
 			MAIGRID.texture:SetColorTexture(0, 1, 0, MAIALPHAGRID)
 		elseif co % 25 == 0 then
@@ -2752,13 +2872,11 @@ function MAISetupMAIMENU()
 	end
 
 	co = 0
-
 	for y = -MAIMathR(GetScreenHeight() / 2, 0), 0, 4 do
 		MAIGRID.texture = MAIGRID:CreateTexture(nil, "ARTWORK")
 		MAIGRID.texture:SetDrawLayer("ARTWORK", 7)
 		MAIGRID.texture:SetSize(GetScreenWidth(), 1)
 		MAIGRID.texture:SetPoint("TOPLEFT", 0, y)
-
 		if y == -MAIMathR(GetScreenHeight() / 2, 0) then
 			MAIGRID.texture:SetColorTexture(0, 1, 0, 1)
 		elseif co % 25 == 0 then
@@ -2771,13 +2889,11 @@ function MAISetupMAIMENU()
 	end
 
 	co = 0
-
 	for x = MAIMathR(GetScreenWidth() / 2, 0), GetScreenWidth(), 4 do
 		MAIGRID.texture = MAIGRID:CreateTexture(nil, "ARTWORK")
 		MAIGRID.texture:SetDrawLayer("ARTWORK", 7)
 		MAIGRID.texture:SetSize(1, GetScreenHeight())
 		MAIGRID.texture:SetPoint("TOPLEFT", x, 0)
-
 		if x == MAIMathR(GetScreenWidth() / 2, 0) then
 			MAIGRID.texture:SetColorTexture(0, 1, 0, 1)
 		elseif co % 25 == 0 then
@@ -2790,13 +2906,11 @@ function MAISetupMAIMENU()
 	end
 
 	co = 0
-
 	for x = MAIMathR(GetScreenWidth() / 2, 0), 0, -4 do
 		MAIGRID.texture = MAIGRID:CreateTexture(nil, "ARTWORK")
 		MAIGRID.texture:SetDrawLayer("ARTWORK", 7)
 		MAIGRID.texture:SetSize(1, GetScreenHeight())
 		MAIGRID.texture:SetPoint("TOPLEFT", x, 0)
-
 		if x == MAIMathR(GetScreenWidth() / 2, 0) then
 			MAIGRID.texture:SetColorTexture(0, 1, 0, 1)
 		elseif co % 25 == 0 then
@@ -2820,10 +2934,8 @@ function MAISetupMAIMENU()
 	MAIINFO.text2:SetPoint("CENTER", MAIINFO, "CENTER", 0, 200)
 	MAIINFO.text2:SetText("FSTACK Enabled")
 	MAIINFO.text2:SetTextColor(1, 1, 0, 1)
-
 	function MAIToggleDragger()
 		MAISV("toggler", not MAIGV("toggler"))
-
 		if MAIGV("toggler") then
 			LoadAddOn("Blizzard_ArenaUI")
 			MAIMENUMOVING:Show()
@@ -2847,7 +2959,6 @@ function MAISetupMAIMENU()
 			MAITHINKER.toggler = MAIGV("toggler")
 			MAITHINKER.tabsize = getn(MAITHINKER.tab)
 			MAITHINKER.force = false
-
 			if MAIGV("toggler") then
 				MAIGRID:Show()
 			else
@@ -2858,7 +2969,6 @@ function MAISetupMAIMENU()
 				if not InCombatLockdown() then
 					if MAIGV("toggler") and MAIGV(v.element.name .. "Enabled") then
 						local show = true
-
 						if MAIGV("hideunmoved") and not MAIGV(v.element.name .. "move") then
 							show = false
 						end
@@ -2869,7 +2979,6 @@ function MAISetupMAIMENU()
 
 						if show then
 							v:Show()
-
 							if v.settingsbtn then
 								v.settingsbtn:EnableMouse(true)
 							end
@@ -2877,7 +2986,6 @@ function MAISetupMAIMENU()
 							v.settingsmove:EnableMouse(true)
 						else
 							v:Hide()
-
 							if v.settingsbtn then
 								v.settingsbtn:EnableMouse(false)
 							end
@@ -2886,7 +2994,6 @@ function MAISetupMAIMENU()
 						end
 					else
 						v:Hide()
-
 						if v.settingsbtn then
 							v.settingsbtn:EnableMouse(false)
 						end
@@ -2904,7 +3011,6 @@ function MAISetupMAIMENU()
 		end
 
 		local tooltip = FrameStackTooltip
-
 		if tooltip and tooltip:IsVisible() then
 			MAIINFO.text2:SetAlpha(1)
 		else
@@ -2917,13 +3023,11 @@ function MAISetupMAIMENU()
 	MAITHINKING()
 	MAITHINKER.alphaframes = {}
 	MAITHINKER.update = true
-
 	function MAITHINKINGALPHA()
 		if MAITHINKER.update or MAITHINKER.fsize ~= #MAITHINKER.frames then
 			MAITHINKER.fsize = #MAITHINKER.frames
 			MAITHINKER.update = false
 			MAITHINKER.alphaframes = {} -- new table
-
 			for i, s in pairs(MAITHINKER.frames) do
 				if not MAIGV(s.element.name .. "hide") and (MAIGV(s.element.name .. "alpha", 1) ~= 1 or MAIGV(s.element.name .. "alpha2", 1) ~= 1 or MAIGV(s.element.name .. "alpha3", 1) ~= 1) then
 					tinsert(MAITHINKER.alphaframes, s)
@@ -2947,10 +3051,8 @@ function MAISetupMAIMENU()
 			end
 
 			s.frame._alpha = MAIMathC(s.frame._alpha, 0, 1)
-
 			if MAIMathR(s.frame:GetAlpha(), 2) ~= s.frame._alpha then
 				s.frame:SetAlpha(s.frame._alpha)
-
 				if s.frame.btns ~= nil then
 					for id, v in pairs(s.frame.btns) do
 						v:SetAlpha(s.frame._alpha)
@@ -2967,7 +3069,6 @@ function MAISetupMAIMENU()
 	end
 
 	MAITHINKINGALPHA()
-
 	if mcur == 0 then
 		MAIMENU.ELEMENTS:Click()
 	end
@@ -2975,7 +3076,6 @@ end
 
 function MAIOpenMenu()
 	MAISV("menu", true)
-
 	if MAIGV("menu") then
 		if MAIGV("toggler") then
 			MAIMENUMOVING:Show()
@@ -2991,7 +3091,6 @@ end
 
 function MAIToggleMenu()
 	MAISV("menu", not MAIGV("menu"))
-
 	if MAIGV("menu") then
 		if MAIGV("toggler") then
 			MAIMENUMOVING:Show()
@@ -3009,11 +3108,9 @@ function MAIToggleMenu()
 end
 
 SLASH_MAI1, SLASH_MAI2, SLASH_MAI3 = "/mai", "/moveandimprove", "/mai help"
-
 SlashCmdList["MAI"] = function(msg)
 	if msg == "" then
 		MAISV("menu", not MAIGV("menu"))
-
 		if MAIGV("menu") then
 			if MAIGV("toggler") then
 				MAIMENUMOVING:Show()
@@ -3045,7 +3142,6 @@ SlashCmdList["MAI"] = function(msg)
 end
 
 SLASH_RL1 = "/rl"
-
 SlashCmdList["RL"] = function(msg)
 	C_UI.Reload()
 end
@@ -3053,14 +3149,16 @@ end
 function MAIElementSetup(element)
 	if MAILoaded and MAIGV(element.name .. "Enabled") then
 		if _G[element.name] == nil then
-			C_Timer.After(0.1, function()
-				MAIElementSetup(element)
-			end)
+			C_Timer.After(
+				0.1,
+				function()
+					MAIElementSetup(element)
+				end
+			)
 		else
 			local mover = CreateFrame("FRAME", element.name .. "Mover", UIParent)
 			mover:Hide()
 			mover.element = element -- assign element
-
 			if MAIGV(element.name .. "sizew") == nil then
 				MAISV(element.name .. "sizew", 60)
 			end
@@ -3097,89 +3195,90 @@ function MAIElementSetup(element)
 			mover:EnableMouse(true)
 			mover:RegisterForDrag("LeftButton")
 			mover.isMoving = false
-
-			mover:SetScript("OnDragStart", function(self)
-				if self.frame and self.frame.element.forcedrag then
-					self.frame:ClearAllPoints()
-				end
-
-				self.isMoving = true
-				self:StartMoving()
-			end)
-
-			mover:SetScript("OnDragStop", function(self)
-				self:StopMovingOrSizing()
-				self.isMoving = false
-				local point, parent, relativePoint, ofsx, ofsy = self:GetPoint()
-
-				if point then
-					ofsx = MAIMathR(ofsx, 0)
-					ofsy = MAIMathR(ofsy, 0)
-
-					if parent == nil then
-						-- SNAP TO BORDER / CENTER
-						local snap = 10
-						local snapgrid = 10
-
-						if ofsx < snap and ofsx > -snap then
-							ofsx = 0
-						end
-
-						if ofsy < snap and ofsy > -snap then
-							ofsy = 0
-						end
-
-						-- SNAP TO GRID
-						if MAIGV("snaptogrid") then
-							if ofsx >= 0 then
-								if ofsx % 10 ~= 0 and ofsx % snapgrid <= snapgrid / 2 then
-									-- nothing
-									ofsx = ofsx - (ofsx % snapgrid)
-								elseif ofsx % 10 ~= 0 then
-									ofsx = ofsx + (snapgrid - ofsx % snapgrid)
-								end
-							else
-								if ofsx % 10 ~= 0 and -ofsx % snapgrid <= snapgrid / 2 then
-									-- nothing
-									ofsx = ofsx + (snapgrid - ofsx % snapgrid)
-								elseif ofsx % 10 ~= 0 then
-									ofsx = ofsx - (ofsx % snapgrid)
-								end
-							end
-
-							if ofsy >= 0 then
-								if ofsy % 10 ~= 0 and ofsy % snapgrid <= snapgrid / 2 then
-									-- nothing
-									ofsy = ofsy - (ofsy % snapgrid)
-								elseif ofsy % 10 ~= 0 then
-									ofsy = ofsy + (snapgrid - ofsy % snapgrid)
-								end
-							else
-								if ofsy % 10 ~= 0 and -ofsy % snapgrid <= snapgrid / 2 then
-									-- nothing
-									ofsy = ofsy + (snapgrid - ofsy % snapgrid)
-								elseif ofsy % 10 ~= 0 then
-									ofsy = ofsy - (ofsy % snapgrid)
-								end
-							end
-						end
-
-						self:SetPoint(point, UIParent, relativePoint, ofsx, ofsy)
-
-						if self.frame and self.frame.element.forcedrag then
-							self.frame.force = true
-							self.frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-						end
+			mover:SetScript(
+				"OnDragStart",
+				function(self)
+					if self.frame and self.frame.element.forcedrag then
+						self.frame:ClearAllPoints()
 					end
 
-					MAISV(self.element.name .. "point", point)
-					MAISV(self.element.name .. "relativePoint", relativePoint)
-					MAISV(self.element.name .. "ofsx", ofsx)
-					MAISV(self.element.name .. "ofsy", ofsy)
-				else
-					MAIERR(mover:GetName() .. " DRAG-FAIL")
+					self.isMoving = true
+					self:StartMoving()
 				end
-			end)
+			)
+
+			mover:SetScript(
+				"OnDragStop",
+				function(self)
+					self:StopMovingOrSizing()
+					self.isMoving = false
+					local point, parent, relativePoint, ofsx, ofsy = self:GetPoint()
+					if point then
+						ofsx = MAIMathR(ofsx, 0)
+						ofsy = MAIMathR(ofsy, 0)
+						if parent == nil then
+							-- SNAP TO BORDER / CENTER
+							local snap = 10
+							local snapgrid = 10
+							if ofsx < snap and ofsx > -snap then
+								ofsx = 0
+							end
+
+							if ofsy < snap and ofsy > -snap then
+								ofsy = 0
+							end
+
+							-- SNAP TO GRID
+							if MAIGV("snaptogrid") then
+								if ofsx >= 0 then
+									if ofsx % 10 ~= 0 and ofsx % snapgrid <= snapgrid / 2 then
+										-- nothing
+										ofsx = ofsx - (ofsx % snapgrid)
+									elseif ofsx % 10 ~= 0 then
+										ofsx = ofsx + (snapgrid - ofsx % snapgrid)
+									end
+								else
+									if ofsx % 10 ~= 0 and -ofsx % snapgrid <= snapgrid / 2 then
+										-- nothing
+										ofsx = ofsx + (snapgrid - ofsx % snapgrid)
+									elseif ofsx % 10 ~= 0 then
+										ofsx = ofsx - (ofsx % snapgrid)
+									end
+								end
+
+								if ofsy >= 0 then
+									if ofsy % 10 ~= 0 and ofsy % snapgrid <= snapgrid / 2 then
+										-- nothing
+										ofsy = ofsy - (ofsy % snapgrid)
+									elseif ofsy % 10 ~= 0 then
+										ofsy = ofsy + (snapgrid - ofsy % snapgrid)
+									end
+								else
+									if ofsy % 10 ~= 0 and -ofsy % snapgrid <= snapgrid / 2 then
+										-- nothing
+										ofsy = ofsy + (snapgrid - ofsy % snapgrid)
+									elseif ofsy % 10 ~= 0 then
+										ofsy = ofsy - (ofsy % snapgrid)
+									end
+								end
+							end
+
+							self:SetPoint(point, UIParent, relativePoint, ofsx, ofsy)
+							if self.frame and self.frame.element.forcedrag then
+								self.frame.force = true
+								self.frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+							end
+						end
+
+						MAISV(self.element.name .. "point", point)
+						MAISV(self.element.name .. "relativePoint", relativePoint)
+						MAISV(self.element.name .. "ofsx", ofsx)
+						MAISV(self.element.name .. "ofsy", ofsy)
+					else
+						MAIERR(mover:GetName() .. " DRAG-FAIL")
+					end
+				end
+			)
 
 			if MAIGV(element.name .. "move") == nil then
 				MAISV(element.name .. "move", true)
@@ -3210,13 +3309,11 @@ function MAIElementSetup(element)
 			function mover.Think()
 				if mover.frame == nil and _G[mover.element.name] ~= nil then
 					mover.frame = _G[mover.element.name]
-
 					if not InCombatLockdown() or MAIEVENT == "PLAYER_ENTERING_WORLD" then
 						local mov = mover
 						-- link them
 						mover.frame.mover = mover
 						mover.frame.element = mover.element
-
 						-- Fix them
 						if (element.setmovable or element.setuserplaced) and mover.frame.SetMovable then
 							mover.frame:SetMovable(true)
@@ -3225,7 +3322,6 @@ function MAIElementSetup(element)
 						-- IGNORE BLIZZARD
 						mover.frame:SetAttribute("ignoreFramePositionManager", true)
 						mover.frame.ignoreFramePositionManager = true
-
 						if UIPARENT_MANAGED_FRAME_POSITIONS then
 							UIPARENT_MANAGED_FRAME_POSITIONS[mover.element.name] = nil
 						end
@@ -3235,99 +3331,107 @@ function MAIElementSetup(element)
 							MAISV(mover.element.name .. "scale", 1)
 						end
 
-						hooksecurefunc(mover.frame, "SetScale", function(s, scale)
-							if s.setscale then return end
-							s.setscale = true
-							s:SetScale(MAIGV(mov.element.name .. "scale"))
-							mover:SetScale(MAIGV(mov.element.name .. "scale"))
+						hooksecurefunc(
+							mover.frame,
+							"SetScale",
+							function(s, scale)
+								if s.setscale then return end
+								s.setscale = true
+								s:SetScale(MAIGV(mov.element.name .. "scale"))
+								mover:SetScale(MAIGV(mov.element.name .. "scale"))
+								if mov.settingsbtn then
+									mov.settingsbtn:SetScale(1 / MAIGV(mov.element.name .. "scale"))
+									mov.settingsmove:SetScale(1 / MAIGV(mov.element.name .. "scale"))
+									mov.textcenter:SetScale(1 / MAIGV(mov.element.name .. "scale"))
+									mov.textmove:SetScale(1 / MAIGV(mov.element.name .. "scale"))
+									mov.text:SetScale(1 / MAIGV(mov.element.name .. "scale"))
+								end
 
-							if mov.settingsbtn then
-								mov.settingsbtn:SetScale(1 / MAIGV(mov.element.name .. "scale"))
-								mov.settingsmove:SetScale(1 / MAIGV(mov.element.name .. "scale"))
-								mov.textcenter:SetScale(1 / MAIGV(mov.element.name .. "scale"))
-								mov.textmove:SetScale(1 / MAIGV(mov.element.name .. "scale"))
-								mov.text:SetScale(1 / MAIGV(mov.element.name .. "scale"))
+								s.setscale = false
 							end
-
-							s.setscale = false
-						end)
+						)
 
 						if MAIGV(mover.element.name .. "scale") ~= 1 then
 							mover.frame:SetScale(MAIGV(mover.element.name .. "scale"))
 						end
 
 						-- Size
-						hooksecurefunc(mover.frame, "SetSize", function(s)
-							local osw, osh = mover.frame:GetSize()
-							local sw = nil
-							local sh = nil
-
-							if mov.element.sw ~= nil then
-								sw = mov.element.sw
-							end
-
-							if mov.element.sh ~= nil then
-								sh = mov.element.sh
-							end
-
-							if sw then
-								MAISV(element.name .. "sizew", sw)
-							end
-
-							if sh then
-								MAISV(element.name .. "sizeh", sh)
-							end
-
-							if osw ~= sw or osh ~= sh then
-								if sw == nil then
-									sw = osw
+						hooksecurefunc(
+							mover.frame,
+							"SetSize",
+							function(s)
+								local osw, osh = mover.frame:GetSize()
+								local sw = nil
+								local sh = nil
+								if mov.element.sw ~= nil then
+									sw = mov.element.sw
 								end
 
-								if sh == nil then
-									sh = osh
+								if mov.element.sh ~= nil then
+									sh = mov.element.sh
 								end
 
-								if sw and sh then
-									mover:SetSize(sw, sh)
-								elseif sw then
-									mover:SetWidth(sw)
-								elseif sh then
-									mover:SetHeight(sh)
+								if sw then
+									MAISV(element.name .. "sizew", sw)
+								end
+
+								if sh then
+									MAISV(element.name .. "sizeh", sh)
+								end
+
+								if osw ~= sw or osh ~= sh then
+									if sw == nil then
+										sw = osw
+									end
+
+									if sh == nil then
+										sh = osh
+									end
+
+									if sw and sh then
+										mover:SetSize(sw, sh)
+									elseif sw then
+										mover:SetWidth(sw)
+									elseif sh then
+										mover:SetHeight(sh)
+									end
 								end
 							end
-						end)
+						)
 
 						local _sw, _sh = mover.frame:GetSize()
 						mover.frame:SetSize(_sw, _sh)
-
 						-- Position
 						if MAIGV(mover.element.name .. "move") then
-							hooksecurefunc(mover.frame, "SetPoint", function(s, ...)
-								if s.maisetpoint then return end
-								s.maisetpoint = true
-
-								if (element.setmovable or element.setuserplaced) and s.SetMovable then
-									s:SetMovable(true)
-								end
-
-								if s.OldClearAllPoints and s.OldSetPoint and s ~= GameTooltip then
-									if mov.element.name ~= "Minimap" or Minimap:GetParent() ~= FarmHud then
-										s:OldClearAllPoints()
-										s:OldSetPoint(mov.element.anchor, mov, mov.element.anchor, 0, 0)
+							hooksecurefunc(
+								mover.frame,
+								"SetPoint",
+								function(s, ...)
+									if s.maisetpoint then return end
+									s.maisetpoint = true
+									if (element.setmovable or element.setuserplaced) and s.SetMovable then
+										s:SetMovable(true)
 									end
-								else
-									if mov.element.name ~= "Minimap" or Minimap:GetParent() ~= FarmHud then
-										s:ClearAllPoints()
-										s:SetPoint(mov.element.anchor, mov, mov.element.anchor, 0, 0)
+
+									if s.OldClearAllPoints and s.OldSetPoint and s ~= GameTooltip then
+										if mov.element.name ~= "Minimap" or Minimap:GetParent() ~= FarmHud then
+											s:OldClearAllPoints()
+											s:OldSetPoint(mov.element.anchor, mov, mov.element.anchor, 0, 0)
+										end
+									else
+										if mov.element.name ~= "Minimap" or Minimap:GetParent() ~= FarmHud then
+											s:ClearAllPoints()
+											s:SetPoint(mov.element.anchor, mov, mov.element.anchor, 0, 0)
+										end
 									end
-								end
 
-								if (element.setmovable or element.setuserplaced) and s.SetMovable then
-									s:SetMovable(false)
-								end
+									if (element.setmovable or element.setuserplaced) and s.SetMovable then
+										s:SetMovable(false)
+									end
 
-								s.maisetpoint = false
-							end)
+									s.maisetpoint = false
+								end
+							)
 
 							if (element.setmovable or element.setuserplaced) and mover.frame.SetMovable then
 								mover.frame:SetMovable(true)
@@ -3347,19 +3451,16 @@ function MAIElementSetup(element)
 							local ofsx = MAIGV(mover.element.name .. "ofsx")
 							local ofsy = MAIGV(mover.element.name .. "ofsy")
 							mover:ClearAllPoints()
-
 							if point then
 								mover.force = true
 								mover:SetPoint(point, UIParent, relativePoint, ofsx, ofsy)
 								mover.force = false
 							else
 								point, parent, relativePoint, ofsx, ofsy = mover.frame:GetPoint()
-
 								if point and parent == nil or parent == UIParent then
 									mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
 								else
 									local l, b, _, _ = mover.frame:GetRect()
-
 									if l == nil and b == nil then
 										mover:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 									else -- Position from Original
@@ -3369,7 +3470,6 @@ function MAIElementSetup(element)
 							end
 
 							point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
-
 							if point and MAIGV(mover.element.name .. "point") == nil then
 								MAISV(mover.element.name .. "point", point)
 								MAISV(mover.element.name .. "relativePoint", relativePoint)
@@ -3380,46 +3480,50 @@ function MAIElementSetup(element)
 
 						-- Hide
 						if MAIGV(mover.element.name .. "hide") then
-							hooksecurefunc(mover.frame, "Show", function(s)
-								if s.show then return end
-								s.show = true
+							hooksecurefunc(
+								mover.frame,
+								"Show",
+								function(s)
+									if s.show then return end
+									s.show = true
+									if MAIGV(s.element.name .. "hide") then
+										if not InCombatLockdown() then
+											s:EnableMouse(false)
+										end
 
-								if MAIGV(s.element.name .. "hide") then
-									if not InCombatLockdown() then
-										s:EnableMouse(false)
+										s:SetAlpha(0)
 									end
 
-									s:SetAlpha(0)
+									s.show = false
 								end
-
-								s.show = false
-							end)
+							)
 
 							if mover.frame.btns then
 								for i, v in pairs(mover.frame.btns) do
 									v.element = {}
 									v.element.name = element.name
+									hooksecurefunc(
+										v,
+										"Show",
+										function(s)
+											if s.show then return end
+											s.show = true
+											if MAIGV(s.element.name .. "hide") then
+												if not InCombatLockdown() then
+													s:EnableMouse(false)
+												end
 
-									hooksecurefunc(v, "Show", function(s)
-										if s.show then return end
-										s.show = true
-
-										if MAIGV(s.element.name .. "hide") then
-											if not InCombatLockdown() then
-												s:EnableMouse(false)
+												s:SetAlpha(0)
 											end
 
-											s:SetAlpha(0)
+											s.show = false
 										end
-
-										s.show = false
-									end)
+									)
 								end
 							end
 
 							if MAIGV(mover.element.name .. "hide") then
 								mover.frame:SetAlpha(0)
-
 								if mover.frame.btns then
 									for i, v in pairs(mover.frame.btns) do
 										v:SetAlpha(0)
@@ -3449,7 +3553,6 @@ function MAIElementSetup(element)
 					mover.textcenter:SetAlpha(1)
 					mover.textmove:SetAlpha(1)
 					mover.text:SetAlpha(1)
-
 					if MAIGV(mover.element.name .. "hide") then
 						mover.texture:SetColorTexture(0.2, 0.2, 0.2, 0.5)
 					elseif MAIGV(mover.element.name .. "move") then
@@ -3490,7 +3593,6 @@ function MAIElementSetup(element)
 
 			mover.Think()
 			mover:ClearAllPoints()
-
 			if MAIGV(mover.element.name .. "point") then
 				local point = MAIGV(mover.element.name .. "point")
 				local relativePoint = MAIGV(mover.element.name .. "relativePoint")
@@ -3505,1274 +3607,1347 @@ function MAIElementSetup(element)
 			local tw = mover.settingsbtn.Text:GetStringWidth()
 			mover.settingsbtn:SetSize(tw + 10, 14)
 			mover.settingsbtn:SetPoint("BOTTOMRIGHT", mover, "BOTTOMRIGHT", 2, 0)
+			mover.settingsbtn:SetScript(
+				"OnClick",
+				function(self)
+					if mover.settings == nil then
+						mover.settings = CreateFrame("FRAME")
+						mover.settings:SetSize(440, 210)
+						MAIPNLINDEX = MAIPNLINDEX or 0
+						MAIPNLINDEX = MAIPNLINDEX + 1
+						if MAIPNLINDEX > 7 then
+							MAIPNLINDEX = 0
+						end
 
-			mover.settingsbtn:SetScript("OnClick", function(self)
-				if mover.settings == nil then
-					mover.settings = CreateFrame("FRAME")
-					mover.settings:SetSize(440, 210)
-					MAIPNLINDEX = MAIPNLINDEX or 0
-					MAIPNLINDEX = MAIPNLINDEX + 1
+						mover.settings:SetPoint("CENTER", -100 + MAIPNLINDEX * 100, -100 + MAIPNLINDEX * 100)
+						mover.settings:SetFrameStrata("DIALOG", MAIPNLINDEX)
+						mover.settings.tabs = {}
+						mover.settings:SetClampedToScreen(true)
+						mover.settings:SetMovable(true)
+						mover.settings:EnableMouse(true)
+						mover.settings:RegisterForDrag("LeftButton")
+						mover.settings:SetScript("OnDragStart", mover.settings.StartMoving)
+						mover.settings:SetScript("OnDragStop", mover.settings.StopMovingOrSizing)
+						mover.settings.texture = mover.settings:CreateTexture(nil, "BACKGROUND")
+						--mover.settings.texture:SetDrawLayer("BACKGROUND", MAIPNLINDEX)
+						mover.settings.texture:SetSize(mover.settings:GetWidth(), 20)
+						mover.settings.texture:SetPoint("TOPLEFT", 0, 0)
+						mover.settings.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+						mover.settings.texture2 = mover.settings:CreateTexture(nil, "BACKGROUND")
+						--mover.settings.texture2:SetDrawLayer("BACKGROUND", MAIPNLINDEX)
+						mover.settings.texture2:SetSize(mover.settings:GetWidth(), 20)
+						mover.settings.texture2:SetPoint("TOPLEFT", 0, -20)
+						mover.settings.texture2:SetColorTexture(0, 0, 0, 0)
+						mover.textheader = mover.settings:CreateFontString(nil, "ARTWORK")
+						mover.textheader:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.textheader:SetPoint("LEFT", mover.settings, "TOPLEFT", 10, -10)
+						mover.textheader:SetText(MAIGT(mover.element.lstr))
+						mover.settings.close = CreateFrame("Button", nil, mover.settings, "UIPanelButtonTemplate")
+						mover.settings.close:SetText("X")
+						mover.settings.close:SetSize(20, 20)
+						mover.settings.close:SetPoint("TOPRIGHT", 0, 0)
+						mover.settings.close:SetScript(
+							"OnClick",
+							function(sel)
+								mover.settings:Hide()
+								mover.settings.visible = false
+							end
+						)
 
-					if MAIPNLINDEX > 7 then
-						MAIPNLINDEX = 0
-					end
+						function mover.settings.SelectTab(movertab)
+							for i, v in pairs(mover.settings.tabs) do
+								v.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
+								v.selected = false
+								v.content:Hide()
+							end
 
-					mover.settings:SetPoint("CENTER", -100 + MAIPNLINDEX * 100, -100 + MAIPNLINDEX * 100)
-					mover.settings:SetFrameStrata("DIALOG", MAIPNLINDEX)
-					mover.settings.tabs = {}
-					mover.settings:SetClampedToScreen(true)
-					mover.settings:SetMovable(true)
-					mover.settings:EnableMouse(true)
-					mover.settings:RegisterForDrag("LeftButton")
-					mover.settings:SetScript("OnDragStart", mover.settings.StartMoving)
-					mover.settings:SetScript("OnDragStop", mover.settings.StopMovingOrSizing)
-					mover.settings.texture = mover.settings:CreateTexture(nil, "BACKGROUND")
-					--mover.settings.texture:SetDrawLayer("BACKGROUND", MAIPNLINDEX)
-					mover.settings.texture:SetSize(mover.settings:GetWidth(), 20)
-					mover.settings.texture:SetPoint("TOPLEFT", 0, 0)
-					mover.settings.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-					mover.settings.texture2 = mover.settings:CreateTexture(nil, "BACKGROUND")
-					--mover.settings.texture2:SetDrawLayer("BACKGROUND", MAIPNLINDEX)
-					mover.settings.texture2:SetSize(mover.settings:GetWidth(), 20)
-					mover.settings.texture2:SetPoint("TOPLEFT", 0, -20)
-					mover.settings.texture2:SetColorTexture(0, 0, 0, 0)
-					mover.textheader = mover.settings:CreateFontString(nil, "ARTWORK")
-					mover.textheader:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.textheader:SetPoint("LEFT", mover.settings, "TOPLEFT", 10, -10)
-					mover.textheader:SetText(MAIGT(mover.element.lstr))
-					mover.settings.close = CreateFrame("Button", nil, mover.settings, "UIPanelButtonTemplate")
-					mover.settings.close:SetText("X")
-					mover.settings.close:SetSize(20, 20)
-					mover.settings.close:SetPoint("TOPRIGHT", 0, 0)
+							movertab.selected = true
+							movertab.content:Show()
+							movertab.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+						end
 
-					mover.settings.close:SetScript("OnClick", function(sel)
+						-- TAB1 - General
+						mover.tab1 = CreateFrame("Button", nil, mover.settings)
+						mover.tab1:SetSize(100, 20)
+						mover.tab1:SetPoint("TOPLEFT", 0, -20)
+						mover.tab1.selected = true
+						mover.tab1:SetScript(
+							"OnClick",
+							function(sel)
+								mover.settings.SelectTab(mover.tab1)
+							end
+						)
+
+						tinsert(mover.settings.tabs, mover.tab1)
+						mover.tab1.texture = mover.tab1:CreateTexture(nil, "Background")
+						mover.tab1.texture:SetAllPoints(mover.tab1)
+						mover.tab1.texture:SetColorTexture(0.1, 0.1, 0.1, 1)
+						mover.tab1.text = mover.tab1:CreateFontString(nil, "ARTWORK")
+						mover.tab1.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.tab1.text:SetPoint("CENTER", mover.tab1, "CENTER", 0, 0)
+						mover.tab1.text:SetText(getglobal("GENERAL"))
+						-- TAB1 - Content
+						mover.tab1.content = CreateFrame("FRAME", nil, mover.settings)
+						mover.tab1.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+						mover.tab1.content:SetPoint("TOPLEFT", 0, -40)
+						mover.tab1.content.texture = mover.tab1.content:CreateTexture(nil, "Background")
+						mover.tab1.content.texture:SetAllPoints(mover.tab1.content)
+						mover.tab1.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+						mover.textpos = mover.tab1.content:CreateFontString(nil, "ARTWORK")
+						mover.textpos:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.textpos:SetPoint("LEFT", mover.tab1.content, "TOPLEFT", 10, -10)
+						mover.textpos:SetText(getglobal("POSITION"))
+						function mover.TextThink()
+							if mover.textpos:IsShown() then
+								if MAIGV(element.name .. "ofsx") ~= nil and MAIGV(element.name .. "ofsy") ~= nil then
+									mover.textpos:SetText(MAIGT("position") .. ": " .. MAIGV(element.name .. "ofsx") .. "," .. MAIGV(element.name .. "ofsy"))
+								else
+									mover.textpos:SetText("Position not saved yet")
+								end
+							end
+
+							C_Timer.After(0.5, mover.TextThink)
+						end
+
+						mover.TextThink()
+						mover.tab1.content.upf = CreateFrame("Button", nil, mover.tab1.content)
+						mover.tab1.content.upf:SetSize(20, 20)
+						mover.tab1.content.upf:SetPoint("TOPLEFT", 50, -20)
+						mover.tab1.content.upf:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
+						mover.tab1.content.upf:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
+						mover.tab1.content.upf:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+						mover.tab1.content.upf:SetScript(
+							"OnClick",
+							function(sel)
+								local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+								if point then
+									ofsy = ofsy + 10
+									MAISV(element.name .. "point", point)
+									MAISV(element.name .. "relativePoint", relativePoint)
+									MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
+									MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
+									mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
+								end
+							end
+						)
+
+						mover.tab1.content.up = CreateFrame("Button", nil, mover.tab1.content)
+						mover.tab1.content.up:SetSize(20, 20)
+						mover.tab1.content.up:SetPoint("TOPLEFT", 50, -35)
+						mover.tab1.content.up:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
+						mover.tab1.content.up:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
+						mover.tab1.content.up:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+						mover.tab1.content.up:SetScript(
+							"OnClick",
+							function(sel)
+								local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+								if point then
+									ofsy = ofsy + 1
+									MAISV(element.name .. "point", point)
+									MAISV(element.name .. "relativePoint", relativePoint)
+									MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
+									MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
+									mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
+								end
+							end
+						)
+
+						mover.tab1.content.dn = CreateFrame("Button", nil, mover.tab1.content)
+						mover.tab1.content.dn:SetText("D")
+						mover.tab1.content.dn:SetSize(20, 20)
+						mover.tab1.content.dn:SetPoint("TOPLEFT", 50, -75)
+						mover.tab1.content.dn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+						mover.tab1.content.dn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+						mover.tab1.content.dn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+						mover.tab1.content.dn:SetScript(
+							"OnClick",
+							function(sel)
+								local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+								if point then
+									ofsy = ofsy - 1
+									MAISV(element.name .. "point", point)
+									MAISV(element.name .. "relativePoint", relativePoint)
+									MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
+									MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
+									mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
+								end
+							end
+						)
+
+						mover.tab1.content.dnf = CreateFrame("Button", nil, mover.tab1.content)
+						mover.tab1.content.dnf:SetText("D")
+						mover.tab1.content.dnf:SetSize(20, 20)
+						mover.tab1.content.dnf:SetPoint("TOPLEFT", 50, -90)
+						mover.tab1.content.dnf:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+						mover.tab1.content.dnf:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+						mover.tab1.content.dnf:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+						mover.tab1.content.dnf:SetScript(
+							"OnClick",
+							function(sel)
+								local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+								if point then
+									ofsy = ofsy - 10
+									MAISV(element.name .. "point", point)
+									MAISV(element.name .. "relativePoint", relativePoint)
+									MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
+									MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
+									mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
+								end
+							end
+						)
+
+						mover.tab1.content.rif = CreateFrame("Button", nil, mover.tab1.content)
+						mover.tab1.content.rif:SetSize(20, 20)
+						mover.tab1.content.rif:SetPoint("TOPLEFT", 85, -55)
+						mover.tab1.content.rif:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
+						mover.tab1.content.rif:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
+						mover.tab1.content.rif:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+						mover.tab1.content.rif:SetScript(
+							"OnClick",
+							function(sel)
+								local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+								if point then
+									ofsx = ofsx + 10
+									MAISV(element.name .. "point", point)
+									MAISV(element.name .. "relativePoint", relativePoint)
+									MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
+									MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
+									mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
+								end
+							end
+						)
+
+						mover.tab1.content.ri = CreateFrame("Button", nil, mover.tab1.content)
+						mover.tab1.content.ri:SetSize(20, 20)
+						mover.tab1.content.ri:SetPoint("TOPLEFT", 70, -55)
+						mover.tab1.content.ri:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
+						mover.tab1.content.ri:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
+						mover.tab1.content.ri:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+						mover.tab1.content.ri:SetScript(
+							"OnClick",
+							function(sel)
+								local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+								if point then
+									ofsx = ofsx + 1
+									MAISV(element.name .. "point", point)
+									MAISV(element.name .. "relativePoint", relativePoint)
+									MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
+									MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
+									mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
+								end
+							end
+						)
+
+						mover.tab1.content.li = CreateFrame("Button", nil, mover.tab1.content)
+						mover.tab1.content.li:SetSize(20, 20)
+						mover.tab1.content.li:SetPoint("TOPLEFT", 30, -55)
+						mover.tab1.content.li:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
+						mover.tab1.content.li:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
+						mover.tab1.content.li:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+						mover.tab1.content.li:SetScript(
+							"OnClick",
+							function(sel)
+								local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+								if point then
+									ofsx = ofsx - 1
+									MAISV(element.name .. "point", point)
+									MAISV(element.name .. "relativePoint", relativePoint)
+									MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
+									MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
+									mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
+								end
+							end
+						)
+
+						mover.tab1.content.lif = CreateFrame("Button", nil, mover.tab1.content)
+						mover.tab1.content.lif:SetSize(20, 20)
+						mover.tab1.content.lif:SetPoint("TOPLEFT", 15, -55)
+						mover.tab1.content.lif:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
+						mover.tab1.content.lif:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
+						mover.tab1.content.lif:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+						mover.tab1.content.lif:SetScript(
+							"OnClick",
+							function(sel)
+								local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
+								if point then
+									ofsx = ofsx - 10
+									MAISV(element.name .. "point", point)
+									MAISV(element.name .. "relativePoint", relativePoint)
+									MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
+									MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
+									mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
+								end
+							end
+						)
+
+						MAISV(element.name .. "scale", MAIGV(element.name .. "scale") or 1)
+						mover.textsca = mover.tab1.content:CreateFontString(nil, "ARTWORK")
+						mover.textsca:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.textsca:SetPoint("LEFT", mover.tab1.content, "TOPLEFT", 150, -10)
+						mover.textsca:SetText(MAIGT("scale") .. ": " .. MAIGV(element.name .. "scale"))
+						mover.tab1.content.scaleup = CreateFrame("Button", nil, mover.tab1.content)
+						mover.tab1.content.scaleup:SetSize(20, 20)
+						mover.tab1.content.scaleup:SetPoint("TOPLEFT", 150, -20)
+						mover.tab1.content.scaleup:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
+						mover.tab1.content.scaleup:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
+						mover.tab1.content.scaleup:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+						mover.tab1.content.scaleup:SetScript(
+							"OnClick",
+							function(sel)
+								local newval = MAIMathR(mover:GetScale() + 0.1, 1)
+								newval = MAIMathC(newval, 0.1, 4.0)
+								MAISV(element.name .. "scale", newval)
+								mover:SetScale(mover:GetScale() + 0.1)
+								_G[element.name]:SetScale(_G[element.name]:GetScale() + 0.1)
+								mover.textsca:SetText(MAIGT("scale") .. ": " .. MAIGV(element.name .. "scale"))
+							end
+						)
+
+						mover.tab1.content.scaleup = CreateFrame("Button", nil, mover.tab1.content)
+						mover.tab1.content.scaleup:SetText("D")
+						mover.tab1.content.scaleup:SetSize(20, 20)
+						mover.tab1.content.scaleup:SetPoint("TOPLEFT", 150, -40)
+						mover.tab1.content.scaleup:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+						mover.tab1.content.scaleup:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+						mover.tab1.content.scaleup:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+						mover.tab1.content.scaleup:SetScript(
+							"OnClick",
+							function(sel)
+								local newval = MAIMathR(mover:GetScale() - 0.1, 1)
+								newval = MAIMathC(newval, 0.1, 4.0)
+								MAISV(element.name .. "scale", newval)
+								mover:SetScale(mover:GetScale() - 0.1)
+								_G[element.name]:SetScale(_G[element.name]:GetScale() - 0.1)
+								mover.textsca:SetText(MAIGT("scale") .. ": " .. MAIGV(element.name .. "scale"))
+							end
+						)
+
+						mover.tab1.content.move = CreateFrame("CheckButton", "moversettingsenabled", mover.tab1.content, "ChatConfigCheckButtonTemplate")
+						mover.tab1.content.move:SetSize(20, 20)
+						mover.tab1.content.move:SetPoint("TOPLEFT", 10, -120)
+						mover.tab1.content.move:SetChecked(MAIGV(element.name .. "move"))
+						mover.tab1.content.move:SetScript(
+							"OnClick",
+							function(sel)
+								local newval = sel:GetChecked()
+								MAISV(element.name .. "move", newval)
+							end
+						)
+
+						mover.tab1.content.move.text = mover.tab1.content.move:CreateFontString(nil, "ARTWORK")
+						mover.tab1.content.move.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.tab1.content.move.text:SetPoint("LEFT", mover.tab1.content.move, "RIGHT", 0, 0)
+						mover.tab1.content.move.text:SetText(MAIGT("move"))
+						mover.tab1.content.improvements = CreateFrame("CheckButton", "moversettingsimprovements", mover.tab1.content, "ChatConfigCheckButtonTemplate")
+						mover.tab1.content.improvements:SetSize(20, 20)
+						mover.tab1.content.improvements:SetPoint("TOPLEFT", 10, -140)
+						mover.tab1.content.improvements:SetChecked(MAIGV(element.name .. "improvements"))
+						mover.tab1.content.improvements:SetScript(
+							"OnClick",
+							function(sel)
+								local newval = sel:GetChecked()
+								MAISV(element.name .. "improvements", newval)
+							end
+						)
+
+						mover.tab1.content.improvements.text = mover.tab1.content.improvements:CreateFontString(nil, "ARTWORK")
+						mover.tab1.content.improvements.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.tab1.content.improvements.text:SetPoint("LEFT", mover.tab1.content.improvements, "RIGHT", 0, 0)
+						mover.tab1.content.improvements.text:SetText(MAIGT("improvements"))
+						mover.tab1.content.hideartwork = CreateFrame("CheckButton", "moversettingshideartwork", mover.tab1.content, "ChatConfigCheckButtonTemplate")
+						mover.tab1.content.hideartwork:SetSize(20, 20)
+						mover.tab1.content.hideartwork:SetPoint("TOPLEFT", 10, -160)
+						mover.tab1.content.hideartwork:SetChecked(MAIGV(element.name .. "hideartwork"))
+						mover.tab1.content.hideartwork:SetScript(
+							"OnClick",
+							function(sel)
+								local newval = sel:GetChecked()
+								MAISV(element.name .. "hideartwork", newval)
+							end
+						)
+
+						mover.tab1.content.hideartwork.text = mover.tab1.content.hideartwork:CreateFontString(nil, "ARTWORK")
+						mover.tab1.content.hideartwork.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.tab1.content.hideartwork.text:SetPoint("LEFT", mover.tab1.content.hideartwork, "RIGHT", 0, 0)
+						mover.tab1.content.hideartwork.text:SetText(MAIGT("hideartwork"))
+						-- TAB - Appearance
+						mover.tabapp = CreateFrame("Button", nil, mover.settings)
+						mover.tabapp:SetSize(100, 20)
+						mover.tabapp:SetPoint("TOPLEFT", 105, -20)
+						mover.tabapp.selected = false
+						mover.tabapp:SetScript(
+							"OnClick",
+							function(sel)
+								mover.settings.SelectTab(mover.tabapp)
+							end
+						)
+
+						tinsert(mover.settings.tabs, mover.tabapp)
+						mover.tabapp.texture = mover.tabapp:CreateTexture(nil, "Background")
+						mover.tabapp.texture:SetAllPoints(mover.tabapp)
+						mover.tabapp.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+						mover.tabapp.text = mover.tabapp:CreateFontString(nil, "ARTWORK")
+						mover.tabapp.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.tabapp.text:SetPoint("CENTER", mover.tabapp, "CENTER", 0, 0)
+						mover.tabapp.text:SetText(getglobal("APPEARANCE_LABEL"))
+						-- TAB - Appearance Content
+						mover.tabapp.content = CreateFrame("FRAME", nil, mover.settings)
+						mover.tabapp.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+						mover.tabapp.content:SetPoint("TOPLEFT", 0, -40)
+						mover.tabapp.content.texture = mover.tabapp.content:CreateTexture(nil, "Background")
+						mover.tabapp.content.texture:SetAllPoints(mover.tabapp.content)
+						mover.tabapp.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+						MAISV(element.name .. "alpha", MAIGV(element.name .. "alpha") or 1)
+						mover.textalp = mover.tabapp.content:CreateFontString(nil, "ARTWORK")
+						mover.textalp:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.textalp:SetPoint("LEFT", mover.tabapp.content, "TOPLEFT", 10, -10)
+						mover.textalp:SetText(MAIGT("outofcombat"))
+						mover.tabapp.content.alpha = MAICreateSlider(mover.tabapp.content, element.name, "alpha", MAIGV(element.name .. "alpha"), 10, -20, 0, 1, 0.1, ".1f", OPACITY)
+						mover.tabapp.content.alpha:HookScript(
+							"OnValueChanged",
+							function(sel, val)
+								if sel.alpha ~= MAIGV(element.name .. "alpha") then
+									sel.alpha = MAIGV(element.name .. "alpha")
+									_G[element.name]._alpha = 1
+									_G[element.name]:SetAlpha(MAIGV(element.name .. "alpha", 1))
+									if _G[element.name].btns ~= nil then
+										for i, v in pairs(_G[element.name].btns) do
+											v:SetAlpha(MAIGV(element.name .. "alpha", 1))
+										end
+									end
+
+									MAITHINKER.update = true
+								end
+							end
+						)
+
+						MAISV(element.name .. "alpha2", MAIGV(element.name .. "alpha2") or 1)
+						mover.textalp2 = mover.tabapp.content:CreateFontString(nil, "ARTWORK")
+						mover.textalp2:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.textalp2:SetPoint("LEFT", mover.tabapp.content, "TOPLEFT", 10, -50)
+						mover.textalp2:SetText(MAIGT("incombat"))
+						mover.tabapp.content.alpha2 = MAICreateSlider(mover.tabapp.content, element.name, "alpha2", MAIGV(element.name .. "alpha2"), 10, -60, 0, 1, 0.1, ".1f", OPACITY)
+						mover.tabapp.content.alpha2:HookScript(
+							"OnValueChanged",
+							function(sel, val)
+								if sel.alpha2 ~= MAIGV(element.name .. "alpha2") then
+									sel.alpha2 = MAIGV(element.name .. "alpha2")
+									_G[element.name]._alpha = 1
+									_G[element.name]:SetAlpha(MAIGV(element.name .. "alpha2"))
+									if _G[element.name].btns ~= nil then
+										for i, v in pairs(_G[element.name].btns) do
+											v:SetAlpha(MAIGV(element.name .. "alpha2"))
+										end
+									end
+
+									MAITHINKER.update = true
+								end
+							end
+						)
+
+						MAISV(element.name .. "alpha3", MAIGV(element.name .. "alpha3") or 1)
+						mover.textalp3 = mover.tabapp.content:CreateFontString(nil, "ARTWORK")
+						mover.textalp3:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.textalp3:SetPoint("LEFT", mover.tabapp.content, "TOPLEFT", 10, -90)
+						mover.textalp3:SetText(MAIGT("invehicle"))
+						mover.tabapp.content.alpha3 = MAICreateSlider(mover.tabapp.content, element.name, "alpha3", MAIGV(element.name .. "alpha3"), 10, -100, 0, 1, 0.1, ".1f", OPACITY)
+						mover.tabapp.content.alpha3:HookScript(
+							"OnValueChanged",
+							function(sel, val)
+								if sel.alpha3 ~= MAIGV(element.name .. "alpha3") then
+									sel.alpha3 = MAIGV(element.name .. "alpha3")
+									_G[element.name]._alpha = 1
+									_G[element.name]:SetAlpha(MAIGV(element.name .. "alpha3"))
+									if _G[element.name].btns ~= nil then
+										for i, v in pairs(_G[element.name].btns) do
+											v:SetAlpha(MAIGV(element.name .. "alpha3"))
+										end
+									end
+
+									MAITHINKER.update = true
+								end
+							end
+						)
+
+						mover.tabapp.content.show = CreateFrame("CheckButton", "moversettingsshow", mover.tabapp.content, "ChatConfigCheckButtonTemplate")
+						mover.tabapp.content.show:SetSize(20, 20)
+						mover.tabapp.content.show:SetPoint("TOPLEFT", 10, -140)
+						mover.tabapp.content.show:SetChecked(MAIGV(element.name .. "hide"))
+						mover.tabapp.content.show:SetScript(
+							"OnClick",
+							function(sel)
+								local newval = sel:GetChecked()
+								MAISV(element.name .. "hide", newval)
+							end
+						)
+
+						mover.tabapp.content.show.text = mover.tabapp.content.show:CreateFontString(nil, "ARTWORK")
+						mover.tabapp.content.show.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+						mover.tabapp.content.show.text:SetPoint("LEFT", mover.tabapp.content.show, "RIGHT", 0, 0)
+						mover.tabapp.content.show.text:SetText(getglobal("HIDE"))
+						local bars = {}
+						for x = 1, MAIMAXBAR do
+							tinsert(bars, "ActionBar" .. x)
+						end
+
+						tinsert(bars, "StanceBar")
+						tinsert(bars, "PetBar")
+						tinsert(bars, "MAIMicroButtons")
+						if tContains(bars, element.name) then
+							-- TAB2 - ActionButton
+							mover.tab2 = CreateFrame("Button", nil, mover.settings)
+							mover.tab2:SetSize(100, 20)
+							mover.tab2:SetPoint("TOPLEFT", 210, -20)
+							mover.tab2.selected = true
+							mover.tab2:SetScript(
+								"OnClick",
+								function(sel)
+									mover.settings.SelectTab(mover.tab2)
+								end
+							)
+
+							tinsert(mover.settings.tabs, mover.tab2)
+							mover.tab2.texture = mover.tab2:CreateTexture(nil, "Background")
+							mover.tab2.texture:SetAllPoints(mover.tab2)
+							mover.tab2.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							mover.tab2.text = mover.tab2:CreateFontString(nil, "ARTWORK")
+							mover.tab2.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							mover.tab2.text:SetPoint("CENTER", mover.tab2, "CENTER", 0, 0)
+							mover.tab2.text:SetText(MAIGT("bar"))
+							-- TAB2 - Content
+							mover.tab2.content = CreateFrame("FRAME", nil, mover.settings)
+							mover.tab2.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+							mover.tab2.content:SetPoint("TOPLEFT", 0, -40)
+							mover.tab2.content.texture = mover.tab2.content:CreateTexture(nil, "Background")
+							mover.tab2.content.texture:SetAllPoints(mover.tab2.content)
+							mover.tab2.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							local CB = LibDD:Create_UIDropDownMenu(element.name .. "rowscb", mover.tab2.content)
+							CB:SetPoint("TOPLEFT", -10, -4)
+							LibDD:UIDropDownMenu_SetWidth(CB, 80)
+							LibDD:UIDropDownMenu_SetText(CB, MAIGV(element.name .. "rows"))
+							LibDD:UIDropDownMenu_Initialize(
+								CB,
+								function(sel, level, menuList)
+									local tab = {}
+									local count = MAIGV(element.name .. "count")
+									tinsert(tab, 1)
+									if count == 2 then
+										tinsert(tab, 2)
+									elseif count == 3 then
+										tinsert(tab, 3)
+									elseif count == 4 then
+										tinsert(tab, 2)
+										tinsert(tab, 4)
+									elseif count == 5 then
+										tinsert(tab, 5)
+									elseif count == 6 then
+										tinsert(tab, 2)
+										tinsert(tab, 3)
+										tinsert(tab, 6)
+									elseif count == 7 then
+										tinsert(tab, 7)
+									elseif count == 8 then
+										tinsert(tab, 2)
+										tinsert(tab, 4)
+										tinsert(tab, 8)
+									elseif count == 9 then
+										tinsert(tab, 3)
+										tinsert(tab, 9)
+									elseif count == 10 then
+										tinsert(tab, 2)
+										tinsert(tab, 5)
+										tinsert(tab, 10)
+									elseif count == 11 then
+										tinsert(tab, 11)
+									elseif count == 12 then
+										tinsert(tab, 2)
+										tinsert(tab, 3)
+										tinsert(tab, 4)
+										tinsert(tab, 6)
+										tinsert(tab, 12)
+									end
+
+									tinsert(tab, "max")
+									for i, v in pairs(tab) do
+										local info = LibDD:UIDropDownMenu_CreateInfo()
+										info.func = sel.SetValue
+										info.text = v
+										info.arg1 = v
+										LibDD:UIDropDownMenu_AddButton(info)
+									end
+								end
+							)
+
+							function CB:SetValue(newValue)
+								MAISV(element.name .. "rows", newValue)
+								LibDD:UIDropDownMenu_SetText(CB, newValue)
+								CloseDropDownMenus()
+								MAIUpdateActionButton()
+								if MAIUpdateMAIMicroButtons then
+									MAIUpdateMAIMicroButtons()
+								end
+							end
+
+							local text = CB:CreateFontString(nil, "ARTWORK")
+							text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							text:SetPoint("LEFT", CB, "RIGHT", -10, 4)
+							text:SetText(MAIGT("rows"))
+							local vmax = 12
+							if element.name == "PetBar" then
+								vmax = 10
+							elseif element.name == "CharacterMicroButton" and MAIBUILD ~= "RETAIL" then
+								vmax = 8
+							end
+
+							MAICreateSlider(mover.tab2.content, element.name, "spacing", 4, 10, -50, -6, 36, 1.0, ".0f", "spacing")
+							if element.name ~= "MAIMicroButtons" then
+								MAICreateSlider(mover.tab2.content, element.name, "count", vmax, 10, -80, 1, vmax, 1.0, ".0f", "count")
+							end
+
+							if string.find(element.name, "ActionBar") then
+								if MAIGV(element.name .. "hidehk") == nil then
+									MAISV(element.name .. "hidehk", false)
+								end
+
+								mover.tab2.content.hidehk = CreateFrame("CheckButton", "moversettingsenabled", mover.tab2.content, "ChatConfigCheckButtonTemplate")
+								mover.tab2.content.hidehk:SetSize(20, 20)
+								mover.tab2.content.hidehk:SetPoint("TOPLEFT", 10, -110)
+								mover.tab2.content.hidehk:SetChecked(MAIGV(element.name .. "hidehk"))
+								mover.tab2.content.hidehk:SetScript(
+									"OnClick",
+									function(sel)
+										local newval = sel:GetChecked()
+										MAISV(element.name .. "hidehk", newval)
+										MAIUpdateActionButton()
+									end
+								)
+
+								mover.tab2.content.hidehk.text = mover.tab2.content.hidehk:CreateFontString(nil, "ARTWORK")
+								mover.tab2.content.hidehk.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+								mover.tab2.content.hidehk.text:SetPoint("LEFT", mover.tab2.content.hidehk, "RIGHT", 0, 0)
+								mover.tab2.content.hidehk.text:SetText("Hide Hotkeys")
+								if MAIGV(element.name .. "hidena") == nil then
+									MAISV(element.name .. "hidena", false)
+								end
+
+								mover.tab2.content.hidena = CreateFrame("CheckButton", "moversettingsenabled", mover.tab2.content, "ChatConfigCheckButtonTemplate")
+								mover.tab2.content.hidena:SetSize(20, 20)
+								mover.tab2.content.hidena:SetPoint("TOPLEFT", 10, -130)
+								mover.tab2.content.hidena:SetChecked(MAIGV(element.name .. "hidena"))
+								mover.tab2.content.hidena:SetScript(
+									"OnClick",
+									function(sel)
+										local newval = sel:GetChecked()
+										MAISV(element.name .. "hidena", newval)
+										MAIUpdateActionButton()
+									end
+								)
+
+								mover.tab2.content.hidena.text = mover.tab2.content.hidena:CreateFontString(nil, "ARTWORK")
+								mover.tab2.content.hidena.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+								mover.tab2.content.hidena.text:SetPoint("LEFT", mover.tab2.content.hidena, "RIGHT", 0, 0)
+								mover.tab2.content.hidena.text:SetText("Hide Name")
+							end
+						end
+
+						if element.name == "BagBar" then
+							-- TAB3 - Bags
+							mover.tab3 = CreateFrame("Button", nil, mover.settings)
+							mover.tab3:SetSize(100, 20)
+							mover.tab3:SetPoint("TOPLEFT", 210, -20)
+							mover.tab3.selected = true
+							mover.tab3:SetScript(
+								"OnClick",
+								function(sel)
+									mover.settings.SelectTab(mover.tab3)
+								end
+							)
+
+							tinsert(mover.settings.tabs, mover.tab3)
+							mover.tab3.texture = mover.tab3:CreateTexture(nil, "Background")
+							mover.tab3.texture:SetAllPoints(mover.tab3)
+							mover.tab3.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							mover.tab3.text = mover.tab3:CreateFontString(nil, "ARTWORK")
+							mover.tab3.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							mover.tab3.text:SetPoint("CENTER", mover.tab3, "CENTER", 0, 0)
+							mover.tab3.text:SetText(getglobal("BAGSLOT"))
+							-- tab3 - Content
+							mover.tab3.content = CreateFrame("FRAME", nil, mover.settings)
+							mover.tab3.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+							mover.tab3.content:SetPoint("TOPLEFT", 0, -40)
+							mover.tab3.content.texture = mover.tab3.content:CreateTexture(nil, "Background")
+							mover.tab3.content.texture:SetAllPoints(mover.tab3.content)
+							mover.tab3.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							mover.tab3.content.onebag = CreateFrame("CheckButton", "moversettingsenabled", mover.tab3.content, "ChatConfigCheckButtonTemplate")
+							mover.tab3.content.onebag:SetSize(20, 20)
+							mover.tab3.content.onebag:SetPoint("TOPLEFT", 10, -10)
+							mover.tab3.content.onebag:SetChecked(MAIGV(element.name .. "onebag"))
+							mover.tab3.content.onebag:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "onebag", newval)
+								end
+							)
+
+							mover.tab3.content.onebag.text = mover.tab3.content.onebag:CreateFontString(nil, "ARTWORK")
+							mover.tab3.content.onebag.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							mover.tab3.content.onebag.text:SetPoint("LEFT", mover.tab3.content.onebag, "RIGHT", 0, 0)
+							mover.tab3.content.onebag.text:SetText("One bag")
+						end
+
+						if element.name == "Minimap" then
+							-- TAB4 - ActionButton
+							mover.tab4 = CreateFrame("Button", nil, mover.settings)
+							mover.tab4:SetSize(100, 20)
+							mover.tab4:SetPoint("TOPLEFT", 210, -20)
+							mover.tab4.selected = true
+							mover.tab4:SetScript(
+								"OnClick",
+								function(sel)
+									mover.settings.SelectTab(mover.tab4)
+								end
+							)
+
+							tinsert(mover.settings.tabs, mover.tab4)
+							mover.tab4.texture = mover.tab4:CreateTexture(nil, "Background")
+							mover.tab4.texture:SetAllPoints(mover.tab4)
+							mover.tab4.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							mover.tab4.text = mover.tab4:CreateFontString(nil, "ARTWORK")
+							mover.tab4.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							mover.tab4.text:SetPoint("CENTER", mover.tab4, "CENTER", 0, 0)
+							mover.tab4.text:SetText(getglobal("MINIMAP_LABEL"))
+							-- TAB4 - Content
+							mover.tab4.content = CreateFrame("FRAME", nil, mover.settings)
+							mover.tab4.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+							mover.tab4.content:SetPoint("TOPLEFT", 0, -40)
+							mover.tab4.content.texture = mover.tab4.content:CreateTexture(nil, "Background")
+							mover.tab4.content.texture:SetAllPoints(mover.tab4.content)
+							mover.tab4.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							if MAIGV(element.name .. "form") == nil then
+								MAISV(element.name .. "form", "paper2")
+							end
+
+							local CB = LibDD:Create_UIDropDownMenu(element.name .. "formcb", mover.tab4.content)
+							CB:SetPoint("TOPLEFT", -10, -4)
+							LibDD:UIDropDownMenu_SetWidth(CB, 80)
+							LibDD:UIDropDownMenu_SetText(CB, MAIGV(element.name .. "form"))
+							LibDD:UIDropDownMenu_Initialize(
+								CB,
+								function(sel, level, menuList)
+									local tab = {}
+									tinsert(tab, "paper")
+									tinsert(tab, "paper2")
+									tinsert(tab, "square")
+									tinsert(tab, "round")
+									for i, v in pairs(tab) do
+										local info = LibDD:UIDropDownMenu_CreateInfo()
+										info.func = sel.SetValue
+										info.text = v
+										info.arg1 = v
+										LibDD:UIDropDownMenu_AddButton(info)
+									end
+								end
+							)
+
+							function CB:SetValue(newValue)
+								MAISV(element.name .. "form", newValue)
+								LibDD:UIDropDownMenu_SetText(CB, newValue)
+								CloseDropDownMenus()
+								MAIUpdateActionButton()
+								if MAIUpdateMAIMicroButtons then
+									MAIUpdateMAIMicroButtons()
+								end
+
+								C_UI.Reload()
+							end
+
+							local text = CB:CreateFontString(nil, "ARTWORK")
+							text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							text:SetPoint("LEFT", CB, "RIGHT", -10, 4)
+							text:SetText(MAIGT("form"))
+							if MAIGV(element.name .. "hideminimapbuttons") == nil then
+								MAISV(element.name .. "hideminimapbuttons", true)
+							end
+
+							local hideminimapbuttons = CreateFrame("CheckButton", "hideminimapbuttons", mover.tab4.content, "ChatConfigCheckButtonTemplate")
+							hideminimapbuttons:SetSize(20, 20)
+							hideminimapbuttons:SetPoint("TOPLEFT", 10, -40)
+							hideminimapbuttons:SetChecked(MAIGV(element.name .. "hideminimapbuttons"))
+							hideminimapbuttons:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "hideminimapbuttons", newval)
+								end
+							)
+
+							hideminimapbuttons.text = hideminimapbuttons:CreateFontString(nil, "ARTWORK")
+							hideminimapbuttons.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							hideminimapbuttons.text:SetPoint("LEFT", hideminimapbuttons, "RIGHT", 0, 0)
+							hideminimapbuttons.text:SetText(MAIGT("hideminimapbuttons"))
+							local range = CreateFrame("CheckButton", "range", mover.tab4.content, "ChatConfigCheckButtonTemplate")
+							range:SetSize(20, 20)
+							range:SetPoint("TOPLEFT", 10, -60)
+							range:SetChecked(MAIGV(element.name .. "range"))
+							range:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "range", newval)
+								end
+							)
+
+							range.text = range:CreateFontString(nil, "ARTWORK")
+							range.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							range.text:SetPoint("LEFT", range, "RIGHT", 0, 0)
+							range.text:SetText(MAIGT("range"))
+						end
+
+						if element.name == "DurabilityFrame" then
+							-- TAB5 - ActionButton
+							mover.tab5 = CreateFrame("Button", nil, mover.settings)
+							mover.tab5:SetSize(100, 20)
+							mover.tab5:SetPoint("TOPLEFT", 210, -20)
+							mover.tab5.selected = true
+							mover.tab5:SetScript(
+								"OnClick",
+								function(sel)
+									mover.settings.SelectTab(mover.tab5)
+								end
+							)
+
+							tinsert(mover.settings.tabs, mover.tab5)
+							mover.tab5.texture = mover.tab5:CreateTexture(nil, "Background")
+							mover.tab5.texture:SetAllPoints(mover.tab5)
+							mover.tab5.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							mover.tab5.text = mover.tab5:CreateFontString(nil, "ARTWORK")
+							mover.tab5.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							mover.tab5.text:SetPoint("CENTER", mover.tab5, "CENTER", 0, 0)
+							mover.tab5.text:SetText(getglobal("DURABILITY"))
+							-- TAB5 - Content
+							mover.tab5.content = CreateFrame("FRAME", nil, mover.settings)
+							mover.tab5.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+							mover.tab5.content:SetPoint("TOPLEFT", 0, -40)
+							mover.tab5.content.texture = mover.tab5.content:CreateTexture(nil, "Background")
+							mover.tab5.content.texture:SetAllPoints(mover.tab5.content)
+							mover.tab5.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							local gold = CreateFrame("CheckButton", "gold", mover.tab5.content, "ChatConfigCheckButtonTemplate")
+							gold:SetSize(20, 20)
+							gold:SetPoint("TOPLEFT", 10, -20)
+							gold:SetChecked(MAIGV(element.name .. "gold"))
+							gold:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "gold", newval)
+								end
+							)
+
+							gold.text = gold:CreateFontString(nil, "ARTWORK")
+							gold.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							gold.text:SetPoint("LEFT", gold, "RIGHT", 0, 0)
+							gold.text:SetText(MAIGT("gold"))
+							local ilvl = CreateFrame("CheckButton", "ilvl", mover.tab5.content, "ChatConfigCheckButtonTemplate")
+							ilvl:SetSize(20, 20)
+							ilvl:SetPoint("TOPLEFT", 10, -40)
+							ilvl:SetChecked(MAIGV(element.name .. "ilvl"))
+							ilvl:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "ilvl", newval)
+								end
+							)
+
+							ilvl.text = ilvl:CreateFontString(nil, "ARTWORK")
+							ilvl.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							ilvl.text:SetPoint("LEFT", ilvl, "RIGHT", 0, 0)
+							ilvl.text:SetText(MAIGT("ilvl"))
+						end
+
+						if element.name == "MAIStatusBar" then
+							-- TAB6 - ActionButton
+							mover.tab6 = CreateFrame("Button", nil, mover.settings)
+							mover.tab6:SetSize(100, 20)
+							mover.tab6:SetPoint("TOPLEFT", 210, -20)
+							mover.tab6.selected = true
+							mover.tab6:SetScript(
+								"OnClick",
+								function(sel)
+									mover.settings.SelectTab(mover.tab6)
+								end
+							)
+
+							tinsert(mover.settings.tabs, mover.tab6)
+							mover.tab6.texture = mover.tab6:CreateTexture(nil, "Background")
+							mover.tab6.texture:SetAllPoints(mover.tab6)
+							mover.tab6.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							mover.tab6.text = mover.tab6:CreateFontString(nil, "ARTWORK")
+							mover.tab6.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							mover.tab6.text:SetPoint("CENTER", mover.tab6, "CENTER", 0, 0)
+							mover.tab6.text:SetText(MAIGT("MAIStatusBar"))
+							-- TAB6 - Content
+							mover.tab6.content = CreateFrame("FRAME", nil, mover.settings)
+							mover.tab6.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+							mover.tab6.content:SetPoint("TOPLEFT", 0, -40)
+							mover.tab6.content.texture = mover.tab6.content:CreateTexture(nil, "Background")
+							mover.tab6.content.texture:SetAllPoints(mover.tab6.content)
+							mover.tab6.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							MAISV(element.name .. "width", MAIGV(element.name .. "width") or 1000)
+							mover.tab6.content.width = MAICreateSlider(mover.tab6.content, element.name, "width", MAIGV(element.name .. "width"), 10, -30, 100, 1600, 10.0, ".0f", MAIGT("width"))
+							mover.tab6.content.width:HookScript(
+								"OnValueChanged",
+								function(sel, val)
+									if MAIGV(element.name .. "width") and MAIGV(element.name .. "width") > 1600 then
+										MAISV(element.name .. "width", 1600)
+									end
+
+									if sel.width ~= MAIGV(element.name .. "width") then
+										sel.width = MAIGV(element.name .. "width")
+										_G[element.name]:SetWidth(MAIGV(element.name .. "width"))
+									end
+								end
+							)
+
+							MAISV(element.name .. "height", MAIGV(element.name .. "height") or 30)
+							if MAIGV(element.name .. "height") == 20 and MAIGV(element.name .. "fixed") == nil then
+								MAISV(element.name .. "fixed", true)
+								MAISV(element.name .. "height", 40)
+							end
+
+							mover.tab6.content.height = MAICreateSlider(mover.tab6.content, element.name, "height", MAIGV(element.name .. "height"), 10, -70, 10, 100, 1.0, ".0f", MAIGT("height"))
+							mover.tab6.content.height:HookScript(
+								"OnValueChanged",
+								function(sel, val)
+									if sel.height ~= MAIGV(element.name .. "height") then
+										sel.height = MAIGV(element.name .. "height")
+										_G[element.name]:SetHeight(MAIGV(element.name .. "height"))
+									end
+								end
+							)
+
+							if MAIGV(element.name .. "showonlywhenhovered") == nil then
+								MAISV(element.name .. "showonlywhenhovered", false)
+							end
+
+							local showonlywhenhovered = CreateFrame("CheckButton", "showonlywhenhovered", mover.tab6.content, "ChatConfigCheckButtonTemplate")
+							showonlywhenhovered:SetSize(20, 20)
+							showonlywhenhovered:SetPoint("TOPLEFT", 10, -100)
+							showonlywhenhovered:SetChecked(MAIGV(element.name .. "showonlywhenhovered"))
+							showonlywhenhovered:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "showonlywhenhovered", newval)
+								end
+							)
+
+							showonlywhenhovered.text = showonlywhenhovered:CreateFontString(nil, "ARTWORK")
+							showonlywhenhovered.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							showonlywhenhovered.text:SetPoint("LEFT", showonlywhenhovered, "RIGHT", 0, 0)
+							showonlywhenhovered.text:SetText(MAIGT("showonlywhenhovered"))
+							if MAIGV(element.name .. "autoselectfaction") == nil then
+								MAISV(element.name .. "autoselectfaction", true)
+							end
+
+							if not MAIGV("nochanges") then
+								local autoselectfaction = CreateFrame("CheckButton", "autoselectfaction", mover.tab6.content, "ChatConfigCheckButtonTemplate")
+								autoselectfaction:SetSize(20, 20)
+								autoselectfaction:SetPoint("TOPLEFT", 10, -120)
+								autoselectfaction:SetChecked(MAIGV(element.name .. "autoselectfaction"))
+								autoselectfaction:SetScript(
+									"OnClick",
+									function(sel)
+										local newval = sel:GetChecked()
+										MAISV(element.name .. "autoselectfaction", newval)
+									end
+								)
+
+								autoselectfaction.text = autoselectfaction:CreateFontString(nil, "ARTWORK")
+								autoselectfaction.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+								autoselectfaction.text:SetPoint("LEFT", autoselectfaction, "RIGHT", 0, 0)
+								autoselectfaction.text:SetText(MAIGT("autoselectfaction"))
+								local missingxp = CreateFrame("CheckButton", "missingxp", mover.tab6.content, "ChatConfigCheckButtonTemplate")
+								missingxp:SetSize(20, 20)
+								missingxp:SetPoint("TOPLEFT", 10, -140)
+								missingxp:SetChecked(MAIGV(element.name .. "missingxp", true))
+								missingxp:SetScript(
+									"OnClick",
+									function(sel)
+										local newval = sel:GetChecked()
+										MAISV(element.name .. "missingxp", newval)
+									end
+								)
+
+								missingxp.text = missingxp:CreateFontString(nil, "ARTWORK")
+								missingxp.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+								missingxp.text:SetPoint("LEFT", missingxp, "RIGHT", 0, 0)
+								missingxp.text:SetText(MAIGT("missingxp"))
+							end
+						end
+
+						if element.name == "GameTooltip" and not MAIGV("nochanges") then
+							-- TAB7 - GameTooltip
+							mover.tab7 = CreateFrame("Button", nil, mover.settings)
+							mover.tab7:SetSize(100, 20)
+							mover.tab7:SetPoint("TOPLEFT", 210, -20)
+							mover.tab7.selected = true
+							mover.tab7:SetScript(
+								"OnClick",
+								function(sel)
+									mover.settings.SelectTab(mover.tab7)
+								end
+							)
+
+							tinsert(mover.settings.tabs, mover.tab7)
+							mover.tab7.texture = mover.tab7:CreateTexture(nil, "Background")
+							mover.tab7.texture:SetAllPoints(mover.tab7)
+							mover.tab7.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							mover.tab7.text = mover.tab7:CreateFontString(nil, "ARTWORK")
+							mover.tab7.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							mover.tab7.text:SetPoint("CENTER", mover.tab7, "CENTER", 0, 0)
+							mover.tab7.text:SetText(MAIGT("tooltip"))
+							-- tab7 - Content
+							mover.tab7.content = CreateFrame("FRAME", nil, mover.settings)
+							mover.tab7.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+							mover.tab7.content:SetPoint("TOPLEFT", 0, -40)
+							mover.tab7.content.texture = mover.tab7.content:CreateTexture(nil, "Background")
+							mover.tab7.content.texture:SetAllPoints(mover.tab7.content)
+							mover.tab7.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							function MAIAddCB(paren, ele, key, value, x, y)
+								local opt = CreateFrame("CheckButton", key, paren, "ChatConfigCheckButtonTemplate")
+								opt:SetSize(20, 20)
+								opt:SetPoint("TOPLEFT", x, y)
+								opt:SetChecked(MAIGV(ele .. key))
+								opt:SetScript(
+									"OnClick",
+									function(sel)
+										local newval = sel:GetChecked()
+										MAISV(ele .. key, newval)
+									end
+								)
+
+								opt.text = opt:CreateFontString(nil, "ARTWORK")
+								opt.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+								opt.text:SetPoint("LEFT", opt, "RIGHT", 0, 0)
+								opt.text:SetText(MAIGT(key))
+							end
+
+							MAIAddCB(mover.tab7.content, element.name, "oncursor", false, 10, -10)
+							MAIAddCB(mover.tab7.content, element.name, "sellprice", false, 10, -30)
+							MAIAddCB(mover.tab7.content, element.name, "ilevel", false, 10, -50)
+							MAIAddCB(mover.tab7.content, element.name, "showcountryflag", true, 10, -70)
+							MAIAddCB(mover.tab7.content, element.name, "expansion", false, 10, -90)
+						end
+
+						if element.name == "MAIBuffFrame" then
+							-- TAB8 - MAIBuffFrame
+							mover.tab8 = CreateFrame("Button", nil, mover.settings)
+							mover.tab8:SetSize(100, 20)
+							mover.tab8:SetPoint("TOPLEFT", 210, -20)
+							mover.tab8.selected = true
+							mover.tab8:SetScript(
+								"OnClick",
+								function(sel)
+									mover.settings.SelectTab(mover.tab8)
+								end
+							)
+
+							tinsert(mover.settings.tabs, mover.tab8)
+							mover.tab8.texture = mover.tab8:CreateTexture(nil, "Background")
+							mover.tab8.texture:SetAllPoints(mover.tab8)
+							mover.tab8.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							mover.tab8.text = mover.tab8:CreateFontString(nil, "ARTWORK")
+							mover.tab8.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							mover.tab8.text:SetPoint("CENTER", mover.tab8, "CENTER", 0, 0)
+							mover.tab8.text:SetText(MAIGT("buffframe"))
+							-- tab8 - Content
+							mover.tab8.content = CreateFrame("FRAME", nil, mover.settings)
+							mover.tab8.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+							mover.tab8.content:SetPoint("TOPLEFT", 0, -40)
+							mover.tab8.content.texture = mover.tab8.content:CreateTexture(nil, "Background")
+							mover.tab8.content.texture:SetAllPoints(mover.tab8.content)
+							mover.tab8.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							if MAIGV(element.name .. "accuratetime") == nil then
+								MAISV(element.name .. "accuratetime", true)
+							end
+
+							local accuratetime = CreateFrame("CheckButton", "accuratetime", mover.tab8.content, "ChatConfigCheckButtonTemplate")
+							accuratetime:SetSize(20, 20)
+							accuratetime:SetPoint("TOPLEFT", 10, -10)
+							accuratetime:SetChecked(MAIGV(element.name .. "accuratetime"))
+							accuratetime:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "accuratetime", newval)
+								end
+							)
+
+							accuratetime.text = accuratetime:CreateFontString(nil, "ARTWORK")
+							accuratetime.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							accuratetime.text:SetPoint("LEFT", accuratetime, "RIGHT", 0, 0)
+							accuratetime.text:SetText(MAIGT("accuratetime"))
+							MAISV(element.name .. "spacing", MAIGV(element.name .. "spacing") or 2)
+							mover.tab8.content.spacing = MAICreateSlider(mover.tab8.content, element.name, "spacing", MAIGV(element.name .. "spacing"), 10, -60, 0, 20, 1.0, "1.0d", MAIGT("spacing"))
+						end
+
+						if element.name == "StanceBar" then
+							-- TAB9 - StanceBar
+							mover.tab9 = CreateFrame("Button", nil, mover.settings)
+							mover.tab9:SetSize(100, 20)
+							mover.tab9:SetPoint("TOPLEFT", 210 + 100 + 10, -20)
+							mover.tab9.selected = true
+							mover.tab9:SetScript(
+								"OnClick",
+								function(sel)
+									mover.settings.SelectTab(mover.tab9)
+								end
+							)
+
+							tinsert(mover.settings.tabs, mover.tab9)
+							mover.tab9.texture = mover.tab9:CreateTexture(nil, "Background")
+							mover.tab9.texture:SetAllPoints(mover.tab9)
+							mover.tab9.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							mover.tab9.text = mover.tab9:CreateFontString(nil, "ARTWORK")
+							mover.tab9.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							mover.tab9.text:SetPoint("CENTER", mover.tab9, "CENTER", 0, 0)
+							mover.tab9.text:SetText(MAIGT("stancebar"))
+							-- tab9 - Content
+							mover.tab9.content = CreateFrame("FRAME", nil, mover.settings)
+							mover.tab9.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+							mover.tab9.content:SetPoint("TOPLEFT", 0, -40)
+							mover.tab9.content.texture = mover.tab9.content:CreateTexture(nil, "Background")
+							mover.tab9.content.texture:SetAllPoints(mover.tab9.content)
+							mover.tab9.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							if MAIGV(element.name .. "allclasses") == nil then
+								MAISV(element.name .. "allclasses", true)
+							end
+
+							local allclasses = CreateFrame("CheckButton", "allclasses", mover.tab9.content, "ChatConfigCheckButtonTemplate")
+							allclasses:SetSize(20, 20)
+							allclasses:SetPoint("TOPLEFT", 10, -10)
+							allclasses:SetChecked(MAIGV(element.name .. "allclasses"))
+							allclasses:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "allclasses", newval)
+									if MAIUpdateStanceBarSize then
+										MAIUpdateStanceBarSize()
+									end
+								end
+							)
+
+							allclasses.text = allclasses:CreateFontString(nil, "ARTWORK")
+							allclasses.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							allclasses.text:SetPoint("LEFT", allclasses, "RIGHT", 0, 0)
+							allclasses.text:SetText(MAIGT("allclasses"))
+							local allclassesplus = CreateFrame("CheckButton", "allclassesplus", mover.tab9.content, "ChatConfigCheckButtonTemplate")
+							allclassesplus:SetSize(20, 20)
+							allclassesplus:SetPoint("TOPLEFT", 10, -40)
+							allclassesplus:SetChecked(MAIGV(element.name .. "allclassesplus"))
+							allclassesplus:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "allclassesplus", newval)
+									if MAIUpdateStanceBarSize then
+										MAIUpdateStanceBarSize()
+									end
+								end
+							)
+
+							allclassesplus.text = allclassesplus:CreateFontString(nil, "ARTWORK")
+							allclassesplus.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							allclassesplus.text:SetPoint("LEFT", allclassesplus, "RIGHT", 0, 0)
+							allclassesplus.text:SetText(MAIGT("allclassesplus"))
+						end
+
+						if element.name == "PlayerFrame" then
+							-- TAB10 - PlayerFrame
+							mover.tab10 = CreateFrame("Button", nil, mover.settings)
+							mover.tab10:SetSize(100, 20)
+							mover.tab10:SetPoint("TOPLEFT", 210, -20)
+							mover.tab10.selected = true
+							mover.tab10:SetScript(
+								"OnClick",
+								function(sel)
+									mover.settings.SelectTab(mover.tab10)
+								end
+							)
+
+							tinsert(mover.settings.tabs, mover.tab10)
+							mover.tab10.texture = mover.tab10:CreateTexture(nil, "Background")
+							mover.tab10.texture:SetAllPoints(mover.tab10)
+							mover.tab10.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							mover.tab10.text = mover.tab10:CreateFontString(nil, "ARTWORK")
+							mover.tab10.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							mover.tab10.text:SetPoint("CENTER", mover.tab10, "CENTER", 0, 0)
+							mover.tab10.text:SetText(MAIGT("playerframe"))
+							-- tab10 - Content
+							mover.tab10.content = CreateFrame("FRAME", nil, mover.settings)
+							mover.tab10.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+							mover.tab10.content:SetPoint("TOPLEFT", 0, -40)
+							mover.tab10.content.texture = mover.tab10.content:CreateTexture(nil, "Background")
+							mover.tab10.content.texture:SetAllPoints(mover.tab10.content)
+							mover.tab10.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							if MAIGV(element.name .. "groupindicator") == nil then
+								MAISV(element.name .. "groupindicator", true)
+							end
+
+							local groupindicator = CreateFrame("CheckButton", "groupindicator", mover.tab10.content, "ChatConfigCheckButtonTemplate")
+							groupindicator:SetSize(20, 20)
+							groupindicator:SetPoint("TOPLEFT", 10, -10)
+							groupindicator:SetChecked(MAIGV(element.name .. "groupindicator"))
+							groupindicator:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "groupindicator", newval)
+								end
+							)
+
+							groupindicator.text = groupindicator:CreateFontString(nil, "ARTWORK")
+							groupindicator.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							groupindicator.text:SetPoint("LEFT", groupindicator, "RIGHT", 0, 0)
+							groupindicator.text:SetText(MAIGT("groupindicator"))
+							if MAIGV(element.name .. "showtotemtimer") == nil then
+								MAISV(element.name .. "showtotemtimer", false)
+							end
+
+							local showtotemtimer = CreateFrame("CheckButton", "showtotemtimer", mover.tab10.content, "ChatConfigCheckButtonTemplate")
+							showtotemtimer:SetSize(20, 20)
+							showtotemtimer:SetPoint("TOPLEFT", 10, -30)
+							showtotemtimer:SetChecked(MAIGV(element.name .. "showtotemtimer"))
+							showtotemtimer:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "showtotemtimer", newval)
+								end
+							)
+
+							showtotemtimer.text = showtotemtimer:CreateFontString(nil, "ARTWORK")
+							showtotemtimer.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							showtotemtimer.text:SetPoint("LEFT", showtotemtimer, "RIGHT", 0, 0)
+							showtotemtimer.text:SetText(MAIGT("totemtimer"))
+							if MAIGV(element.name .. "showpvpicon") == nil then
+								MAISV(element.name .. "showpvpicon", true)
+							end
+
+							local showpvpicon = CreateFrame("CheckButton", "showpvpicon", mover.tab10.content, "ChatConfigCheckButtonTemplate")
+							showpvpicon:SetSize(20, 20)
+							showpvpicon:SetPoint("TOPLEFT", 10, -50)
+							showpvpicon:SetChecked(MAIGV(element.name .. "showpvpicon"))
+							showpvpicon:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "showpvpicon", newval)
+								end
+							)
+
+							showpvpicon.text = showpvpicon:CreateFontString(nil, "ARTWORK")
+							showpvpicon.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							showpvpicon.text:SetPoint("LEFT", showpvpicon, "RIGHT", 0, 0)
+							showpvpicon.text:SetText(MAIGT("showpvpicon"))
+						end
+
+						if element.name == "TargetFrame" then
+							-- TAB11 - TargetFrame
+							mover.tab11 = CreateFrame("Button", nil, mover.settings)
+							mover.tab11:SetSize(100, 20)
+							mover.tab11:SetPoint("TOPLEFT", 210, -20)
+							mover.tab11.selected = true
+							mover.tab11:SetScript(
+								"OnClick",
+								function(sel)
+									mover.settings.SelectTab(mover.tab11)
+								end
+							)
+
+							tinsert(mover.settings.tabs, mover.tab11)
+							mover.tab11.texture = mover.tab11:CreateTexture(nil, "Background")
+							mover.tab11.texture:SetAllPoints(mover.tab11)
+							mover.tab11.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							mover.tab11.text = mover.tab11:CreateFontString(nil, "ARTWORK")
+							mover.tab11.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							mover.tab11.text:SetPoint("CENTER", mover.tab11, "CENTER", 0, 0)
+							mover.tab11.text:SetText(MAIGT("targetframe"))
+							-- tab11 - Content
+							mover.tab11.content = CreateFrame("FRAME", nil, mover.settings)
+							mover.tab11.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
+							mover.tab11.content:SetPoint("TOPLEFT", 0, -40)
+							mover.tab11.content.texture = mover.tab11.content:CreateTexture(nil, "Background")
+							mover.tab11.content.texture:SetAllPoints(mover.tab11.content)
+							mover.tab11.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+							if MAIGV(element.name .. "ilvl") == nil then
+								MAISV(element.name .. "ilvl", true)
+							end
+
+							local ilvl = CreateFrame("CheckButton", "ilvl", mover.tab11.content, "ChatConfigCheckButtonTemplate")
+							ilvl:SetSize(20, 20)
+							ilvl:SetPoint("TOPLEFT", 10, -10)
+							ilvl:SetChecked(MAIGV(element.name .. "ilvl"))
+							ilvl:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "ilvl", newval)
+								end
+							)
+
+							ilvl.text = ilvl:CreateFontString(nil, "ARTWORK")
+							ilvl.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							ilvl.text:SetPoint("LEFT", ilvl, "RIGHT", 0, 0)
+							ilvl.text:SetText(MAIGT("ilvl"))
+							if MAIGV(element.name .. "showpvpicon") == nil then
+								MAISV(element.name .. "showpvpicon", true)
+							end
+
+							local showpvpicon = CreateFrame("CheckButton", "showpvpicon", mover.tab11.content, "ChatConfigCheckButtonTemplate")
+							showpvpicon:SetSize(20, 20)
+							showpvpicon:SetPoint("TOPLEFT", 10, -50)
+							showpvpicon:SetChecked(MAIGV(element.name .. "showpvpicon"))
+							showpvpicon:SetScript(
+								"OnClick",
+								function(sel)
+									local newval = sel:GetChecked()
+									MAISV(element.name .. "showpvpicon", newval)
+								end
+							)
+
+							showpvpicon.text = showpvpicon:CreateFontString(nil, "ARTWORK")
+							showpvpicon.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
+							showpvpicon.text:SetPoint("LEFT", showpvpicon, "RIGHT", 0, 0)
+							showpvpicon.text:SetText(MAIGT("showpvpicon"))
+						end
+
+						mover.settings.SelectTab(mover.tab1)
+						mover.settings.visible = true
+					elseif mover.settings.visible then
 						mover.settings:Hide()
 						mover.settings.visible = false
-					end)
-
-					function mover.settings.SelectTab(movertab)
-						for i, v in pairs(mover.settings.tabs) do
-							v.texture:SetColorTexture(unpack(MAICOLORBACKGROUND))
-							v.selected = false
-							v.content:Hide()
-						end
-
-						movertab.selected = true
-						movertab.content:Show()
-						movertab.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
+					else
+						mover.settings:Show()
+						mover.settings.visible = true
 					end
-
-					-- TAB1 - General
-					mover.tab1 = CreateFrame("Button", nil, mover.settings)
-					mover.tab1:SetSize(100, 20)
-					mover.tab1:SetPoint("TOPLEFT", 0, -20)
-					mover.tab1.selected = true
-
-					mover.tab1:SetScript("OnClick", function(sel)
-						mover.settings.SelectTab(mover.tab1)
-					end)
-
-					tinsert(mover.settings.tabs, mover.tab1)
-					mover.tab1.texture = mover.tab1:CreateTexture(nil, "Background")
-					mover.tab1.texture:SetAllPoints(mover.tab1)
-					mover.tab1.texture:SetColorTexture(0.1, 0.1, 0.1, 1)
-					mover.tab1.text = mover.tab1:CreateFontString(nil, "ARTWORK")
-					mover.tab1.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.tab1.text:SetPoint("CENTER", mover.tab1, "CENTER", 0, 0)
-					mover.tab1.text:SetText(getglobal("GENERAL"))
-					-- TAB1 - Content
-					mover.tab1.content = CreateFrame("FRAME", nil, mover.settings)
-					mover.tab1.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-					mover.tab1.content:SetPoint("TOPLEFT", 0, -40)
-					mover.tab1.content.texture = mover.tab1.content:CreateTexture(nil, "Background")
-					mover.tab1.content.texture:SetAllPoints(mover.tab1.content)
-					mover.tab1.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-					mover.textpos = mover.tab1.content:CreateFontString(nil, "ARTWORK")
-					mover.textpos:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.textpos:SetPoint("LEFT", mover.tab1.content, "TOPLEFT", 10, -10)
-					mover.textpos:SetText(getglobal("POSITION"))
-
-					function mover.TextThink()
-						if mover.textpos:IsShown() then
-							if MAIGV(element.name .. "ofsx") ~= nil and MAIGV(element.name .. "ofsy") ~= nil then
-								mover.textpos:SetText(MAIGT("position") .. ": " .. MAIGV(element.name .. "ofsx") .. "," .. MAIGV(element.name .. "ofsy"))
-							else
-								mover.textpos:SetText("Position not saved yet")
-							end
-						end
-
-						C_Timer.After(0.5, mover.TextThink)
-					end
-
-					mover.TextThink()
-					mover.tab1.content.upf = CreateFrame("Button", nil, mover.tab1.content)
-					mover.tab1.content.upf:SetSize(20, 20)
-					mover.tab1.content.upf:SetPoint("TOPLEFT", 50, -20)
-					mover.tab1.content.upf:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
-					mover.tab1.content.upf:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
-					mover.tab1.content.upf:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-
-					mover.tab1.content.upf:SetScript("OnClick", function(sel)
-						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
-
-						if point then
-							ofsy = ofsy + 10
-							MAISV(element.name .. "point", point)
-							MAISV(element.name .. "relativePoint", relativePoint)
-							MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
-							MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
-							mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
-						end
-					end)
-
-					mover.tab1.content.up = CreateFrame("Button", nil, mover.tab1.content)
-					mover.tab1.content.up:SetSize(20, 20)
-					mover.tab1.content.up:SetPoint("TOPLEFT", 50, -35)
-					mover.tab1.content.up:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
-					mover.tab1.content.up:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
-					mover.tab1.content.up:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-
-					mover.tab1.content.up:SetScript("OnClick", function(sel)
-						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
-
-						if point then
-							ofsy = ofsy + 1
-							MAISV(element.name .. "point", point)
-							MAISV(element.name .. "relativePoint", relativePoint)
-							MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
-							MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
-							mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
-						end
-					end)
-
-					mover.tab1.content.dn = CreateFrame("Button", nil, mover.tab1.content)
-					mover.tab1.content.dn:SetText("D")
-					mover.tab1.content.dn:SetSize(20, 20)
-					mover.tab1.content.dn:SetPoint("TOPLEFT", 50, -75)
-					mover.tab1.content.dn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
-					mover.tab1.content.dn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
-					mover.tab1.content.dn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-
-					mover.tab1.content.dn:SetScript("OnClick", function(sel)
-						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
-
-						if point then
-							ofsy = ofsy - 1
-							MAISV(element.name .. "point", point)
-							MAISV(element.name .. "relativePoint", relativePoint)
-							MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
-							MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
-							mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
-						end
-					end)
-
-					mover.tab1.content.dnf = CreateFrame("Button", nil, mover.tab1.content)
-					mover.tab1.content.dnf:SetText("D")
-					mover.tab1.content.dnf:SetSize(20, 20)
-					mover.tab1.content.dnf:SetPoint("TOPLEFT", 50, -90)
-					mover.tab1.content.dnf:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
-					mover.tab1.content.dnf:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
-					mover.tab1.content.dnf:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-
-					mover.tab1.content.dnf:SetScript("OnClick", function(sel)
-						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
-
-						if point then
-							ofsy = ofsy - 10
-							MAISV(element.name .. "point", point)
-							MAISV(element.name .. "relativePoint", relativePoint)
-							MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
-							MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
-							mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
-						end
-					end)
-
-					mover.tab1.content.rif = CreateFrame("Button", nil, mover.tab1.content)
-					mover.tab1.content.rif:SetSize(20, 20)
-					mover.tab1.content.rif:SetPoint("TOPLEFT", 85, -55)
-					mover.tab1.content.rif:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
-					mover.tab1.content.rif:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
-					mover.tab1.content.rif:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-
-					mover.tab1.content.rif:SetScript("OnClick", function(sel)
-						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
-
-						if point then
-							ofsx = ofsx + 10
-							MAISV(element.name .. "point", point)
-							MAISV(element.name .. "relativePoint", relativePoint)
-							MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
-							MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
-							mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
-						end
-					end)
-
-					mover.tab1.content.ri = CreateFrame("Button", nil, mover.tab1.content)
-					mover.tab1.content.ri:SetSize(20, 20)
-					mover.tab1.content.ri:SetPoint("TOPLEFT", 70, -55)
-					mover.tab1.content.ri:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
-					mover.tab1.content.ri:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
-					mover.tab1.content.ri:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-
-					mover.tab1.content.ri:SetScript("OnClick", function(sel)
-						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
-
-						if point then
-							ofsx = ofsx + 1
-							MAISV(element.name .. "point", point)
-							MAISV(element.name .. "relativePoint", relativePoint)
-							MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
-							MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
-							mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
-						end
-					end)
-
-					mover.tab1.content.li = CreateFrame("Button", nil, mover.tab1.content)
-					mover.tab1.content.li:SetSize(20, 20)
-					mover.tab1.content.li:SetPoint("TOPLEFT", 30, -55)
-					mover.tab1.content.li:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
-					mover.tab1.content.li:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
-					mover.tab1.content.li:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-
-					mover.tab1.content.li:SetScript("OnClick", function(sel)
-						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
-
-						if point then
-							ofsx = ofsx - 1
-							MAISV(element.name .. "point", point)
-							MAISV(element.name .. "relativePoint", relativePoint)
-							MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
-							MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
-							mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
-						end
-					end)
-
-					mover.tab1.content.lif = CreateFrame("Button", nil, mover.tab1.content)
-					mover.tab1.content.lif:SetSize(20, 20)
-					mover.tab1.content.lif:SetPoint("TOPLEFT", 15, -55)
-					mover.tab1.content.lif:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
-					mover.tab1.content.lif:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
-					mover.tab1.content.lif:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-
-					mover.tab1.content.lif:SetScript("OnClick", function(sel)
-						local point, parent, relativePoint, ofsx, ofsy = mover:GetPoint()
-
-						if point then
-							ofsx = ofsx - 10
-							MAISV(element.name .. "point", point)
-							MAISV(element.name .. "relativePoint", relativePoint)
-							MAISV(element.name .. "ofsx", MAIMathR(ofsx, 0))
-							MAISV(element.name .. "ofsy", MAIMathR(ofsy, 0))
-							mover:SetPoint(point, parent, relativePoint, ofsx, ofsy)
-						end
-					end)
-
-					MAISV(element.name .. "scale", MAIGV(element.name .. "scale") or 1)
-					mover.textsca = mover.tab1.content:CreateFontString(nil, "ARTWORK")
-					mover.textsca:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.textsca:SetPoint("LEFT", mover.tab1.content, "TOPLEFT", 150, -10)
-					mover.textsca:SetText(MAIGT("scale") .. ": " .. MAIGV(element.name .. "scale"))
-					mover.tab1.content.scaleup = CreateFrame("Button", nil, mover.tab1.content)
-					mover.tab1.content.scaleup:SetSize(20, 20)
-					mover.tab1.content.scaleup:SetPoint("TOPLEFT", 150, -20)
-					mover.tab1.content.scaleup:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
-					mover.tab1.content.scaleup:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
-					mover.tab1.content.scaleup:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-
-					mover.tab1.content.scaleup:SetScript("OnClick", function(sel)
-						local newval = MAIMathR(mover:GetScale() + 0.1, 1)
-						newval = MAIMathC(newval, 0.1, 4.0)
-						MAISV(element.name .. "scale", newval)
-						mover:SetScale(mover:GetScale() + 0.1)
-						_G[element.name]:SetScale(_G[element.name]:GetScale() + 0.1)
-						mover.textsca:SetText(MAIGT("scale") .. ": " .. MAIGV(element.name .. "scale"))
-					end)
-
-					mover.tab1.content.scaleup = CreateFrame("Button", nil, mover.tab1.content)
-					mover.tab1.content.scaleup:SetText("D")
-					mover.tab1.content.scaleup:SetSize(20, 20)
-					mover.tab1.content.scaleup:SetPoint("TOPLEFT", 150, -40)
-					mover.tab1.content.scaleup:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
-					mover.tab1.content.scaleup:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
-					mover.tab1.content.scaleup:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-
-					mover.tab1.content.scaleup:SetScript("OnClick", function(sel)
-						local newval = MAIMathR(mover:GetScale() - 0.1, 1)
-						newval = MAIMathC(newval, 0.1, 4.0)
-						MAISV(element.name .. "scale", newval)
-						mover:SetScale(mover:GetScale() - 0.1)
-						_G[element.name]:SetScale(_G[element.name]:GetScale() - 0.1)
-						mover.textsca:SetText(MAIGT("scale") .. ": " .. MAIGV(element.name .. "scale"))
-					end)
-
-					mover.tab1.content.move = CreateFrame("CheckButton", "moversettingsenabled", mover.tab1.content, "ChatConfigCheckButtonTemplate")
-					mover.tab1.content.move:SetSize(20, 20)
-					mover.tab1.content.move:SetPoint("TOPLEFT", 10, -120)
-					mover.tab1.content.move:SetChecked(MAIGV(element.name .. "move"))
-
-					mover.tab1.content.move:SetScript("OnClick", function(sel)
-						local newval = sel:GetChecked()
-						MAISV(element.name .. "move", newval)
-					end)
-
-					mover.tab1.content.move.text = mover.tab1.content.move:CreateFontString(nil, "ARTWORK")
-					mover.tab1.content.move.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.tab1.content.move.text:SetPoint("LEFT", mover.tab1.content.move, "RIGHT", 0, 0)
-					mover.tab1.content.move.text:SetText(MAIGT("move"))
-					mover.tab1.content.improvements = CreateFrame("CheckButton", "moversettingsimprovements", mover.tab1.content, "ChatConfigCheckButtonTemplate")
-					mover.tab1.content.improvements:SetSize(20, 20)
-					mover.tab1.content.improvements:SetPoint("TOPLEFT", 10, -140)
-					mover.tab1.content.improvements:SetChecked(MAIGV(element.name .. "improvements"))
-
-					mover.tab1.content.improvements:SetScript("OnClick", function(sel)
-						local newval = sel:GetChecked()
-						MAISV(element.name .. "improvements", newval)
-					end)
-
-					mover.tab1.content.improvements.text = mover.tab1.content.improvements:CreateFontString(nil, "ARTWORK")
-					mover.tab1.content.improvements.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.tab1.content.improvements.text:SetPoint("LEFT", mover.tab1.content.improvements, "RIGHT", 0, 0)
-					mover.tab1.content.improvements.text:SetText(MAIGT("improvements"))
-					mover.tab1.content.hideartwork = CreateFrame("CheckButton", "moversettingshideartwork", mover.tab1.content, "ChatConfigCheckButtonTemplate")
-					mover.tab1.content.hideartwork:SetSize(20, 20)
-					mover.tab1.content.hideartwork:SetPoint("TOPLEFT", 10, -160)
-					mover.tab1.content.hideartwork:SetChecked(MAIGV(element.name .. "hideartwork"))
-
-					mover.tab1.content.hideartwork:SetScript("OnClick", function(sel)
-						local newval = sel:GetChecked()
-						MAISV(element.name .. "hideartwork", newval)
-					end)
-
-					mover.tab1.content.hideartwork.text = mover.tab1.content.hideartwork:CreateFontString(nil, "ARTWORK")
-					mover.tab1.content.hideartwork.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.tab1.content.hideartwork.text:SetPoint("LEFT", mover.tab1.content.hideartwork, "RIGHT", 0, 0)
-					mover.tab1.content.hideartwork.text:SetText(MAIGT("hideartwork"))
-					-- TAB - Appearance
-					mover.tabapp = CreateFrame("Button", nil, mover.settings)
-					mover.tabapp:SetSize(100, 20)
-					mover.tabapp:SetPoint("TOPLEFT", 105, -20)
-					mover.tabapp.selected = false
-
-					mover.tabapp:SetScript("OnClick", function(sel)
-						mover.settings.SelectTab(mover.tabapp)
-					end)
-
-					tinsert(mover.settings.tabs, mover.tabapp)
-					mover.tabapp.texture = mover.tabapp:CreateTexture(nil, "Background")
-					mover.tabapp.texture:SetAllPoints(mover.tabapp)
-					mover.tabapp.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-					mover.tabapp.text = mover.tabapp:CreateFontString(nil, "ARTWORK")
-					mover.tabapp.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.tabapp.text:SetPoint("CENTER", mover.tabapp, "CENTER", 0, 0)
-					mover.tabapp.text:SetText(getglobal("APPEARANCE_LABEL"))
-					-- TAB - Appearance Content
-					mover.tabapp.content = CreateFrame("FRAME", nil, mover.settings)
-					mover.tabapp.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-					mover.tabapp.content:SetPoint("TOPLEFT", 0, -40)
-					mover.tabapp.content.texture = mover.tabapp.content:CreateTexture(nil, "Background")
-					mover.tabapp.content.texture:SetAllPoints(mover.tabapp.content)
-					mover.tabapp.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-					MAISV(element.name .. "alpha", MAIGV(element.name .. "alpha") or 1)
-					mover.textalp = mover.tabapp.content:CreateFontString(nil, "ARTWORK")
-					mover.textalp:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.textalp:SetPoint("LEFT", mover.tabapp.content, "TOPLEFT", 10, -10)
-					mover.textalp:SetText(MAIGT("outofcombat"))
-					mover.tabapp.content.alpha = MAICreateSlider(mover.tabapp.content, element.name, "alpha", MAIGV(element.name .. "alpha"), 10, -20, 0, 1, 0.1, ".1f", OPACITY)
-
-					mover.tabapp.content.alpha:HookScript("OnValueChanged", function(sel, val)
-						if sel.alpha ~= MAIGV(element.name .. "alpha") then
-							sel.alpha = MAIGV(element.name .. "alpha")
-							_G[element.name]._alpha = 1
-							_G[element.name]:SetAlpha(MAIGV(element.name .. "alpha", 1))
-
-							if _G[element.name].btns ~= nil then
-								for i, v in pairs(_G[element.name].btns) do
-									v:SetAlpha(MAIGV(element.name .. "alpha", 1))
-								end
-							end
-
-							MAITHINKER.update = true
-						end
-					end)
-
-					MAISV(element.name .. "alpha2", MAIGV(element.name .. "alpha2") or 1)
-					mover.textalp2 = mover.tabapp.content:CreateFontString(nil, "ARTWORK")
-					mover.textalp2:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.textalp2:SetPoint("LEFT", mover.tabapp.content, "TOPLEFT", 10, -50)
-					mover.textalp2:SetText(MAIGT("incombat"))
-					mover.tabapp.content.alpha2 = MAICreateSlider(mover.tabapp.content, element.name, "alpha2", MAIGV(element.name .. "alpha2"), 10, -60, 0, 1, 0.1, ".1f", OPACITY)
-
-					mover.tabapp.content.alpha2:HookScript("OnValueChanged", function(sel, val)
-						if sel.alpha2 ~= MAIGV(element.name .. "alpha2") then
-							sel.alpha2 = MAIGV(element.name .. "alpha2")
-							_G[element.name]._alpha = 1
-							_G[element.name]:SetAlpha(MAIGV(element.name .. "alpha2"))
-
-							if _G[element.name].btns ~= nil then
-								for i, v in pairs(_G[element.name].btns) do
-									v:SetAlpha(MAIGV(element.name .. "alpha2"))
-								end
-							end
-
-							MAITHINKER.update = true
-						end
-					end)
-
-					MAISV(element.name .. "alpha3", MAIGV(element.name .. "alpha3") or 1)
-					mover.textalp3 = mover.tabapp.content:CreateFontString(nil, "ARTWORK")
-					mover.textalp3:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.textalp3:SetPoint("LEFT", mover.tabapp.content, "TOPLEFT", 10, -90)
-					mover.textalp3:SetText(MAIGT("invehicle"))
-					mover.tabapp.content.alpha3 = MAICreateSlider(mover.tabapp.content, element.name, "alpha3", MAIGV(element.name .. "alpha3"), 10, -100, 0, 1, 0.1, ".1f", OPACITY)
-
-					mover.tabapp.content.alpha3:HookScript("OnValueChanged", function(sel, val)
-						if sel.alpha3 ~= MAIGV(element.name .. "alpha3") then
-							sel.alpha3 = MAIGV(element.name .. "alpha3")
-							_G[element.name]._alpha = 1
-							_G[element.name]:SetAlpha(MAIGV(element.name .. "alpha3"))
-
-							if _G[element.name].btns ~= nil then
-								for i, v in pairs(_G[element.name].btns) do
-									v:SetAlpha(MAIGV(element.name .. "alpha3"))
-								end
-							end
-
-							MAITHINKER.update = true
-						end
-					end)
-
-					mover.tabapp.content.show = CreateFrame("CheckButton", "moversettingsshow", mover.tabapp.content, "ChatConfigCheckButtonTemplate")
-					mover.tabapp.content.show:SetSize(20, 20)
-					mover.tabapp.content.show:SetPoint("TOPLEFT", 10, -140)
-					mover.tabapp.content.show:SetChecked(MAIGV(element.name .. "hide"))
-
-					mover.tabapp.content.show:SetScript("OnClick", function(sel)
-						local newval = sel:GetChecked()
-						MAISV(element.name .. "hide", newval)
-					end)
-
-					mover.tabapp.content.show.text = mover.tabapp.content.show:CreateFontString(nil, "ARTWORK")
-					mover.tabapp.content.show.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-					mover.tabapp.content.show.text:SetPoint("LEFT", mover.tabapp.content.show, "RIGHT", 0, 0)
-					mover.tabapp.content.show.text:SetText(getglobal("HIDE"))
-					local bars = {}
-
-					for x = 1, MAIMAXBAR do
-						tinsert(bars, "ActionBar" .. x)
-					end
-
-					tinsert(bars, "StanceBar")
-					tinsert(bars, "PetBar")
-					tinsert(bars, "MAIMicroButtons")
-
-					if tContains(bars, element.name) then
-						-- TAB2 - ActionButton
-						mover.tab2 = CreateFrame("Button", nil, mover.settings)
-						mover.tab2:SetSize(100, 20)
-						mover.tab2:SetPoint("TOPLEFT", 210, -20)
-						mover.tab2.selected = true
-
-						mover.tab2:SetScript("OnClick", function(sel)
-							mover.settings.SelectTab(mover.tab2)
-						end)
-
-						tinsert(mover.settings.tabs, mover.tab2)
-						mover.tab2.texture = mover.tab2:CreateTexture(nil, "Background")
-						mover.tab2.texture:SetAllPoints(mover.tab2)
-						mover.tab2.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						mover.tab2.text = mover.tab2:CreateFontString(nil, "ARTWORK")
-						mover.tab2.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						mover.tab2.text:SetPoint("CENTER", mover.tab2, "CENTER", 0, 0)
-						mover.tab2.text:SetText(MAIGT("bar"))
-						-- TAB2 - Content
-						mover.tab2.content = CreateFrame("FRAME", nil, mover.settings)
-						mover.tab2.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-						mover.tab2.content:SetPoint("TOPLEFT", 0, -40)
-						mover.tab2.content.texture = mover.tab2.content:CreateTexture(nil, "Background")
-						mover.tab2.content.texture:SetAllPoints(mover.tab2.content)
-						mover.tab2.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						local CB = LibDD:Create_UIDropDownMenu(element.name .. "rowscb", mover.tab2.content)
-						CB:SetPoint("TOPLEFT", -10, -4)
-						LibDD:UIDropDownMenu_SetWidth(CB, 80)
-						LibDD:UIDropDownMenu_SetText(CB, MAIGV(element.name .. "rows"))
-
-						LibDD:UIDropDownMenu_Initialize(CB, function(sel, level, menuList)
-							local tab = {}
-							local count = MAIGV(element.name .. "count")
-							tinsert(tab, 1)
-
-							if count == 2 then
-								tinsert(tab, 2)
-							elseif count == 3 then
-								tinsert(tab, 3)
-							elseif count == 4 then
-								tinsert(tab, 2)
-								tinsert(tab, 4)
-							elseif count == 5 then
-								tinsert(tab, 5)
-							elseif count == 6 then
-								tinsert(tab, 2)
-								tinsert(tab, 3)
-								tinsert(tab, 6)
-							elseif count == 7 then
-								tinsert(tab, 7)
-							elseif count == 8 then
-								tinsert(tab, 2)
-								tinsert(tab, 4)
-								tinsert(tab, 8)
-							elseif count == 9 then
-								tinsert(tab, 3)
-								tinsert(tab, 9)
-							elseif count == 10 then
-								tinsert(tab, 2)
-								tinsert(tab, 5)
-								tinsert(tab, 10)
-							elseif count == 11 then
-								tinsert(tab, 11)
-							elseif count == 12 then
-								tinsert(tab, 2)
-								tinsert(tab, 3)
-								tinsert(tab, 4)
-								tinsert(tab, 6)
-								tinsert(tab, 12)
-							end
-
-							tinsert(tab, "max")
-
-							for i, v in pairs(tab) do
-								local info = LibDD:UIDropDownMenu_CreateInfo()
-								info.func = sel.SetValue
-								info.text = v
-								info.arg1 = v
-								LibDD:UIDropDownMenu_AddButton(info)
-							end
-						end)
-
-						function CB:SetValue(newValue)
-							MAISV(element.name .. "rows", newValue)
-							LibDD:UIDropDownMenu_SetText(CB, newValue)
-							CloseDropDownMenus()
-							MAIUpdateActionButton()
-
-							if MAIUpdateMAIMicroButtons then
-								MAIUpdateMAIMicroButtons()
-							end
-						end
-
-						local text = CB:CreateFontString(nil, "ARTWORK")
-						text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						text:SetPoint("LEFT", CB, "RIGHT", -10, 4)
-						text:SetText(MAIGT("rows"))
-						local vmax = 12
-
-						if element.name == "PetBar" then
-							vmax = 10
-						elseif element.name == "CharacterMicroButton" and MAIBUILD ~= "RETAIL" then
-							vmax = 8
-						end
-
-						MAICreateSlider(mover.tab2.content, element.name, "spacing", 4, 10, -50, -6, 36, 1.0, ".0f", "spacing")
-
-						if element.name ~= "MAIMicroButtons" then
-							MAICreateSlider(mover.tab2.content, element.name, "count", vmax, 10, -80, 1, vmax, 1.0, ".0f", "count")
-						end
-
-						if string.find(element.name, "ActionBar") then
-							if MAIGV(element.name .. "hidehk") == nil then
-								MAISV(element.name .. "hidehk", false)
-							end
-
-							mover.tab2.content.hidehk = CreateFrame("CheckButton", "moversettingsenabled", mover.tab2.content, "ChatConfigCheckButtonTemplate")
-							mover.tab2.content.hidehk:SetSize(20, 20)
-							mover.tab2.content.hidehk:SetPoint("TOPLEFT", 10, -110)
-							mover.tab2.content.hidehk:SetChecked(MAIGV(element.name .. "hidehk"))
-
-							mover.tab2.content.hidehk:SetScript("OnClick", function(sel)
-								local newval = sel:GetChecked()
-								MAISV(element.name .. "hidehk", newval)
-								MAIUpdateActionButton()
-							end)
-
-							mover.tab2.content.hidehk.text = mover.tab2.content.hidehk:CreateFontString(nil, "ARTWORK")
-							mover.tab2.content.hidehk.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-							mover.tab2.content.hidehk.text:SetPoint("LEFT", mover.tab2.content.hidehk, "RIGHT", 0, 0)
-							mover.tab2.content.hidehk.text:SetText("Hide Hotkeys")
-
-							if MAIGV(element.name .. "hidena") == nil then
-								MAISV(element.name .. "hidena", false)
-							end
-
-							mover.tab2.content.hidena = CreateFrame("CheckButton", "moversettingsenabled", mover.tab2.content, "ChatConfigCheckButtonTemplate")
-							mover.tab2.content.hidena:SetSize(20, 20)
-							mover.tab2.content.hidena:SetPoint("TOPLEFT", 10, -130)
-							mover.tab2.content.hidena:SetChecked(MAIGV(element.name .. "hidena"))
-
-							mover.tab2.content.hidena:SetScript("OnClick", function(sel)
-								local newval = sel:GetChecked()
-								MAISV(element.name .. "hidena", newval)
-								MAIUpdateActionButton()
-							end)
-
-							mover.tab2.content.hidena.text = mover.tab2.content.hidena:CreateFontString(nil, "ARTWORK")
-							mover.tab2.content.hidena.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-							mover.tab2.content.hidena.text:SetPoint("LEFT", mover.tab2.content.hidena, "RIGHT", 0, 0)
-							mover.tab2.content.hidena.text:SetText("Hide Name")
-						end
-					end
-
-					if element.name == "BagBar" then
-						-- TAB3 - Bags
-						mover.tab3 = CreateFrame("Button", nil, mover.settings)
-						mover.tab3:SetSize(100, 20)
-						mover.tab3:SetPoint("TOPLEFT", 210, -20)
-						mover.tab3.selected = true
-
-						mover.tab3:SetScript("OnClick", function(sel)
-							mover.settings.SelectTab(mover.tab3)
-						end)
-
-						tinsert(mover.settings.tabs, mover.tab3)
-						mover.tab3.texture = mover.tab3:CreateTexture(nil, "Background")
-						mover.tab3.texture:SetAllPoints(mover.tab3)
-						mover.tab3.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						mover.tab3.text = mover.tab3:CreateFontString(nil, "ARTWORK")
-						mover.tab3.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						mover.tab3.text:SetPoint("CENTER", mover.tab3, "CENTER", 0, 0)
-						mover.tab3.text:SetText(getglobal("BAGSLOT"))
-						-- tab3 - Content
-						mover.tab3.content = CreateFrame("FRAME", nil, mover.settings)
-						mover.tab3.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-						mover.tab3.content:SetPoint("TOPLEFT", 0, -40)
-						mover.tab3.content.texture = mover.tab3.content:CreateTexture(nil, "Background")
-						mover.tab3.content.texture:SetAllPoints(mover.tab3.content)
-						mover.tab3.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						mover.tab3.content.onebag = CreateFrame("CheckButton", "moversettingsenabled", mover.tab3.content, "ChatConfigCheckButtonTemplate")
-						mover.tab3.content.onebag:SetSize(20, 20)
-						mover.tab3.content.onebag:SetPoint("TOPLEFT", 10, -10)
-						mover.tab3.content.onebag:SetChecked(MAIGV(element.name .. "onebag"))
-
-						mover.tab3.content.onebag:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "onebag", newval)
-						end)
-
-						mover.tab3.content.onebag.text = mover.tab3.content.onebag:CreateFontString(nil, "ARTWORK")
-						mover.tab3.content.onebag.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						mover.tab3.content.onebag.text:SetPoint("LEFT", mover.tab3.content.onebag, "RIGHT", 0, 0)
-						mover.tab3.content.onebag.text:SetText("One bag")
-					end
-
-					if element.name == "Minimap" then
-						-- TAB4 - ActionButton
-						mover.tab4 = CreateFrame("Button", nil, mover.settings)
-						mover.tab4:SetSize(100, 20)
-						mover.tab4:SetPoint("TOPLEFT", 210, -20)
-						mover.tab4.selected = true
-
-						mover.tab4:SetScript("OnClick", function(sel)
-							mover.settings.SelectTab(mover.tab4)
-						end)
-
-						tinsert(mover.settings.tabs, mover.tab4)
-						mover.tab4.texture = mover.tab4:CreateTexture(nil, "Background")
-						mover.tab4.texture:SetAllPoints(mover.tab4)
-						mover.tab4.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						mover.tab4.text = mover.tab4:CreateFontString(nil, "ARTWORK")
-						mover.tab4.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						mover.tab4.text:SetPoint("CENTER", mover.tab4, "CENTER", 0, 0)
-						mover.tab4.text:SetText(getglobal("MINIMAP_LABEL"))
-						-- TAB4 - Content
-						mover.tab4.content = CreateFrame("FRAME", nil, mover.settings)
-						mover.tab4.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-						mover.tab4.content:SetPoint("TOPLEFT", 0, -40)
-						mover.tab4.content.texture = mover.tab4.content:CreateTexture(nil, "Background")
-						mover.tab4.content.texture:SetAllPoints(mover.tab4.content)
-						mover.tab4.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-
-						if MAIGV(element.name .. "form") == nil then
-							MAISV(element.name .. "form", "paper2")
-						end
-
-						local CB = LibDD:Create_UIDropDownMenu(element.name .. "formcb", mover.tab4.content)
-						CB:SetPoint("TOPLEFT", -10, -4)
-						LibDD:UIDropDownMenu_SetWidth(CB, 80)
-						LibDD:UIDropDownMenu_SetText(CB, MAIGV(element.name .. "form"))
-
-						LibDD:UIDropDownMenu_Initialize(CB, function(sel, level, menuList)
-							local tab = {}
-							tinsert(tab, "paper")
-							tinsert(tab, "paper2")
-							tinsert(tab, "square")
-							tinsert(tab, "round")
-
-							for i, v in pairs(tab) do
-								local info = LibDD:UIDropDownMenu_CreateInfo()
-								info.func = sel.SetValue
-								info.text = v
-								info.arg1 = v
-								LibDD:UIDropDownMenu_AddButton(info)
-							end
-						end)
-
-						function CB:SetValue(newValue)
-							MAISV(element.name .. "form", newValue)
-							LibDD:UIDropDownMenu_SetText(CB, newValue)
-							CloseDropDownMenus()
-							MAIUpdateActionButton()
-
-							if MAIUpdateMAIMicroButtons then
-								MAIUpdateMAIMicroButtons()
-							end
-
-							C_UI.Reload()
-						end
-
-						local text = CB:CreateFontString(nil, "ARTWORK")
-						text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						text:SetPoint("LEFT", CB, "RIGHT", -10, 4)
-						text:SetText(MAIGT("form"))
-
-						if MAIGV(element.name .. "hideminimapbuttons") == nil then
-							MAISV(element.name .. "hideminimapbuttons", true)
-						end
-
-						local hideminimapbuttons = CreateFrame("CheckButton", "hideminimapbuttons", mover.tab4.content, "ChatConfigCheckButtonTemplate")
-						hideminimapbuttons:SetSize(20, 20)
-						hideminimapbuttons:SetPoint("TOPLEFT", 10, -40)
-						hideminimapbuttons:SetChecked(MAIGV(element.name .. "hideminimapbuttons"))
-
-						hideminimapbuttons:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "hideminimapbuttons", newval)
-						end)
-
-						hideminimapbuttons.text = hideminimapbuttons:CreateFontString(nil, "ARTWORK")
-						hideminimapbuttons.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						hideminimapbuttons.text:SetPoint("LEFT", hideminimapbuttons, "RIGHT", 0, 0)
-						hideminimapbuttons.text:SetText(MAIGT("hideminimapbuttons"))
-						local range = CreateFrame("CheckButton", "range", mover.tab4.content, "ChatConfigCheckButtonTemplate")
-						range:SetSize(20, 20)
-						range:SetPoint("TOPLEFT", 10, -60)
-						range:SetChecked(MAIGV(element.name .. "range"))
-
-						range:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "range", newval)
-						end)
-
-						range.text = range:CreateFontString(nil, "ARTWORK")
-						range.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						range.text:SetPoint("LEFT", range, "RIGHT", 0, 0)
-						range.text:SetText(MAIGT("range"))
-					end
-
-					if element.name == "DurabilityFrame" then
-						-- TAB5 - ActionButton
-						mover.tab5 = CreateFrame("Button", nil, mover.settings)
-						mover.tab5:SetSize(100, 20)
-						mover.tab5:SetPoint("TOPLEFT", 210, -20)
-						mover.tab5.selected = true
-
-						mover.tab5:SetScript("OnClick", function(sel)
-							mover.settings.SelectTab(mover.tab5)
-						end)
-
-						tinsert(mover.settings.tabs, mover.tab5)
-						mover.tab5.texture = mover.tab5:CreateTexture(nil, "Background")
-						mover.tab5.texture:SetAllPoints(mover.tab5)
-						mover.tab5.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						mover.tab5.text = mover.tab5:CreateFontString(nil, "ARTWORK")
-						mover.tab5.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						mover.tab5.text:SetPoint("CENTER", mover.tab5, "CENTER", 0, 0)
-						mover.tab5.text:SetText(getglobal("DURABILITY"))
-						-- TAB5 - Content
-						mover.tab5.content = CreateFrame("FRAME", nil, mover.settings)
-						mover.tab5.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-						mover.tab5.content:SetPoint("TOPLEFT", 0, -40)
-						mover.tab5.content.texture = mover.tab5.content:CreateTexture(nil, "Background")
-						mover.tab5.content.texture:SetAllPoints(mover.tab5.content)
-						mover.tab5.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						local gold = CreateFrame("CheckButton", "gold", mover.tab5.content, "ChatConfigCheckButtonTemplate")
-						gold:SetSize(20, 20)
-						gold:SetPoint("TOPLEFT", 10, -20)
-						gold:SetChecked(MAIGV(element.name .. "gold"))
-
-						gold:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "gold", newval)
-						end)
-
-						gold.text = gold:CreateFontString(nil, "ARTWORK")
-						gold.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						gold.text:SetPoint("LEFT", gold, "RIGHT", 0, 0)
-						gold.text:SetText(MAIGT("gold"))
-						local ilvl = CreateFrame("CheckButton", "ilvl", mover.tab5.content, "ChatConfigCheckButtonTemplate")
-						ilvl:SetSize(20, 20)
-						ilvl:SetPoint("TOPLEFT", 10, -40)
-						ilvl:SetChecked(MAIGV(element.name .. "ilvl"))
-
-						ilvl:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "ilvl", newval)
-						end)
-
-						ilvl.text = ilvl:CreateFontString(nil, "ARTWORK")
-						ilvl.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						ilvl.text:SetPoint("LEFT", ilvl, "RIGHT", 0, 0)
-						ilvl.text:SetText(MAIGT("ilvl"))
-					end
-
-					if element.name == "MAIStatusBar" then
-						-- TAB6 - ActionButton
-						mover.tab6 = CreateFrame("Button", nil, mover.settings)
-						mover.tab6:SetSize(100, 20)
-						mover.tab6:SetPoint("TOPLEFT", 210, -20)
-						mover.tab6.selected = true
-
-						mover.tab6:SetScript("OnClick", function(sel)
-							mover.settings.SelectTab(mover.tab6)
-						end)
-
-						tinsert(mover.settings.tabs, mover.tab6)
-						mover.tab6.texture = mover.tab6:CreateTexture(nil, "Background")
-						mover.tab6.texture:SetAllPoints(mover.tab6)
-						mover.tab6.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						mover.tab6.text = mover.tab6:CreateFontString(nil, "ARTWORK")
-						mover.tab6.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						mover.tab6.text:SetPoint("CENTER", mover.tab6, "CENTER", 0, 0)
-						mover.tab6.text:SetText(MAIGT("MAIStatusBar"))
-						-- TAB6 - Content
-						mover.tab6.content = CreateFrame("FRAME", nil, mover.settings)
-						mover.tab6.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-						mover.tab6.content:SetPoint("TOPLEFT", 0, -40)
-						mover.tab6.content.texture = mover.tab6.content:CreateTexture(nil, "Background")
-						mover.tab6.content.texture:SetAllPoints(mover.tab6.content)
-						mover.tab6.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						MAISV(element.name .. "width", MAIGV(element.name .. "width") or 1000)
-						mover.tab6.content.width = MAICreateSlider(mover.tab6.content, element.name, "width", MAIGV(element.name .. "width"), 10, -30, 100, 1600, 10.0, ".0f", MAIGT("width"))
-
-						mover.tab6.content.width:HookScript("OnValueChanged", function(sel, val)
-							if MAIGV(element.name .. "width") and MAIGV(element.name .. "width") > 1600 then
-								MAISV(element.name .. "width", 1600)
-							end
-
-							if sel.width ~= MAIGV(element.name .. "width") then
-								sel.width = MAIGV(element.name .. "width")
-								_G[element.name]:SetWidth(MAIGV(element.name .. "width"))
-							end
-						end)
-
-						MAISV(element.name .. "height", MAIGV(element.name .. "height") or 30)
-
-						if MAIGV(element.name .. "height") == 20 and MAIGV(element.name .. "fixed") == nil then
-							MAISV(element.name .. "fixed", true)
-							MAISV(element.name .. "height", 40)
-						end
-
-						mover.tab6.content.height = MAICreateSlider(mover.tab6.content, element.name, "height", MAIGV(element.name .. "height"), 10, -70, 10, 100, 1.0, ".0f", MAIGT("height"))
-
-						mover.tab6.content.height:HookScript("OnValueChanged", function(sel, val)
-							if sel.height ~= MAIGV(element.name .. "height") then
-								sel.height = MAIGV(element.name .. "height")
-								_G[element.name]:SetHeight(MAIGV(element.name .. "height"))
-							end
-						end)
-
-						if MAIGV(element.name .. "showonlywhenhovered") == nil then
-							MAISV(element.name .. "showonlywhenhovered", false)
-						end
-
-						local showonlywhenhovered = CreateFrame("CheckButton", "showonlywhenhovered", mover.tab6.content, "ChatConfigCheckButtonTemplate")
-						showonlywhenhovered:SetSize(20, 20)
-						showonlywhenhovered:SetPoint("TOPLEFT", 10, -100)
-						showonlywhenhovered:SetChecked(MAIGV(element.name .. "showonlywhenhovered"))
-
-						showonlywhenhovered:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "showonlywhenhovered", newval)
-						end)
-
-						showonlywhenhovered.text = showonlywhenhovered:CreateFontString(nil, "ARTWORK")
-						showonlywhenhovered.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						showonlywhenhovered.text:SetPoint("LEFT", showonlywhenhovered, "RIGHT", 0, 0)
-						showonlywhenhovered.text:SetText(MAIGT("showonlywhenhovered"))
-
-						if MAIGV(element.name .. "autoselectfaction") == nil then
-							MAISV(element.name .. "autoselectfaction", true)
-						end
-
-						if not MAIGV("nochanges") then
-							local autoselectfaction = CreateFrame("CheckButton", "autoselectfaction", mover.tab6.content, "ChatConfigCheckButtonTemplate")
-							autoselectfaction:SetSize(20, 20)
-							autoselectfaction:SetPoint("TOPLEFT", 10, -120)
-							autoselectfaction:SetChecked(MAIGV(element.name .. "autoselectfaction"))
-
-							autoselectfaction:SetScript("OnClick", function(sel)
-								local newval = sel:GetChecked()
-								MAISV(element.name .. "autoselectfaction", newval)
-							end)
-
-							autoselectfaction.text = autoselectfaction:CreateFontString(nil, "ARTWORK")
-							autoselectfaction.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-							autoselectfaction.text:SetPoint("LEFT", autoselectfaction, "RIGHT", 0, 0)
-							autoselectfaction.text:SetText(MAIGT("autoselectfaction"))
-							local missingxp = CreateFrame("CheckButton", "missingxp", mover.tab6.content, "ChatConfigCheckButtonTemplate")
-							missingxp:SetSize(20, 20)
-							missingxp:SetPoint("TOPLEFT", 10, -140)
-							missingxp:SetChecked(MAIGV(element.name .. "missingxp", true))
-
-							missingxp:SetScript("OnClick", function(sel)
-								local newval = sel:GetChecked()
-								MAISV(element.name .. "missingxp", newval)
-							end)
-
-							missingxp.text = missingxp:CreateFontString(nil, "ARTWORK")
-							missingxp.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-							missingxp.text:SetPoint("LEFT", missingxp, "RIGHT", 0, 0)
-							missingxp.text:SetText(MAIGT("missingxp"))
-						end
-					end
-
-					if element.name == "GameTooltip" and not MAIGV("nochanges") then
-						-- TAB7 - GameTooltip
-						mover.tab7 = CreateFrame("Button", nil, mover.settings)
-						mover.tab7:SetSize(100, 20)
-						mover.tab7:SetPoint("TOPLEFT", 210, -20)
-						mover.tab7.selected = true
-
-						mover.tab7:SetScript("OnClick", function(sel)
-							mover.settings.SelectTab(mover.tab7)
-						end)
-
-						tinsert(mover.settings.tabs, mover.tab7)
-						mover.tab7.texture = mover.tab7:CreateTexture(nil, "Background")
-						mover.tab7.texture:SetAllPoints(mover.tab7)
-						mover.tab7.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						mover.tab7.text = mover.tab7:CreateFontString(nil, "ARTWORK")
-						mover.tab7.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						mover.tab7.text:SetPoint("CENTER", mover.tab7, "CENTER", 0, 0)
-						mover.tab7.text:SetText(MAIGT("tooltip"))
-						-- tab7 - Content
-						mover.tab7.content = CreateFrame("FRAME", nil, mover.settings)
-						mover.tab7.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-						mover.tab7.content:SetPoint("TOPLEFT", 0, -40)
-						mover.tab7.content.texture = mover.tab7.content:CreateTexture(nil, "Background")
-						mover.tab7.content.texture:SetAllPoints(mover.tab7.content)
-						mover.tab7.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-
-						function MAIAddCB(paren, ele, key, value, x, y)
-							local opt = CreateFrame("CheckButton", key, paren, "ChatConfigCheckButtonTemplate")
-							opt:SetSize(20, 20)
-							opt:SetPoint("TOPLEFT", x, y)
-							opt:SetChecked(MAIGV(ele .. key))
-
-							opt:SetScript("OnClick", function(sel)
-								local newval = sel:GetChecked()
-								MAISV(ele .. key, newval)
-							end)
-
-							opt.text = opt:CreateFontString(nil, "ARTWORK")
-							opt.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-							opt.text:SetPoint("LEFT", opt, "RIGHT", 0, 0)
-							opt.text:SetText(MAIGT(key))
-						end
-
-						MAIAddCB(mover.tab7.content, element.name, "oncursor", false, 10, -10)
-						MAIAddCB(mover.tab7.content, element.name, "sellprice", false, 10, -30)
-						MAIAddCB(mover.tab7.content, element.name, "ilevel", false, 10, -50)
-						MAIAddCB(mover.tab7.content, element.name, "showcountryflag", true, 10, -70)
-						MAIAddCB(mover.tab7.content, element.name, "expansion", false, 10, -90)
-					end
-
-					if element.name == "MAIBuffFrame" then
-						-- TAB8 - MAIBuffFrame
-						mover.tab8 = CreateFrame("Button", nil, mover.settings)
-						mover.tab8:SetSize(100, 20)
-						mover.tab8:SetPoint("TOPLEFT", 210, -20)
-						mover.tab8.selected = true
-
-						mover.tab8:SetScript("OnClick", function(sel)
-							mover.settings.SelectTab(mover.tab8)
-						end)
-
-						tinsert(mover.settings.tabs, mover.tab8)
-						mover.tab8.texture = mover.tab8:CreateTexture(nil, "Background")
-						mover.tab8.texture:SetAllPoints(mover.tab8)
-						mover.tab8.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						mover.tab8.text = mover.tab8:CreateFontString(nil, "ARTWORK")
-						mover.tab8.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						mover.tab8.text:SetPoint("CENTER", mover.tab8, "CENTER", 0, 0)
-						mover.tab8.text:SetText(MAIGT("buffframe"))
-						-- tab8 - Content
-						mover.tab8.content = CreateFrame("FRAME", nil, mover.settings)
-						mover.tab8.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-						mover.tab8.content:SetPoint("TOPLEFT", 0, -40)
-						mover.tab8.content.texture = mover.tab8.content:CreateTexture(nil, "Background")
-						mover.tab8.content.texture:SetAllPoints(mover.tab8.content)
-						mover.tab8.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-
-						if MAIGV(element.name .. "accuratetime") == nil then
-							MAISV(element.name .. "accuratetime", true)
-						end
-
-						local accuratetime = CreateFrame("CheckButton", "accuratetime", mover.tab8.content, "ChatConfigCheckButtonTemplate")
-						accuratetime:SetSize(20, 20)
-						accuratetime:SetPoint("TOPLEFT", 10, -10)
-						accuratetime:SetChecked(MAIGV(element.name .. "accuratetime"))
-
-						accuratetime:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "accuratetime", newval)
-						end)
-
-						accuratetime.text = accuratetime:CreateFontString(nil, "ARTWORK")
-						accuratetime.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						accuratetime.text:SetPoint("LEFT", accuratetime, "RIGHT", 0, 0)
-						accuratetime.text:SetText(MAIGT("accuratetime"))
-						MAISV(element.name .. "spacing", MAIGV(element.name .. "spacing") or 2)
-						mover.tab8.content.spacing = MAICreateSlider(mover.tab8.content, element.name, "spacing", MAIGV(element.name .. "spacing"), 10, -60, 0, 20, 1.0, "1.0d", MAIGT("spacing"))
-					end
-
-					if element.name == "StanceBar" then
-						-- TAB9 - StanceBar
-						mover.tab9 = CreateFrame("Button", nil, mover.settings)
-						mover.tab9:SetSize(100, 20)
-						mover.tab9:SetPoint("TOPLEFT", 210 + 100 + 10, -20)
-						mover.tab9.selected = true
-
-						mover.tab9:SetScript("OnClick", function(sel)
-							mover.settings.SelectTab(mover.tab9)
-						end)
-
-						tinsert(mover.settings.tabs, mover.tab9)
-						mover.tab9.texture = mover.tab9:CreateTexture(nil, "Background")
-						mover.tab9.texture:SetAllPoints(mover.tab9)
-						mover.tab9.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						mover.tab9.text = mover.tab9:CreateFontString(nil, "ARTWORK")
-						mover.tab9.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						mover.tab9.text:SetPoint("CENTER", mover.tab9, "CENTER", 0, 0)
-						mover.tab9.text:SetText(MAIGT("stancebar"))
-						-- tab9 - Content
-						mover.tab9.content = CreateFrame("FRAME", nil, mover.settings)
-						mover.tab9.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-						mover.tab9.content:SetPoint("TOPLEFT", 0, -40)
-						mover.tab9.content.texture = mover.tab9.content:CreateTexture(nil, "Background")
-						mover.tab9.content.texture:SetAllPoints(mover.tab9.content)
-						mover.tab9.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-
-						if MAIGV(element.name .. "allclasses") == nil then
-							MAISV(element.name .. "allclasses", true)
-						end
-
-						local allclasses = CreateFrame("CheckButton", "allclasses", mover.tab9.content, "ChatConfigCheckButtonTemplate")
-						allclasses:SetSize(20, 20)
-						allclasses:SetPoint("TOPLEFT", 10, -10)
-						allclasses:SetChecked(MAIGV(element.name .. "allclasses"))
-
-						allclasses:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "allclasses", newval)
-
-							if MAIUpdateStanceBarSize then
-								MAIUpdateStanceBarSize()
-							end
-						end)
-
-						allclasses.text = allclasses:CreateFontString(nil, "ARTWORK")
-						allclasses.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						allclasses.text:SetPoint("LEFT", allclasses, "RIGHT", 0, 0)
-						allclasses.text:SetText(MAIGT("allclasses"))
-						local allclassesplus = CreateFrame("CheckButton", "allclassesplus", mover.tab9.content, "ChatConfigCheckButtonTemplate")
-						allclassesplus:SetSize(20, 20)
-						allclassesplus:SetPoint("TOPLEFT", 10, -40)
-						allclassesplus:SetChecked(MAIGV(element.name .. "allclassesplus"))
-
-						allclassesplus:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "allclassesplus", newval)
-
-							if MAIUpdateStanceBarSize then
-								MAIUpdateStanceBarSize()
-							end
-						end)
-
-						allclassesplus.text = allclassesplus:CreateFontString(nil, "ARTWORK")
-						allclassesplus.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						allclassesplus.text:SetPoint("LEFT", allclassesplus, "RIGHT", 0, 0)
-						allclassesplus.text:SetText(MAIGT("allclassesplus"))
-					end
-
-					if element.name == "PlayerFrame" then
-						-- TAB10 - PlayerFrame
-						mover.tab10 = CreateFrame("Button", nil, mover.settings)
-						mover.tab10:SetSize(100, 20)
-						mover.tab10:SetPoint("TOPLEFT", 210, -20)
-						mover.tab10.selected = true
-
-						mover.tab10:SetScript("OnClick", function(sel)
-							mover.settings.SelectTab(mover.tab10)
-						end)
-
-						tinsert(mover.settings.tabs, mover.tab10)
-						mover.tab10.texture = mover.tab10:CreateTexture(nil, "Background")
-						mover.tab10.texture:SetAllPoints(mover.tab10)
-						mover.tab10.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						mover.tab10.text = mover.tab10:CreateFontString(nil, "ARTWORK")
-						mover.tab10.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						mover.tab10.text:SetPoint("CENTER", mover.tab10, "CENTER", 0, 0)
-						mover.tab10.text:SetText(MAIGT("playerframe"))
-						-- tab10 - Content
-						mover.tab10.content = CreateFrame("FRAME", nil, mover.settings)
-						mover.tab10.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-						mover.tab10.content:SetPoint("TOPLEFT", 0, -40)
-						mover.tab10.content.texture = mover.tab10.content:CreateTexture(nil, "Background")
-						mover.tab10.content.texture:SetAllPoints(mover.tab10.content)
-						mover.tab10.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-
-						if MAIGV(element.name .. "groupindicator") == nil then
-							MAISV(element.name .. "groupindicator", true)
-						end
-
-						local groupindicator = CreateFrame("CheckButton", "groupindicator", mover.tab10.content, "ChatConfigCheckButtonTemplate")
-						groupindicator:SetSize(20, 20)
-						groupindicator:SetPoint("TOPLEFT", 10, -10)
-						groupindicator:SetChecked(MAIGV(element.name .. "groupindicator"))
-
-						groupindicator:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "groupindicator", newval)
-						end)
-
-						groupindicator.text = groupindicator:CreateFontString(nil, "ARTWORK")
-						groupindicator.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						groupindicator.text:SetPoint("LEFT", groupindicator, "RIGHT", 0, 0)
-						groupindicator.text:SetText(MAIGT("groupindicator"))
-
-						if MAIGV(element.name .. "showtotemtimer") == nil then
-							MAISV(element.name .. "showtotemtimer", false)
-						end
-
-						local showtotemtimer = CreateFrame("CheckButton", "showtotemtimer", mover.tab10.content, "ChatConfigCheckButtonTemplate")
-						showtotemtimer:SetSize(20, 20)
-						showtotemtimer:SetPoint("TOPLEFT", 10, -30)
-						showtotemtimer:SetChecked(MAIGV(element.name .. "showtotemtimer"))
-
-						showtotemtimer:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "showtotemtimer", newval)
-						end)
-
-						showtotemtimer.text = showtotemtimer:CreateFontString(nil, "ARTWORK")
-						showtotemtimer.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						showtotemtimer.text:SetPoint("LEFT", showtotemtimer, "RIGHT", 0, 0)
-						showtotemtimer.text:SetText(MAIGT("totemtimer"))
-
-						if MAIGV(element.name .. "showpvpicon") == nil then
-							MAISV(element.name .. "showpvpicon", true)
-						end
-
-						local showpvpicon = CreateFrame("CheckButton", "showpvpicon", mover.tab10.content, "ChatConfigCheckButtonTemplate")
-						showpvpicon:SetSize(20, 20)
-						showpvpicon:SetPoint("TOPLEFT", 10, -50)
-						showpvpicon:SetChecked(MAIGV(element.name .. "showpvpicon"))
-
-						showpvpicon:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "showpvpicon", newval)
-						end)
-
-						showpvpicon.text = showpvpicon:CreateFontString(nil, "ARTWORK")
-						showpvpicon.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						showpvpicon.text:SetPoint("LEFT", showpvpicon, "RIGHT", 0, 0)
-						showpvpicon.text:SetText(MAIGT("showpvpicon"))
-					end
-
-					if element.name == "TargetFrame" then
-						-- TAB11 - TargetFrame
-						mover.tab11 = CreateFrame("Button", nil, mover.settings)
-						mover.tab11:SetSize(100, 20)
-						mover.tab11:SetPoint("TOPLEFT", 210, -20)
-						mover.tab11.selected = true
-
-						mover.tab11:SetScript("OnClick", function(sel)
-							mover.settings.SelectTab(mover.tab11)
-						end)
-
-						tinsert(mover.settings.tabs, mover.tab11)
-						mover.tab11.texture = mover.tab11:CreateTexture(nil, "Background")
-						mover.tab11.texture:SetAllPoints(mover.tab11)
-						mover.tab11.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-						mover.tab11.text = mover.tab11:CreateFontString(nil, "ARTWORK")
-						mover.tab11.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						mover.tab11.text:SetPoint("CENTER", mover.tab11, "CENTER", 0, 0)
-						mover.tab11.text:SetText(MAIGT("targetframe"))
-						-- tab11 - Content
-						mover.tab11.content = CreateFrame("FRAME", nil, mover.settings)
-						mover.tab11.content:SetSize(mover.settings:GetWidth(), mover.settings:GetHeight() - 20)
-						mover.tab11.content:SetPoint("TOPLEFT", 0, -40)
-						mover.tab11.content.texture = mover.tab11.content:CreateTexture(nil, "Background")
-						mover.tab11.content.texture:SetAllPoints(mover.tab11.content)
-						mover.tab11.content.texture:SetColorTexture(unpack(MAICOLORBACKGROUNDHEADER))
-
-						if MAIGV(element.name .. "ilvl") == nil then
-							MAISV(element.name .. "ilvl", true)
-						end
-
-						local ilvl = CreateFrame("CheckButton", "ilvl", mover.tab11.content, "ChatConfigCheckButtonTemplate")
-						ilvl:SetSize(20, 20)
-						ilvl:SetPoint("TOPLEFT", 10, -10)
-						ilvl:SetChecked(MAIGV(element.name .. "ilvl"))
-
-						ilvl:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "ilvl", newval)
-						end)
-
-						ilvl.text = ilvl:CreateFontString(nil, "ARTWORK")
-						ilvl.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						ilvl.text:SetPoint("LEFT", ilvl, "RIGHT", 0, 0)
-						ilvl.text:SetText(MAIGT("ilvl"))
-
-						if MAIGV(element.name .. "showpvpicon") == nil then
-							MAISV(element.name .. "showpvpicon", true)
-						end
-
-						local showpvpicon = CreateFrame("CheckButton", "showpvpicon", mover.tab11.content, "ChatConfigCheckButtonTemplate")
-						showpvpicon:SetSize(20, 20)
-						showpvpicon:SetPoint("TOPLEFT", 10, -50)
-						showpvpicon:SetChecked(MAIGV(element.name .. "showpvpicon"))
-
-						showpvpicon:SetScript("OnClick", function(sel)
-							local newval = sel:GetChecked()
-							MAISV(element.name .. "showpvpicon", newval)
-						end)
-
-						showpvpicon.text = showpvpicon:CreateFontString(nil, "ARTWORK")
-						showpvpicon.text:SetFont(STANDARD_TEXT_FONT, 8, "THINOUTLINE")
-						showpvpicon.text:SetPoint("LEFT", showpvpicon, "RIGHT", 0, 0)
-						showpvpicon.text:SetText(MAIGT("showpvpicon"))
-					end
-
-					mover.settings.SelectTab(mover.tab1)
-					mover.settings.visible = true
-				elseif mover.settings.visible then
-					mover.settings:Hide()
-					mover.settings.visible = false
-				else
-					mover.settings:Show()
-					mover.settings.visible = true
 				end
-			end)
+			)
 
 			mover.settingsmove = CreateFrame("CheckButton", "pnlsettingsmove", mover, "UICheckButtonTemplate")
 			mover.settingsmove:SetSize(20, 20)
 			mover.settingsmove:SetPoint("BOTTOMLEFT", -3, -4)
 			mover.settingsmove:SetChecked(MAIGV(element.name .. "move"))
-
-			mover.settingsmove:SetScript("OnClick", function(sel)
-				local newval = sel:GetChecked()
-				MAISV(element.name .. "move", newval)
-			end)
+			mover.settingsmove:SetScript(
+				"OnClick",
+				function(sel)
+					local newval = sel:GetChecked()
+					MAISV(element.name .. "move", newval)
+				end
+			)
 
 			-- Scale
 			mover.settingsbtn:SetScale(1 / MAIGV(element.name .. "scale"))
@@ -4794,11 +4969,9 @@ end
 
 local MAIGlowAlpha = 0.75
 local slotbry = 0
-
 function MAIAddIlvl(SLOT, i)
 	if SLOT and SLOT.info == nil then
 		local name = ""
-
 		if SLOT.GetName then
 			name = SLOT:GetName() .. "."
 		end
@@ -4807,16 +4980,18 @@ function MAIAddIlvl(SLOT, i)
 		SLOT.info:SetSize(SLOT:GetSize())
 		SLOT.info:SetPoint("CENTER", SLOT, "CENTER", 0, 0)
 		SLOT.info:SetFrameLevel(50)
-
-		SLOT.info:SetScript("OnUpdate", function(sel, elapsed)
-			if MouseIsOver(SLOT) then
-				SLOT.text:SetAlpha(0)
-				SLOT.texth:SetAlpha(0)
-			else
-				SLOT.text:SetAlpha(1)
-				SLOT.texth:SetAlpha(1)
+		SLOT.info:SetScript(
+			"OnUpdate",
+			function(sel, elapsed)
+				if MouseIsOver(SLOT) then
+					SLOT.text:SetAlpha(0)
+					SLOT.texth:SetAlpha(0)
+				else
+					SLOT.text:SetAlpha(1)
+					SLOT.texth:SetAlpha(1)
+				end
 			end
-		end)
+		)
 
 		--[[
 		SLOT.info.texture = SLOT:CreateTexture( nil, "BACKGROUND" )
@@ -4836,7 +5011,6 @@ function MAIAddIlvl(SLOT, i)
 		SLOT.text:SetPoint("TOP", SLOT.info, "TOP", 0, -slotbry)
 		SLOT.texth:SetPoint("BOTTOM", SLOT.info, "BOTTOM", 0, slotbry)
 		local NormalTexture = _G[SLOT:GetName() .. "NormalTexture"]
-
 		if NormalTexture then
 			local sw, sh = NormalTexture:GetSize()
 			SLOT.border:SetWidth(sw)
@@ -4849,16 +5023,13 @@ end
 
 function MAISkinFrame(frameName, ids, retry, show)
 	if not MAIGV("FrameColorEnabled", true) then return end
-
 	if show then
 		MAIMSG("|cFFFFFF00" .. "----------------------------")
 		MAIMSG("|cFFFFFF00" .. "MAI DEBUG: " .. frameName)
 	end
 
 	local frames = {string.split(".", frameName)}
-
 	local frame = _G
-
 	for i, v in pairs(frames) do
 		if frame[v] then
 			frame = frame[v]
@@ -4869,12 +5040,10 @@ function MAISkinFrame(frameName, ids, retry, show)
 		if frame.GetRegions then
 			-- if it is a frame and has some textures
 			local textures = {frame:GetRegions()}
-
 			if ids then
 				for i, texture in pairs(textures) do
 					if texture.SetTexture then
 						local skip = false
-
 						if texture:GetName() and strfind(texture:GetName(), "Portrait", 1, true) then
 							skip = true
 						end
@@ -4899,15 +5068,17 @@ function MAISkinFrame(frameName, ids, retry, show)
 		end
 	else
 		if retry then
-			C_Timer.After(0.1, function()
-				MAISkinFrame(frameName, ids, retry, show)
-			end)
+			C_Timer.After(
+				0.1,
+				function()
+					MAISkinFrame(frameName, ids, retry, show)
+				end
+			)
 		end
 	end
 end
 
 local MAICharSlots = {"AmmoSlot", "HeadSlot", "NeckSlot", "ShoulderSlot", "ShirtSlot", "ChestSlot", "WaistSlot", "LegsSlot", "FeetSlot", "WristSlot", "HandsSlot", "Finger0Slot", "Finger1Slot", "Trinket0Slot", "Trinket1Slot", "BackSlot", "MainHandSlot", "SecondaryHandSlot", "RangedSlot", "TabardSlot",}
-
 -- 0,
 -- 1
 -- 2
@@ -4933,13 +5104,10 @@ local MAICharSlots = {"AmmoSlot", "HeadSlot", "NeckSlot", "ShoulderSlot", "Shirt
 --"Bag2Slot",
 --"Bag3Slot"
 local MAIClassIDs = {2, 3, 4, 6, 8}
-
 -- 15
 local MAISubClassIDs15 = {5, 6}
-
 function MAISetup()
 	MAIUpdateChatChannels()
-
 	if MAIBUILD ~= "RETAIL" then
 		-- Bag Searchbar
 		BagItemSearchBox = CreateFrame("EditBox", "BagItemSearchBox", ContainerFrame1, "BagSearchBoxTemplate")
@@ -4949,29 +5117,36 @@ function MAISetup()
 		BagItemAutoSortButton = CreateFrame("Button", "BagItemAutoSortButton", ContainerFrame1)
 		BagItemAutoSortButton:SetSize(16, 16)
 		BagItemAutoSortButton:SetPoint("TOPLEFT", ContainerFrame1, "TOPLEFT", 164, -30)
-
 		--[[
 		BagItemAutoSortButton:SetNormalTexture("bags-button-autosort-up")
 		BagItemAutoSortButton:SetPushedTexture("bags-button-autosort-down")
 		BagItemAutoSortButton:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square")
 		]]
-		BagItemAutoSortButton:SetScript("OnClick", function(self, ...)
-			PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
-
-			if SortBags then
-				SortBags()
+		BagItemAutoSortButton:SetScript(
+			"OnClick",
+			function(self, ...)
+				PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
+				if SortBags then
+					SortBags()
+				end
 			end
-		end)
+		)
 
-		BagItemAutoSortButton:SetScript("OnEnter", function(self, ...)
-			GameTooltip:SetOwner(self)
-			GameTooltip:SetText(BAG_CLEANUP_BAGS)
-			GameTooltip:Show()
-		end)
+		BagItemAutoSortButton:SetScript(
+			"OnEnter",
+			function(self, ...)
+				GameTooltip:SetOwner(self)
+				GameTooltip:SetText(BAG_CLEANUP_BAGS)
+				GameTooltip:Show()
+			end
+		)
 
-		BagItemAutoSortButton:SetScript("OnLeave", function(self, ...)
-			GameTooltip_Hide()
-		end)
+		BagItemAutoSortButton:SetScript(
+			"OnLeave",
+			function(self, ...)
+				GameTooltip_Hide()
+			end
+		)
 	end
 
 	if MAICreateMinimapButtonsFrame then
@@ -4979,7 +5154,6 @@ function MAISetup()
 	end
 
 	MAIGetElementList()
-
 	for i, v in pairs(ELEMENTS) do
 		LANG_MAI[v.name] = MAIGT(v.lstr)
 	end
@@ -4988,27 +5162,23 @@ function MAISetup()
 	LANG_MAI["ActionBars"] = MAIGT("actionbars")
 	LANG_MAI["UnitFrames"] = UNITFRAME_LABEL
 	LANG_MAI["GV"] = REWARDS
-
 	if MAIUpdateActionButton then
 		MAIUpdateActionButton()
 	end
 
 	MAIEVENT = "PLAYER_ENTERING_WORLD"
 	MAISetupMAIMENU()
-
 	for i, v in pairs(ELEMENTS) do
 		MAIElementSetup(v)
 	end
 
 	MAIEVENT = nil
-
 	if MAIGV("menu") == nil then
 		MAISV("menu", true)
 	end
 
 	if MAIGV("menu") then
 		OLDMAITAB = MAICopy_Table(MAITAB["PROFILES"][MAIGCP()])
-
 		if MAIGV("toggler") then
 			MAIMENUMOVING:Show()
 			MAIMENU:Hide()
@@ -5046,15 +5216,12 @@ function MAISetup()
 		PlayerSpeed.text:SetShadowOffset(1, -1)
 		PlayerSpeed.text:SetText("")
 		PlayerSpeed.text:SetTextColor(0.1, 1.0, 0.1)
-
 		function PlayerSpeed.Think()
 			if MAIMathC then
 				local speed = GetUnitSpeed("PLAYER") / 7 * 100
 				local text = ""
-
 				if speed > 0 then
 					text = string.format("+%d", MAIMathC(speed, 0, 9000)) .. "%"
-
 					if speed >= 100 then
 						PlayerSpeed.text:SetTextColor(0.1, 1.0, 0.1)
 					else
@@ -5075,14 +5242,12 @@ function MAISetup()
 	end
 
 	MAITHINKER.update = true
-
 	if not MAIGV("nochanges") then
 		MAIMoveFrames()
 	end
 
 	if PaperDollFrame and not MAIGV("nochanges") then
 		PDThink = CreateFrame("FRAME")
-
 		if MAIGV("PaperDollFrame" .. "showilvl") == nil then
 			MAISV("PaperDollFrame" .. "showilvl", true)
 		end
@@ -5095,7 +5260,6 @@ function MAISetup()
 		PaperDollFrame.ilvl:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
 		PaperDollFrame.ilvl:SetPoint("TOPLEFT", CharacterWristSlot, "BOTTOMLEFT", 24, -15)
 		PaperDollFrame.ilvl:SetText(ITEM_LEVEL_ABBR .. ": ?")
-
 		for i, slot in pairs(MAICharSlots) do
 			MAIAddIlvl(_G["Character" .. slot], i)
 		end
@@ -5103,23 +5267,18 @@ function MAISetup()
 		function PDThink.UpdateItemInfos()
 			local count = 0
 			local sum = 0
-
 			for i, slot in pairs(MAICharSlots) do
 				i = i - 1
 				local SLOT = _G["Character" .. slot]
-
 				if SLOT and SLOT.text ~= nil and GetInventoryItemLink and SLOT.GetID and SLOT:GetID() then
 					local ItemID = GetInventoryItemLink("PLAYER", SLOT:GetID()) or GetInventoryItemID("PLAYER", SLOT:GetID())
-
 					if ItemID ~= nil and GetDetailedItemLevelInfo then
 						local _, _, rarity = GetItemInfo(ItemID)
 						local ilvl = GetDetailedItemLevelInfo(ItemID)
 						local color = ITEM_QUALITY_COLORS[rarity]
 						local current, maximum = GetInventoryItemDurability(i)
-
 						if current and maximum then
 							local per = current / maximum
-
 							-- 100%
 							if current == maximum then
 								SLOT.texth:SetTextColor(0, 1, 0, 1)
@@ -5149,7 +5308,6 @@ function MAISetup()
 						if ilvl and color then
 							if slot == "AmmoSlot" then
 								local COUNT = _G["Character" .. slot .. "Count"]
-
 								if COUNT.hooked == nil then
 									COUNT.hooked = true
 									COUNT:SetFont(STANDARD_TEXT_FONT, 9, "THINOUTLINE")
@@ -5174,7 +5332,6 @@ function MAISetup()
 
 								if MAIGV("showitemquality", true) then
 									local alpha = MAIGlowAlpha
-
 									if color.r == 1 and color.g == 1 and color.b == 1 then
 										alpha = alpha - 0.2
 									end
@@ -5206,10 +5363,8 @@ function MAISetup()
 
 			if count > 0 then
 				local max = 16 -- when only mainhand
-
 				if GetInventoryItemID("PLAYER", 17) then
 					local t1 = GetItemInfo(GetInventoryItemLink("PLAYER", 17))
-
 					-- when 2x 1handed
 					if t1 then
 						max = 17
@@ -5221,7 +5376,6 @@ function MAISetup()
 				end
 
 				MAIILVL = string.format("%0.2f", sum / max)
-
 				if MAIGV("PaperDollFrame" .. "showilvl") and not MAIGV("nochanges") then
 					PaperDollFrame.ilvl:SetText("|cFFFFFF00" .. ITEM_LEVEL_ABBR .. ": |r" .. MAIILVL)
 				else
@@ -5239,27 +5393,30 @@ function MAISetup()
 
 		C_Timer.After(1, PDThink.Loop)
 		PDThink:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-
-		PDThink:SetScript("OnEvent", function(self, event, slotid, ...)
-			PDThink.UpdateItemInfos()
-		end)
+		PDThink:SetScript(
+			"OnEvent",
+			function(self, event, slotid, ...)
+				PDThink.UpdateItemInfos()
+			end
+		)
 
 		PaperDollFrame.btn = CreateFrame("CheckButton", "PaperDollFrame" .. "btn", PaperDollFrame, "UICheckButtonTemplate")
 		PaperDollFrame.btn:SetSize(20, 20)
 		PaperDollFrame.btn:SetPoint("TOPLEFT", CharacterWristSlot, "BOTTOMLEFT", 6, -10)
 		PaperDollFrame.btn:SetChecked(MAIGV("PaperDollFrame" .. "showilvl"))
+		PaperDollFrame.btn:SetScript(
+			"OnClick",
+			function(self)
+				local newval = self:GetChecked()
+				MAISV("PaperDollFrame" .. "showilvl", newval)
+				PDThink.UpdateItemInfos()
+				if IFThink and IFThink.UpdateItemInfos then
+					IFThink.UpdateItemInfos()
+				end
 
-		PaperDollFrame.btn:SetScript("OnClick", function(self)
-			local newval = self:GetChecked()
-			MAISV("PaperDollFrame" .. "showilvl", newval)
-			PDThink.UpdateItemInfos()
-
-			if IFThink and IFThink.UpdateItemInfos then
-				IFThink.UpdateItemInfos()
+				ContainerFrame_UpdateAll()
 			end
-
-			ContainerFrame_UpdateAll()
-		end)
+		)
 
 		-- Inspect
 		function MAIWaitForInspectFrame()
@@ -5269,7 +5426,6 @@ function MAISetup()
 				InspectPaperDollFrame.ilvl:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
 				InspectPaperDollFrame.ilvl:SetPoint("TOPLEFT", InspectWristSlot, "BOTTOMLEFT", 24, -15)
 				InspectPaperDollFrame.ilvl:SetText(ITEM_LEVEL_ABBR .. ": ?")
-
 				for i, slot in pairs(MAICharSlots) do
 					MAIAddIlvl(_G["Inspect" .. slot], i)
 				end
@@ -5277,18 +5433,14 @@ function MAISetup()
 				function IFThink.UpdateItemInfos()
 					local count = 0
 					local sum = 0
-
 					for i, slot in pairs(MAICharSlots) do
 						local SLOT = _G["Inspect" .. slot]
-
 						if SLOT and SLOT.text ~= nil and GetInventoryItemLink then
 							local ItemID = GetInventoryItemLink("TARGET", SLOT:GetID()) --GetInventoryItemID("PLAYER", SLOT:GetID())
-
 							if ItemID and GetDetailedItemLevelInfo then
 								local _, _, rarity = GetItemInfo(ItemID)
 								local ilvl = GetDetailedItemLevelInfo(ItemID)
 								local color = ITEM_QUALITY_COLORS[rarity]
-
 								if ilvl and color then
 									-- ignore: shirt, tabard, ammo
 									if i ~= 4 and i ~= 19 and i ~= 20 then
@@ -5303,7 +5455,6 @@ function MAISetup()
 
 										if MAIGV("showitemqualtity", true) then
 											local alpha = MAIGlowAlpha
-
 											if color.r == 1 and color.g == 1 and color.b == 1 then
 												alpha = alpha - 0.2
 											end
@@ -5332,10 +5483,8 @@ function MAISetup()
 					if count > 0 then
 						local max = 16 -- when only mainhand
 						local ItemID = GetInventoryItemLink("TARGET", 17)
-
 						if GetItemInfo and GetInventoryItemID and ItemID ~= nil then
 							local t1 = GetItemInfo(ItemID)
-
 							-- when 2x 1handed
 							if t1 then
 								max = 17
@@ -5347,7 +5496,6 @@ function MAISetup()
 						end
 
 						MAIILVLINSPECT = string.format("%0.2f", sum / max)
-
 						if MAIGV("PaperDollFrame" .. "showilvl") and not MAIGV("nochanges") then
 							InspectPaperDollFrame.ilvl:SetText("|cFFFFFF00" .. ITEM_LEVEL_ABBR .. ": |r" .. MAIILVLINSPECT)
 						else
@@ -5360,53 +5508,56 @@ function MAISetup()
 
 				C_Timer.After(0.5, IFThink.UpdateItemInfos)
 				IFThink:RegisterEvent("INSPECT_READY")
-
-				IFThink:SetScript("OnEvent", function(self, event, slotid, ...)
-					C_Timer.After(0.1, IFThink.UpdateItemInfos)
-				end)
+				IFThink:SetScript(
+					"OnEvent",
+					function(self, event, slotid, ...)
+						C_Timer.After(0.1, IFThink.UpdateItemInfos)
+					end
+				)
 			else
 				C_Timer.After(0.1, MAIWaitForInspectFrame)
 			end
 		end
 
 		MAIWaitForInspectFrame()
-
 		-- BAGS
 		if ContainerFrame_Update then
-			hooksecurefunc("ContainerFrame_Update", function(self)
-				local id = self:GetID()
-				local name = self:GetName()
-				local size = self.size
+			hooksecurefunc(
+				"ContainerFrame_Update",
+				function(self)
+					local id = self:GetID()
+					local name = self:GetName()
+					local size = self.size
+					for i = 1, size do
+						local bid = size - i + 1
+						local SLOT = _G[name .. "Item" .. bid]
+						if GetContainerItemLink then
+							local slotLink = GetContainerItemLink(id, i)
+							MAIAddIlvl(SLOT, i)
+							if slotLink and GetDetailedItemLevelInfo then
+								local _, _, rarity, _, _, _, _, _, _, _, _, classID, subclassID = GetItemInfo(slotLink)
+								local ilvl = GetDetailedItemLevelInfo(slotLink)
+								local color = ITEM_QUALITY_COLORS[rarity]
+								if ilvl and color then
+									if MAIGV("PaperDollFrame" .. "showilvl") and not MAIGV("nochanges") then
+										if tContains(MAIClassIDs, classID) or (classID == 15 and tContains(MAISubClassIDs15, subclassID)) then
+											SLOT.text:SetText(color.hex .. ilvl)
+										else
+											SLOT.text:SetText("")
+										end
 
-				for i = 1, size do
-					local bid = size - i + 1
-					local SLOT = _G[name .. "Item" .. bid]
+										local alpha = MAIGlowAlpha
+										if color.r == 1 and color.g == 1 and color.b == 1 then
+											alpha = alpha - 0.2
+										end
 
-					if GetContainerItemLink then
-						local slotLink = GetContainerItemLink(id, i)
-						MAIAddIlvl(SLOT, i)
-
-						if slotLink and GetDetailedItemLevelInfo then
-							local _, _, rarity, _, _, _, _, _, _, _, _, classID, subclassID = GetItemInfo(slotLink)
-							local ilvl = GetDetailedItemLevelInfo(slotLink)
-							local color = ITEM_QUALITY_COLORS[rarity]
-
-							if ilvl and color then
-								if MAIGV("PaperDollFrame" .. "showilvl") and not MAIGV("nochanges") then
-									if tContains(MAIClassIDs, classID) or (classID == 15 and tContains(MAISubClassIDs15, subclassID)) then
-										SLOT.text:SetText(color.hex .. ilvl)
+										SLOT.border:SetVertexColor(color.r, color.g, color.b, alpha)
+										--SLOT.info:Show()
 									else
 										SLOT.text:SetText("")
+										SLOT.border:SetVertexColor(1, 1, 1, 0)
+										--SLOT.info:Hide()
 									end
-
-									local alpha = MAIGlowAlpha
-
-									if color.r == 1 and color.g == 1 and color.b == 1 then
-										alpha = alpha - 0.2
-									end
-
-									SLOT.border:SetVertexColor(color.r, color.g, color.b, alpha)
-									--SLOT.info:Show()
 								else
 									SLOT.text:SetText("")
 									SLOT.border:SetVertexColor(1, 1, 1, 0)
@@ -5417,14 +5568,10 @@ function MAISetup()
 								SLOT.border:SetVertexColor(1, 1, 1, 0)
 								--SLOT.info:Hide()
 							end
-						else
-							SLOT.text:SetText("")
-							SLOT.border:SetVertexColor(1, 1, 1, 0)
-							--SLOT.info:Hide()
 						end
 					end
 				end
-			end)
+			)
 		end
 	end
 
@@ -5450,14 +5597,12 @@ function MAISetup()
 	local dragspellid1 = 0
 	local dragspellid2 = 0
 	local stanceid = 1
-
 	function MAIAddStanceButton(spell1, spell2, hr, allclassesplus, nl)
 		local spellid1 = spell1.spellid
 		local art1 = spell1.art
 		local db = spell1.db
 		local spellid2 = spell2.spellid or spell1.spellid
 		local art2 = spell2.art or spell1.art
-
 		if spellid1 == nil and art1 == nil then
 			MAINL = MAINL + 1
 		else
@@ -5490,7 +5635,6 @@ function MAISetup()
 				b:SetAttribute("*type2", "spell")
 				b:SetAttribute("spell2", spellname2)
 				b:RegisterForClicks("AnyUp")
-
 				function b:SetSpell(sid1, sid2)
 					local name1, _, texture1 = GetSpellInfo(sid1)
 					local name2 = GetSpellInfo(sid2)
@@ -5501,10 +5645,8 @@ function MAISetup()
 					b:SetAttribute("spell2", name2)
 					local sbsid1 = 0
 					local i = 1
-
 					while true do
 						local spellName, _, spellID = GetSpellBookItemName(i, BOOKTYPE_SPELL)
-
 						--strfind(spellName, spellname) then
 						if spellName and spellName == name1 and spellID and MAIIsSpellKnown(spellID, "SetSpell #1") then
 							sbsid1 = spellID
@@ -5518,10 +5660,8 @@ function MAISetup()
 					b.sbsid1 = sbsid1
 					local sbsid2 = 0
 					i = 1
-
 					while true do
 						local spellName, _, spellID = GetSpellBookItemName(i, BOOKTYPE_SPELL)
-
 						--strfind(spellName, spellname) then
 						if spellName and spellName == name2 and spellID and MAIIsSpellKnown(spellID, "SetSpell #2") then
 							sbsid2 = spellID
@@ -5538,52 +5678,63 @@ function MAISetup()
 				end
 
 				b:RegisterForDrag("LeftButton")
-
-				b:SetScript("OnDragStart", function(self, ...)
-					if LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION") then
-						dragspellid1 = self.spellid1
-						dragspellid2 = self.spellid2
-						dragframe = self
-						PickupSpell(self.spellid1)
-						self.Icon:SetTexture(nil)
-					end
-				end)
-
-				b:SetScript("OnReceiveDrag", function(self, ...)
-					if self ~= dragframe and dragspellid1 and dragframe and self.art == dragframe.art then
-						-- change drag
-						dragframe:SetSpell(self.spellid1, self.spellid2)
-						-- change target
-						self:SetSpell(dragspellid1, dragspellid2)
-						dragframe = nil
-						dragspellid1 = nil
-						dragspellid2 = nil
-						-- reset mouse
-						ClearCursor()
-					elseif dragframe then
-						if self.art then
-							print("|cFFFF0000" .. "WRONG SLOT (", self.art, ")")
+				b:SetScript(
+					"OnDragStart",
+					function(self, ...)
+						if LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION") then
+							dragspellid1 = self.spellid1
+							dragspellid2 = self.spellid2
+							dragframe = self
+							PickupSpell(self.spellid1)
+							self.Icon:SetTexture(nil)
 						end
-
-						dragframe:SetSpell(dragspellid1, dragspellid2)
-						dragframe = nil
-						dragspellid1 = nil
-						dragspellid2 = nil
 					end
-				end)
+				)
 
-				b:HookScript("OnUpdate", function(self)
-					if (IsMouseButtonDown("RightButton") or IsMouseButtonDown("LeftButton")) and dragframe == self then
-						C_Timer.After(0.01, function()
-							if dragframe == self and not GetCursorInfo() then
-								dragframe:SetSpell(dragspellid1, dragspellid2)
-								dragframe = nil
-								dragspellid1 = nil
-								dragspellid2 = nil
+				b:SetScript(
+					"OnReceiveDrag",
+					function(self, ...)
+						if self ~= dragframe and dragspellid1 and dragframe and self.art == dragframe.art then
+							-- change drag
+							dragframe:SetSpell(self.spellid1, self.spellid2)
+							-- change target
+							self:SetSpell(dragspellid1, dragspellid2)
+							dragframe = nil
+							dragspellid1 = nil
+							dragspellid2 = nil
+							-- reset mouse
+							ClearCursor()
+						elseif dragframe then
+							if self.art then
+								print("|cFFFF0000" .. "WRONG SLOT (", self.art, ")")
 							end
-						end)
+
+							dragframe:SetSpell(dragspellid1, dragspellid2)
+							dragframe = nil
+							dragspellid1 = nil
+							dragspellid2 = nil
+						end
 					end
-				end)
+				)
+
+				b:HookScript(
+					"OnUpdate",
+					function(self)
+						if (IsMouseButtonDown("RightButton") or IsMouseButtonDown("LeftButton")) and dragframe == self then
+							C_Timer.After(
+								0.01,
+								function()
+									if dragframe == self and not GetCursorInfo() then
+										dragframe:SetSpell(dragspellid1, dragspellid2)
+										dragframe = nil
+										dragspellid1 = nil
+										dragspellid2 = nil
+									end
+								end
+							)
+						end
+					end
+				)
 
 				b.Icon = b:CreateTexture(nil, "BACKGROUND")
 				--b.Icon:SetDrawLayer("BACKGROUND", 7)
@@ -5615,7 +5766,6 @@ function MAISetup()
 				b.text:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", 0, 0)
 				b.text:SetText("")
 				b.spellstate = false
-
 				function b:MAIThink()
 					if MAIIsSpellKnown(spellid1, "MAIThink") and MAIGV("StanceBar" .. "allclasses") and (not b.allclassesplus or (b.allclassesplus and MAIGV("StanceBar" .. "allclassesplus"))) then
 						local _, _, texture1 = GetSpellInfo(b.spellid1)
@@ -5624,10 +5774,8 @@ function MAISetup()
 						local sbsid1 = 0
 						local sbsid2 = 0
 						local i = 1
-
 						while true do
 							local spellName, _, spellID = GetSpellBookItemName(i, BOOKTYPE_SPELL)
-
 							--strfind(spellName, spellname) then
 							if spellName and spellName == spellname1 and spellID and MAIIsSpellKnown(spellID, "SetSpell #3") then
 								sbsid1 = spellID
@@ -5639,13 +5787,10 @@ function MAISetup()
 						end
 
 						b.sbsid1 = sbsid1
-
 						if spellname2 then
 							i = 1
-
 							while true do
 								local spellName, _, spellID = GetSpellBookItemName(i, BOOKTYPE_SPELL)
-
 								--strfind(spellName, spellname) then
 								if spellName and spellName == spellname2 and spellID and MAIIsSpellKnown(spellID, "SetSpell #4") then
 									sbsid2 = spellID
@@ -5662,10 +5807,8 @@ function MAISetup()
 						spellname1, _, texture1 = GetSpellInfo(b.sbsid1)
 						spellname2, _, texture2 = GetSpellInfo(b.sbsid2)
 						local hasbuff = false
-
 						for id = 1, 40 do
 							local name, _, _, _, duration, expirationTime, _, _, _, spe = UnitBuff("PLAYER", id)
-
 							if name ~= nil and name == spellname2 and sbsid2 == spe then
 								hasbuff = 1
 								start = expirationTime - duration
@@ -5680,7 +5823,6 @@ function MAISetup()
 						if not hasbuff then
 							for id = 1, 40 do
 								local name, _, _, _, duration, expirationTime, _, _, _, spe = UnitBuff("PLAYER", id)
-
 								if name ~= nil and name == spellname1 and sbsid1 == spe then
 									hasbuff = 1
 									start = expirationTime - duration
@@ -5703,7 +5845,6 @@ function MAISetup()
 
 						for id = 1, 4 do
 							local haveTotem, totemName, startTime, duration = GetTotemInfo(id)
-
 							if haveTotem and totemName and spellname1 and string.find(totemName, spellname1) then
 								start = startTime
 								dura = duration
@@ -5726,7 +5867,6 @@ function MAISetup()
 							CooldownFrame_Set(b.cooldown, start, dura, true)
 						else
 							start, dura = GetSpellCooldown(b.sbsid1)
-
 							if start then
 								b.cooldown:SetReverse(false)
 								CooldownFrame_Set(b.cooldown, start, dura, true)
@@ -5736,7 +5876,6 @@ function MAISetup()
 						end
 
 						local isUsable, notEnoughMana = IsUsableSpell(b.sbsid1)
-
 						if isUsable then
 							b.Icon:SetVertexColor(1.0, 1.0, 1.0)
 						elseif notEnoughMana then
@@ -5773,33 +5912,36 @@ function MAISetup()
 				end
 
 				b:MAIThink()
+				b:SetScript(
+					"OnEnter",
+					function(self, ...)
+						GameTooltip:SetOwner(self, "ANCHOR_TOP")
+						local spellbookid = 0
+						local i = 1
+						while true do
+							local spell, _, spellid = GetSpellBookItemName(i, BOOKTYPE_SPELL)
+							if spellid and spellid == b.spellid1 then
+								spellbookid = i
+							elseif not spell then
+								break
+							end
 
-				b:SetScript("OnEnter", function(self, ...)
-					GameTooltip:SetOwner(self, "ANCHOR_TOP")
-					local spellbookid = 0
-					local i = 1
-
-					while true do
-						local spell, _, spellid = GetSpellBookItemName(i, BOOKTYPE_SPELL)
-
-						if spellid and spellid == b.spellid1 then
-							spellbookid = i
-						elseif not spell then
-							break
+							i = i + 1
 						end
 
-						i = i + 1
+						if MAIIsSpellKnown(spellid1, "OnEnter") and spellbookid > 0 then
+							GameTooltip:SetSpellBookItem(spellbookid, BOOKTYPE_SPELL)
+							GameTooltip:Show()
+						end
 					end
+				)
 
-					if MAIIsSpellKnown(spellid1, "OnEnter") and spellbookid > 0 then
-						GameTooltip:SetSpellBookItem(spellbookid, BOOKTYPE_SPELL)
-						GameTooltip:Show()
+				b:SetScript(
+					"OnLeave",
+					function(self, ...)
+						GameTooltip:Hide()
 					end
-				end)
-
-				b:SetScript("OnLeave", function(self, ...)
-					GameTooltip:Hide()
-				end)
+				)
 
 				stanceid = stanceid + 1
 
@@ -5811,7 +5953,6 @@ function MAISetup()
 	end
 
 	local _, englishClass, _ = UnitClass("PLAYER")
-
 	if MAIGV("CLASSES") == nil then
 		MAISV("CLASSES", {})
 	else
@@ -5836,82 +5977,64 @@ function MAISetup()
 		end
 
 		MAIGV("CLASSES")["MAGEVERSION"] = MAIGV("CLASSES")["MAGEVERSION"] or 0
-
 		if MAIGV("CLASSES")["MAGEVERSION"] ~= 6 then
 			MAIGV("CLASSES")["MAGEVERSION"] = 6
 			MAIGV("CLASSES")["MAGE"][1] = {}
-
 			-- Arkane Intelligenz, Brillanz
 			MAIGV("CLASSES")["MAGE"][1][1] = {1459, "buff", nil, 23028, "buffbetter", nil}
-
 			-- Frostrüstung
 			MAIGV("CLASSES")["MAGE"][1][2] = {168, "buff"}
-
 			-- Mage Armor, Magische Rüstung
 			MAIGV("CLASSES")["MAGE"][1][3] = {6117, "buff"}
-
 			MAIGV("CLASSES")["MAGE"][2] = {}
-
 			-- Magie dämpfen
 			MAIGV("CLASSES")["MAGE"][2][1] = {604, "buffshort"}
-
 			-- Magie verstärken
 			MAIGV("CLASSES")["MAGE"][2][2] = {1008, "buffshort"}
-
 			MAIGV("CLASSES")["MAGE"][3] = {}
-
 			-- Trinken herstellen
 			MAIGV("CLASSES")["MAGE"][3][1] = {5504, "food"}
-
 			-- Essen herstellen
 			MAIGV("CLASSES")["MAGE"][3][2] = {587, "food"}
-
 			-- Tischlein deck dich
 			MAIGV("CLASSES")["MAGE"][3][3] = {43987, "food"}
-
 			--MAIGV( "CLASSES" )["MAGE"][3][4] = {759, "food"} -- Manaachat herstellen -- BROKEN, not same names
 			MAIGV("CLASSES")["MAGE"][4] = {}
-
 			-- Feuerzauberschutz
 			MAIGV("CLASSES")["MAGE"][4][1] = {543, "buffempower", true}
-
 			-- Frostzauberschutz
 			MAIGV("CLASSES")["MAGE"][4][2] = {6143, "buffempower", true}
-
 			MAIGV("CLASSES")["MAGE"][5] = {}
-
 			-- Manaschild
 			MAIGV("CLASSES")["MAGE"][5][1] = {1463, "shield", true}
-
 			-- Eisbarriere
 			MAIGV("CLASSES")["MAGE"][5][2] = {11426, "shield", true}
-
 			-- Glühende Rüstung
 			MAIGV("CLASSES")["MAGE"][5][3] = {30482, "shield", true}
 		end
 
 		local oldi = 0
-
 		for i, v in pairs(MAIGV("CLASSES")["MAGE"]) do
 			local hr = false
-
 			for x, tab in pairs(v) do
 				hr = false
-
 				if i ~= oldi and MAIIsSpellKnown(tab[1], "MAGE") then
 					oldi = i
 					hr = true
 				end
 
 				-- spell1, spell2, hr, allclassesplus, nl
-				MAIAddStanceButton({
-					["spellid"] = tab[1],
-					["art"] = tab[2],
-					["db"] = MAIGV("CLASSES")["MAGE"][i][x]
-				}, {
-					["spellid"] = tab[4],
-					["art"] = tab[5],
-				}, hr, tab[3])
+				MAIAddStanceButton(
+					{
+						["spellid"] = tab[1],
+						["art"] = tab[2],
+						["db"] = MAIGV("CLASSES")["MAGE"][i][x]
+					},
+					{
+						["spellid"] = tab[4],
+						["art"] = tab[5],
+					}, hr, tab[3]
+				)
 			end
 		end
 
@@ -5923,63 +6046,43 @@ function MAISetup()
 		end
 
 		MAIGV("CLASSES")["HUNTERVERSION"] = MAIGV("CLASSES")["HUNTERVERSION"] or 0
-
 		if MAIGV("CLASSES")["HUNTERVERSION"] ~= 3 then
 			MAIGV("CLASSES")["HUNTERVERSION"] = 3
 			MAIGV("CLASSES")["HUNTER"][1] = {}
-
 			-- Affen
 			MAIGV("CLASSES")["HUNTER"][1][1] = {13163, "aspect"}
-
 			-- Falken
 			MAIGV("CLASSES")["HUNTER"][1][2] = {13165, "aspect"}
-
 			-- Geparden
 			MAIGV("CLASSES")["HUNTER"][1][3] = {5118, "aspect"}
-
 			-- Rudels
 			MAIGV("CLASSES")["HUNTER"][1][4] = {13159, "aspect"}
-
 			-- Wildtiers
 			MAIGV("CLASSES")["HUNTER"][1][5] = {13161, "aspect"}
-
 			-- Nature
 			MAIGV("CLASSES")["HUNTER"][1][6] = {20043, "aspect"}
-
 			-- Viper
 			MAIGV("CLASSES")["HUNTER"][1][7] = {34074, "aspect"}
-
 			-- [RETAIL] Geparden
 			MAIGV("CLASSES")["HUNTER"][1][8] = {186257, "aspect", true}
-
 			-- [RETAIL] Schildkröte
 			MAIGV("CLASSES")["HUNTER"][1][9] = {186265, "aspect", true}
-
 			-- [RETAIL] Wildnis
 			MAIGV("CLASSES")["HUNTER"][1][10] = {193530, "aspect", true}
-
 			-- [RETAIL] Adlers
 			MAIGV("CLASSES")["HUNTER"][1][11] = {186289, "aspect", true}
-
 			MAIGV("CLASSES")["HUNTER"][2] = {}
-
 			-- Aura des Volltreffers
 			MAIGV("CLASSES")["HUNTER"][2][1] = {19506, "hunteraura"}
-
 			MAIGV("CLASSES")["HUNTER"][3] = {}
-
 			-- Feuerbrandfalle
 			MAIGV("CLASSES")["HUNTER"][3][1] = {13795, "trap", true}
-
 			-- Sprengfalle
 			MAIGV("CLASSES")["HUNTER"][3][2] = {13813, "trap", true}
-
 			-- Eiskältefalle
 			MAIGV("CLASSES")["HUNTER"][3][3] = {1499, "trap", true}
-
 			-- Frostfalle
 			MAIGV("CLASSES")["HUNTER"][3][4] = {13809, "trap", true}
-
 			-- Schlangenfalle
 			MAIGV("CLASSES")["HUNTER"][3][5] = {34600, "trap", true}
 			--MAIMakeStanceButton(1494, true ), true )) -- Wildtiere
@@ -5993,24 +6096,23 @@ function MAISetup()
 		end
 
 		local oldi = 0
-
 		for i, v in pairs(MAIGV("CLASSES")["HUNTER"]) do
 			local hr = false
-
 			for x, tab in pairs(v) do
 				hr = false
-
 				if i ~= oldi and tab[1] and MAIIsSpellKnown(tab[1], "HUNTER") then
 					oldi = i
 					hr = true
 				end
 
 				-- spell1, spell2, hr, allclassesplus, nl
-				MAIAddStanceButton({
-					["spellid"] = tab[1],
-					["art"] = tab[2],
-					["db"] = MAIGV("CLASSES")["HUNTER"][i][x]
-				}, {}, hr, tab[3])
+				MAIAddStanceButton(
+					{
+						["spellid"] = tab[1],
+						["art"] = tab[2],
+						["db"] = MAIGV("CLASSES")["HUNTER"][i][x]
+					}, {}, hr, tab[3]
+				)
 			end
 		end
 
@@ -6022,142 +6124,102 @@ function MAISetup()
 		end
 
 		MAIGV("CLASSES")["SHAMANVERSION"] = MAIGV("CLASSES")["SHAMANVERSION"] or 0
-
 		if MAIGV("CLASSES")["SHAMANVERSION"] ~= 6 then
 			MAIGV("CLASSES")["SHAMANVERSION"] = 6
 			MAIGV("CLASSES")["SHAMAN"][5] = {}
-
 			-- Ruf der Totems
 			MAIGV("CLASSES")["SHAMAN"][5][1] = {36936, "totem"}
-
 			MAIGV("CLASSES")["SHAMAN"][4] = {}
-
 			-- Verbrennung
 			MAIGV("CLASSES")["SHAMAN"][4][1] = {3599, "fire"}
-
 			-- Feuernova
 			MAIGV("CLASSES")["SHAMAN"][4][2] = {1535, "fire"}
-
 			-- glühenden Magmas
 			MAIGV("CLASSES")["SHAMAN"][4][3] = {8190, "fire"}
-
 			-- Flammenzunge
 			MAIGV("CLASSES")["SHAMAN"][4][4] = {8227, "fire"}
-
 			-- Frostwiderstands
 			MAIGV("CLASSES")["SHAMAN"][4][5] = {8181, "fire"}
-
 			-- Feuerelementars
 			MAIGV("CLASSES")["SHAMAN"][4][6] = {2894, "fire"}
-
 			-- [RETAIL] Feuerelementars
 			MAIGV("CLASSES")["SHAMAN"][4][7] = {198067, "fire"}
-
 			-- [TBC][Talent] Totem des Ingrimms
 			MAIGV("CLASSES")["SHAMAN"][4][8] = {30706, "fire"}
-
 			MAIGV("CLASSES")["SHAMAN"][3] = {}
-
 			-- Steinhaut
 			MAIGV("CLASSES")["SHAMAN"][3][1] = {8071, "earth"}
-
 			-- Erdbindung
 			MAIGV("CLASSES")["SHAMAN"][3][2] = {2484, "earth"}
-
 			-- Steinklaue
 			MAIGV("CLASSES")["SHAMAN"][3][3] = {5730, "earth"}
-
 			-- Erdstärke
 			MAIGV("CLASSES")["SHAMAN"][3][4] = {8075, "earth"}
-
 			-- Erdstoßes
 			MAIGV("CLASSES")["SHAMAN"][3][5] = {8143, "earth"}
-
 			-- Erdelementars
 			MAIGV("CLASSES")["SHAMAN"][3][6] = {2062, "earth"}
-
 			-- [RETAIL] Erdelementars
 			MAIGV("CLASSES")["SHAMAN"][3][7] = {198103, "earth"}
-
 			MAIGV("CLASSES")["SHAMAN"][2] = {}
-
 			-- heilenden Flusses
 			MAIGV("CLASSES")["SHAMAN"][2][1] = {5394, "water"}
-
 			-- Manaquelle
 			MAIGV("CLASSES")["SHAMAN"][2][2] = {5675, "water"}
-
 			-- [TBC][TALENT] Manaquelle
 			MAIGV("CLASSES")["SHAMAN"][2][3] = {16190, "water"}
-
 			-- Krankheitsreinigung
 			MAIGV("CLASSES")["SHAMAN"][2][4] = {8170, "water"}
-
 			-- Giftreinigung
 			MAIGV("CLASSES")["SHAMAN"][2][5] = {8166, "water"}
-
 			-- Feuerwiderstands
 			MAIGV("CLASSES")["SHAMAN"][2][6] = {8184, "water"}
-
 			-- [RETAIL] Manaflut
 			MAIGV("CLASSES")["SHAMAN"][2][7] = {16191, "water"}
-
 			-- [RETAIL] Heilungsflut
 			MAIGV("CLASSES")["SHAMAN"][2][8] = {108280, "water"}
-
 			MAIGV("CLASSES")["SHAMAN"][1] = {}
-
 			-- beruhigenden Winde
 			MAIGV("CLASSES")["SHAMAN"][1][1] = {25908, "air"}
-
 			-- luftgleichen Anmut
 			MAIGV("CLASSES")["SHAMAN"][1][2] = {8835, "air"}
-
 			-- Windzorns
 			MAIGV("CLASSES")["SHAMAN"][1][3] = {8512, "air"}
-
 			-- Erdung
 			MAIGV("CLASSES")["SHAMAN"][1][4] = {8177, "air"}
-
 			-- Wachens
 			MAIGV("CLASSES")["SHAMAN"][1][5] = {6495, "air"}
-
 			-- Windmauer
 			MAIGV("CLASSES")["SHAMAN"][1][6] = {15107, "air"}
-
 			-- Natzrwiderstands
 			MAIGV("CLASSES")["SHAMAN"][1][7] = {10595, "air"}
-
 			-- stürmischen Zorns
 			MAIGV("CLASSES")["SHAMAN"][1][8] = {3738, "air"}
-
 			-- [RETAIL] Energiespeicherung
 			MAIGV("CLASSES")["SHAMAN"][1][9] = {192058, "air"}
-
 			-- [RETAIL] Geisterbindung
 			MAIGV("CLASSES")["SHAMAN"][1][10] = {98008, "air"}
 		end
 
 		if MultiCastActionBarFrame == nil then
 			local oldi = 0
-
 			for i, v in pairs(MAIGV("CLASSES")["SHAMAN"]) do
 				local nl = false
-
 				for x, totem in pairs(v) do
 					nl = false
-
 					if i ~= oldi and MAIIsSpellKnown(totem[1], "SHAMAN") then
 						oldi = i
 						nl = true
 					end
 
 					-- spell1, spell2, hr, allclassesplus, nl
-					MAIAddStanceButton({
-						["spellid"] = totem[1],
-						["art"] = totem[2],
-						["db"] = MAIGV("CLASSES")["SHAMAN"][i][x]
-					}, {}, nil, nil, nl)
+					MAIAddStanceButton(
+						{
+							["spellid"] = totem[1],
+							["art"] = totem[2],
+							["db"] = MAIGV("CLASSES")["SHAMAN"][i][x]
+						}, {}, nil, nil, nl
+					)
 				end
 			end
 
@@ -6170,92 +6232,68 @@ function MAISetup()
 		end
 
 		MAIGV("CLASSES")["WARLOCKVERSION"] = MAIGV("CLASSES")["WARLOCKVERSION"] or 0
-
 		if MAIGV("CLASSES")["WARLOCKVERSION"] ~= 4 then
 			MAIGV("CLASSES")["WARLOCKVERSION"] = 3
 			MAIGV("CLASSES")["WARLOCK"][1] = {}
-
 			-- Wichtel
 			MAIGV("CLASSES")["WARLOCK"][1][1] = {688, "daemon"}
-
 			-- Leerwandler
 			MAIGV("CLASSES")["WARLOCK"][1][2] = {697, "daemon"}
-
 			-- Sukkubus
 			MAIGV("CLASSES")["WARLOCK"][1][3] = {712, "daemon"}
-
 			-- Sukkubus, Retail
 			MAIGV("CLASSES")["WARLOCK"][1][4] = {366222, "daemon"}
-
 			-- Teufelsjäger
 			MAIGV("CLASSES")["WARLOCK"][1][5] = {691, "daemon"}
-
 			-- Inferno
 			MAIGV("CLASSES")["WARLOCK"][1][6] = {1122, "daemon"}
-
 			-- Teufelswache
 			MAIGV("CLASSES")["WARLOCK"][1][7] = {30146, "daemon"}
-
 			MAIGV("CLASSES")["WARLOCK"][2] = {}
-
 			-- Dämonensklave
 			MAIGV("CLASSES")["WARLOCK"][2][1] = {1098, "control"}
-
 			MAIGV("CLASSES")["WARLOCK"][3] = {}
-
 			-- Ritual of Souls
 			MAIGV("CLASSES")["WARLOCK"][3][1] = {29893, "spellitem"}
-
 			-- Gesundheitsstein
 			MAIGV("CLASSES")["WARLOCK"][3][2] = {6201, "spellitem"}
-
 			-- Seelenstein
 			MAIGV("CLASSES")["WARLOCK"][3][3] = {693, "spellitem"}
-
 			-- Feuerstein
 			MAIGV("CLASSES")["WARLOCK"][3][4] = {6366, "spellitem"}
-
 			-- Zauberstein
 			MAIGV("CLASSES")["WARLOCK"][3][5] = {2362, "spellitem"}
-
 			MAIGV("CLASSES")["WARLOCK"][4] = {}
-
 			-- Ritual der Beschwörung
 			MAIGV("CLASSES")["WARLOCK"][4][1] = {698, "teleport"}
-
 			MAIGV("CLASSES")["WARLOCK"][5] = {}
-
 			-- Dämonenrüstung
 			MAIGV("CLASSES")["WARLOCK"][5][1] = {687, "buff", true}
-
 			-- Dämonenrüstung
 			MAIGV("CLASSES")["WARLOCK"][5][2] = {28176, "buff", true}
-
 			-- Unendlicher Atem
 			MAIGV("CLASSES")["WARLOCK"][5][3] = {5697, "buff", true}
-
 			-- Unsichtbarkeit entdecken
 			MAIGV("CLASSES")["WARLOCK"][5][4] = {132, "buff", true}
 		end
 
 		local oldi = 0
-
 		for i, v in pairs(MAIGV("CLASSES")["WARLOCK"]) do
 			local hr = false
-
 			for x, tab in pairs(v) do
 				hr = false
-
 				if i ~= oldi and MAIIsSpellKnown(tab[1], "WARLOCK") then
 					oldi = i
 					hr = true
 				end
 
-				local b = MAIAddStanceButton({
-					["spellid"] = tab[1],
-					["art"] = tab[2],
-					["db"] = MAIGV("CLASSES")["WARLOCK"][i][x]
-				}, {}, hr, tab[3])
+				local b = MAIAddStanceButton(
+					{
+						["spellid"] = tab[1],
+						["art"] = tab[2],
+						["db"] = MAIGV("CLASSES")["WARLOCK"][i][x]
+					}, {}, hr, tab[3]
+				)
 
 				if b then
 					if tab[1] == 1122 then
@@ -6275,67 +6313,54 @@ function MAISetup()
 		end
 
 		MAIGV("CLASSES")["PALADINVERSION"] = MAIGV("CLASSES")["PALADINVERSION"] or 0
-
 		if MAIGV("CLASSES")["PALADINVERSION"] ~= 5 then
 			MAIGV("CLASSES")["PALADINVERSION"] = 5
 			MAIGV("CLASSES")["PALADIN"][1] = {}
-
 			-- FAKE (Aura leiste)
 			MAIGV("CLASSES")["PALADIN"][1][1] = {nil, "fake"}
-
 			MAIGV("CLASSES")["PALADIN"][2] = {}
-
 			-- Segen der Macht
 			MAIGV("CLASSES")["PALADIN"][2][1] = {19740, "buffnormal", nil, 25782, "buffbetter", nil}
-
 			-- Segen der Weisheit
 			MAIGV("CLASSES")["PALADIN"][2][2] = {19742, "buffnormal", nil, 25894, "buffbetter", nil}
-
 			-- Segen des Lichts
 			MAIGV("CLASSES")["PALADIN"][2][3] = {19977, "buffnormal", nil, 25890, "buffbetter", nil}
-
 			-- Segen der Rettung
 			MAIGV("CLASSES")["PALADIN"][2][4] = {1038, "buffnormal", nil, 25895, "buffbetter", nil}
-
 			-- Segen des Refugiums
 			MAIGV("CLASSES")["PALADIN"][2][5] = {20911, "buffnormal", nil, 25899, "buffbetter", nil}
-
 			-- Segen der Könige
 			MAIGV("CLASSES")["PALADIN"][2][6] = {20217, "buffnormal", nil, 25898, "buffbetter", nil}
-
 			-- Segen der Freiheit
 			MAIGV("CLASSES")["PALADIN"][2][7] = {1044, "buffnormal", true}
-
 			-- Segen des Schutzes
 			MAIGV("CLASSES")["PALADIN"][2][8] = {1022, "buffnormal", true}
-
 			-- Segen der Opferung
 			MAIGV("CLASSES")["PALADIN"][2][9] = {6940, "buffnormal", true}
-
 			MAIGV("CLASSES")["PALADIN"][3] = {}
 		end
 
 		local oldi = 0
-
 		for i, v in pairs(MAIGV("CLASSES")["PALADIN"]) do
 			local nl = false
-
 			for x, buff in pairs(v) do
 				nl = false
-
 				if i ~= oldi and buff[1] and MAIIsSpellKnown(buff[1], "PALADIN") then
 					oldi = i
 					nl = true
 				end
 
-				MAIAddStanceButton({
-					["spellid"] = buff[1],
-					["art"] = buff[2],
-					["db"] = MAIGV("CLASSES")["PALADIN"][i][x]
-				}, {
-					["spellid"] = buff[4],
-					["art"] = buff[5]
-				}, nil, buff[3], nl)
+				MAIAddStanceButton(
+					{
+						["spellid"] = buff[1],
+						["art"] = buff[2],
+						["db"] = MAIGV("CLASSES")["PALADIN"][i][x]
+					},
+					{
+						["spellid"] = buff[4],
+						["art"] = buff[5]
+					}, nil, buff[3], nl
+				)
 			end
 		end
 
@@ -6345,54 +6370,71 @@ function MAISetup()
 
 	if MAIGV("FrameColorEnabled", true) then
 		local texts = {QuestInfoTitleHeader, QuestInfoQuestType, QuestInfoObjectivesHeader, QuestInfoObjectivesText, QuestInfoObjective1, QuestInfoObjective2, QuestInfoObjective3, QuestInfoObjective4, QuestInfoObjective5, QuestInfoObjective6, QuestInfoDescriptionHeader, QuestInfoDescriptionText, QuestInfoRewardsFrame.Header, QuestInfoRewardsFrame.ItemChooseText, QuestInfoRewardsFrame.ItemReceiveText, QuestInfoRewardsFrameHonorReceiveText, QuestInfoXPFrame.ReceiveText, QuestProgressTitleText, QuestProgressText, QuestInfoRewardText, GreetingText, AvailableQuestsText, CurrentQuestsText, QuestProgressRequiredItemsText, GossipGreetingText, GossipFrameGreetingPanel, QuestTitleButton1, QuestTitleButton2, QuestTitleButton3, QuestTitleButton4, QuestTitleButton5, QuestTitleButton6, GossipTitleButton1, GossipTitleButton2, GossipTitleButton3, GossipTitleButton4, GossipTitleButton5, GossipTitleButton6}
-
 		for i, text in pairs(texts) do
 			if text then
 				if text.GetRegions then
 					for id, tex in pairs({text:GetRegions()}) do
 						if tex.SetTextColor then
-							hooksecurefunc(tex, "SetTextColor", function(self, color)
-								if self.maisettextcolor then return end
-								self.maisettextcolor = true
-								self:SetTextColor(MAITextColor(MAIGetFrameColor()))
-								self.maisettextcolor = false
-							end)
+							hooksecurefunc(
+								tex,
+								"SetTextColor",
+								function(self, color)
+									if self.maisettextcolor then return end
+									self.maisettextcolor = true
+									self:SetTextColor(MAITextColor(MAIGetFrameColor()))
+									self.maisettextcolor = false
+								end
+							)
 
 							tex:SetTextColor(1, 1, 1, 1)
-
-							hooksecurefunc("MAIFrameColor", function()
-								tex:SetTextColor(1, 1, 1, 1)
-							end)
+							hooksecurefunc(
+								"MAIFrameColor",
+								function()
+									tex:SetTextColor(1, 1, 1, 1)
+								end
+							)
 						end
 					end
 
 					if text.SetTextColor then
-						hooksecurefunc(text, "SetTextColor", function(self, color)
+						hooksecurefunc(
+							text,
+							"SetTextColor",
+							function(self, color)
+								if self.maisettextcolor then return end
+								self.maisettextcolor = true
+								self:SetTextColor(MAITextColor(MAIGetFrameColor()))
+								self.maisettextcolor = false
+							end
+						)
+
+						text:SetTextColor(1, 1, 1, 1)
+						hooksecurefunc(
+							"MAIFrameColor",
+							function()
+								text:SetTextColor(1, 1, 1, 1)
+							end
+						)
+					end
+				else
+					hooksecurefunc(
+						text,
+						"SetTextColor",
+						function(self, color)
 							if self.maisettextcolor then return end
 							self.maisettextcolor = true
 							self:SetTextColor(MAITextColor(MAIGetFrameColor()))
 							self.maisettextcolor = false
-						end)
-
-						text:SetTextColor(1, 1, 1, 1)
-
-						hooksecurefunc("MAIFrameColor", function()
-							text:SetTextColor(1, 1, 1, 1)
-						end)
-					end
-				else
-					hooksecurefunc(text, "SetTextColor", function(self, color)
-						if self.maisettextcolor then return end
-						self.maisettextcolor = true
-						self:SetTextColor(MAITextColor(MAIGetFrameColor()))
-						self.maisettextcolor = false
-					end)
+						end
+					)
 
 					text:SetTextColor(1, 1, 1, 1)
-
-					hooksecurefunc("MAIFrameColor", function()
-						text:SetTextColor(1, 1, 1, 1)
-					end)
+					hooksecurefunc(
+						"MAIFrameColor",
+						function()
+							text:SetTextColor(1, 1, 1, 1)
+						end
+					)
 				end
 			end
 		end
@@ -6416,9 +6458,7 @@ function MAISetup()
 		MAISkinFrame("HonorFrame", {})
 		MAISkinFrame("PVPFrame", {}) -- TBC
 		MAISkinFrame("TokenFrame", {}) -- WOTLK
-
 		MAISkinFrame("SpellBookFrame", {1})
-
 		for i = 1, 16 do
 			MAISkinFrame("SpellButton" .. i, {2})
 		end
@@ -6438,9 +6478,7 @@ function MAISetup()
 		MAISkinFrame("PlayerTalentFrameTab4", {}, true)
 		MAISkinFrame("PlayerTalentFrameScrollFrame", {}, true)
 		MAISkinFrame("GlyphFrame", {}, true)
-
 		MAISkinFrame("QuestLogFrame", {1})
-
 		MAISkinFrame("QuestLogScrollFrame", {})
 		MAISkinFrame("QuestLogCollapseAllButton", {})
 		MAISkinFrame("FriendsFrame", {})
@@ -6473,9 +6511,7 @@ function MAISetup()
 		MAISkinFrame("MerchantFrameTab2", {})
 		MAISkinFrame("MailFrame", {})
 		MAISkinFrame("MailFrameInset", {})
-
 		MAISkinFrame("InboxFrame", {1})
-
 		for i = 1, 30 do
 			MAISkinFrame("SendMailAttachment" .. i, {})
 		end
@@ -6545,7 +6581,6 @@ function MAISetup()
 		MAISkinFrame("CharacterFrameTab4", {})
 		MAISkinFrame("CharacterFrameInset", {})
 		MAISkinFrame("CharacterModelFrame", {})
-
 		for i, v in pairs(MAICharSlots) do
 			MAISkinFrame("Character" .. v, {})
 		end
@@ -6557,7 +6592,6 @@ function MAISetup()
 		MAISkinFrame("SpellBookFrameInset.NineSlice", {})
 		MAISkinFrame("SpellBookFrameTabButton1", {})
 		MAISkinFrame("SpellBookFrameTabButton2", {})
-
 		for i = 1, 6 do
 			MAISkinFrame("SpellBookSkillLineTab" .. i, {4, 6})
 		end
@@ -6568,13 +6602,9 @@ function MAISetup()
 		MAISkinFrame("PlayerTalentFrameInset", {}, true)
 		MAISkinFrame("PlayerTalentFrameInset.NineSlice", {}, true)
 		MAISkinFrame("PlayerTalentFrameSpecialization", {}, true)
-
 		MAISkinFrame("PlayerTalentFrameTab1", {1}, true)
-
 		MAISkinFrame("PlayerTalentFrameTab2", {1}, true)
-
 		MAISkinFrame("PlayerTalentFrameTab3", {1}, true)
-
 		--MAISkinFrame( "PlayerTalentFrameScrollFrame", { , 3 }, true )
 		MAISkinFrame("PVEFrame", {})
 		MAISkinFrame("PVEFrame.NineSlice", {})
@@ -6609,7 +6639,6 @@ function MAISetup()
 		MAISkinFrame("MailFrameInset", {})
 		MAISkinFrame("MailFrameInset.NineSlice", {})
 		MAISkinFrame("InboxFrame", {})
-
 		for i = 1, 30 do
 			MAISkinFrame("SendMailAttachment" .. i, {})
 		end
@@ -6685,7 +6714,6 @@ function MAISetup()
 
 	for id = 1, 4 do
 		local pftexture = _G["PartyMemberFrame" .. id .. "Texture"]
-
 		if pftexture then
 			MAIRegisterUIColor(pftexture)
 		end
@@ -6694,15 +6722,12 @@ end
 
 local MAIPREFIX = "D4MAI"
 local MAICHECKEDVERSION = false
-
 local function OnEvent(self, event, ...)
 	if event == "CHAT_MSG_ADDON" then
 		local prefix, version, _, target = ...
-
 		if prefix == MAIPREFIX then
 			local name = MAIUnitName("PLAYER")
 			if target == name then return end --self? -> exit
-
 			-- if targetversion < as selfversion
 			if version == MAIVERSION then
 				C_ChatInfo.SendAddonMessage(MAIPREFIX, MAIVERSION, "WHISPER", target) -- send to the target selfversion
@@ -6716,10 +6741,8 @@ local function OnEvent(self, event, ...)
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		local isInitialLogin, isReloadingUi = ...
-
 		if isInitialLogin or isReloadingUi then
 			C_ChatInfo.RegisterAddonMessagePrefix(MAIPREFIX)
-
 			if IsInRaid(LE_PARTY_CATEGORY_HOME) then
 				C_ChatInfo.SendAddonMessage(MAIPREFIX, MAIVERSION, "RAID")
 			elseif IsInRaid(LE_PARTY_CATEGORY_INSTANCE) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
@@ -6735,7 +6758,6 @@ local function OnEvent(self, event, ...)
 			if MAIBUILD == "RETAIL" then
 				for i = 1, 5 do
 					local id, name = GetChannelName(i)
-
 					if name ~= nil and (strlower(name) == "lfg" or strlower(name) == "world") then
 						C_ChatInfo.SendAddonMessage(MAIPREFIX, MAIVERSION, "CHANNEL", id)
 					end
@@ -6749,10 +6771,8 @@ local f = CreateFrame("Frame")
 f:RegisterEvent("CHAT_MSG_ADDON")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:SetScript("OnEvent", OnEvent)
-
 local function RemoveBadWords(self, event, msg, author, ...)
 	msg = strlower(msg)
-
 	if MAIGV("blockwords") and MAIGV("blockwords") ~= "" and MAIGV("blockwords") ~= " " then
 		for i, v in pairs({string.split(",", MAIGV("blockwords"))}) do
 			if v ~= "" and msg:find(strlower(v)) then return true end
@@ -6764,7 +6784,6 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", RemoveBadWords)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", RemoveBadWords)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", RemoveBadWords)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", RemoveBadWords)
-
 function MAIAddRole(tab, role)
 	if tab[role] == nil then
 		tab[role] = {}
@@ -6782,84 +6801,79 @@ function MAISetupLFGSortSearchResult()
 
 		local lfgfilter = CreateFrame("FRAME", "MAILFGFilter")
 		lfgfilter:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED")
+		hooksecurefunc(
+			"LFGListUtil_SortSearchResults",
+			function(results)
+				if not LFGListFrame.SearchPanel:IsShown() then return end
+				local text = LFGListFrame.SearchPanel.SearchBox:GetText()
+				if text == "" then return end -- ERROR when removing this line
+				local rTab = {}
+				rTab["TANK"] = 0
+				rTab["HEALER"] = 0
+				rTab["DAMAGER"] = 0
+				local prole = UnitGroupRolesAssigned("PLAYER")
+				if prole == "NONE" then
+					prole = GetSpecializationRole(GetSpecialization())
+				end
 
-		hooksecurefunc("LFGListUtil_SortSearchResults", function(results)
-			if not LFGListFrame.SearchPanel:IsShown() then return end
-			local text = LFGListFrame.SearchPanel.SearchBox:GetText()
-			if text == "" then return end -- ERROR when removing this line
-			local rTab = {}
-			rTab["TANK"] = 0
-			rTab["HEALER"] = 0
-			rTab["DAMAGER"] = 0
-			local prole = UnitGroupRolesAssigned("PLAYER")
+				MAIAddRole(rTab, prole)
+				for i = 1, 4 do
+					MAIAddRole(rTab, UnitGroupRolesAssigned("PARTY" .. i))
+				end
 
-			if prole == "NONE" then
-				prole = GetSpecializationRole(GetSpecialization())
-			end
-
-			MAIAddRole(rTab, prole)
-
-			for i = 1, 4 do
-				MAIAddRole(rTab, UnitGroupRolesAssigned("PARTY" .. i))
-			end
-
-			local accepted = {}
-			local numAccepted = 0
-			local numResults = #results
-
-			for i = 1, numResults do
-				local accept = true
-				local id = results[i]
-				local info = C_LFGList.GetSearchResultInfo(id)
-
-				if info then
-					local roles = C_LFGList.GetSearchResultMemberCounts(id)
-
-					if roles then
-						local rtank = roles.TANK_REMAINING
-						local rheal = roles.HEALER_REMAINING
-						local rdama = roles.DAMAGER_REMAINING
-
-						if rtank > 0 or rheal > 0 or rdama > 0 then
-							local tank = roles.TANK
-							local heal = roles.HEALER
-							local dama = roles.DAMAGER
-							local btank = tank + rTab["TANK"] <= 1 -- OLD
-							local bheal = heal + rTab["HEALER"] <= 1 -- OLD
-							local bdama = dama + rTab["DAMAGER"] <= 3 -- OLD
-							btank = rTab["TANK"] <= rtank
-							bheal = rTab["HEALER"] <= rheal
-							bdama = rTab["DAMAGER"] <= rdama
-
-							if btank and bheal and bdama then
-							else
-								-- bad
-								accept = false
+				local accepted = {}
+				local numAccepted = 0
+				local numResults = #results
+				for i = 1, numResults do
+					local accept = true
+					local id = results[i]
+					local info = C_LFGList.GetSearchResultInfo(id)
+					if info then
+						local roles = C_LFGList.GetSearchResultMemberCounts(id)
+						if roles then
+							local rtank = roles.TANK_REMAINING
+							local rheal = roles.HEALER_REMAINING
+							local rdama = roles.DAMAGER_REMAINING
+							if rtank > 0 or rheal > 0 or rdama > 0 then
+								local tank = roles.TANK
+								local heal = roles.HEALER
+								local dama = roles.DAMAGER
+								local btank = tank + rTab["TANK"] <= 1 -- OLD
+								local bheal = heal + rTab["HEALER"] <= 1 -- OLD
+								local bdama = dama + rTab["DAMAGER"] <= 3 -- OLD
+								btank = rTab["TANK"] <= rtank
+								bheal = rTab["HEALER"] <= rheal
+								bdama = rTab["DAMAGER"] <= rdama
+								if btank and bheal and bdama then
+								else
+									-- bad
+									accept = false
+								end
 							end
+						end
+
+						if (not MAIGV("nochanges") and MAIGV("maismartfilter")) and accept then
+							numAccepted = numAccepted + 1
+							accepted[i] = true
+						else
+							accepted[i] = false
+						end
+					end
+				end
+
+				if not MAIGV("nochanges") and MAIGV("maismartfilter") and numAccepted ~= numResults then
+					for i, v in pairs(results) do
+						if not accepted[i] then
+							table.remove(results, i)
 						end
 					end
 
-					if (not MAIGV("nochanges") and MAIGV("maismartfilter")) and accept then
-						numAccepted = numAccepted + 1
-						accepted[i] = true
-					else
-						accepted[i] = false
-					end
+					LFGListFrame.SearchPanel.totalResults = #results
+
+					return true
 				end
 			end
-
-			if not MAIGV("nochanges") and MAIGV("maismartfilter") and numAccepted ~= numResults then
-				for i, v in pairs(results) do
-					if not accepted[i] then
-						table.remove(results, i)
-					end
-				end
-
-				LFGListFrame.SearchPanel.totalResults = #results
-
-				return true
-			end
-		end)
+		)
 		--lfgfilter:SetScript("OnEvent", LFGFilterWrong)
 	end
 end
@@ -6867,7 +6881,6 @@ end
 -- Share UnitXp
 local XPPREFIX = "D4XP"
 local XPAPIPREFIX = "D4XPAPI"
-
 function MAIUnitXP(unit)
 	local target = MAIUnitName(unit)
 	if UnitIsUnit(unit, "player") then return UnitXP("player") end
@@ -6902,14 +6915,12 @@ function MAIUpdatePartyXPAPI()
 	if MAILoaded then
 		for i = 1, 4 do
 			local target = MAIUnitName("PARTY" .. i)
-
 			if MAIGV("XPTAB")[target] == nil then
 				MAIGV("XPTAB")[target] = {}
 			end
 		end
 
 		local message = "Ping"
-
 		if IsInRaid(LE_PARTY_CATEGORY_INSTANCE) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
 			C_ChatInfo.SendAddonMessage(XPAPIPREFIX, message, "INSTANCE_CHAT")
 		elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
@@ -6920,16 +6931,13 @@ end
 
 local maidebugxpbar = false
 local maixpready = false
-
 local function OnEventXP(sel, event, ...)
 	if MAILoaded then
 		if event == "CHAT_MSG_ADDON" then
 			local prefix, values, _, target = ...
-
 			-- new xp values
 			if prefix == XPPREFIX and MAIGV("XPTAB") then
 				local xp, xpmax = string.split(";", values)
-
 				if MAIGV("XPTAB")[target] == nil then
 					MAIGV("XPTAB")[target] = {}
 				end
@@ -6941,7 +6949,6 @@ local function OnEventXP(sel, event, ...)
 				-- PING
 				if values == "Ping" then
 					local message = "Pong" -- "answer to ping"
-
 					if IsInRaid(LE_PARTY_CATEGORY_INSTANCE) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
 						C_ChatInfo.SendAddonMessage(XPAPIPREFIX, message, "INSTANCE_CHAT")
 					elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
@@ -6957,11 +6964,9 @@ local function OnEventXP(sel, event, ...)
 			end
 		elseif event == "PLAYER_ENTERING_WORLD" then
 			local isInitialLogin, isReloadingUi = ...
-
 			if isInitialLogin or isReloadingUi then
 				C_ChatInfo.RegisterAddonMessagePrefix(XPPREFIX)
 				C_ChatInfo.RegisterAddonMessagePrefix(XPAPIPREFIX)
-
 				if MAIGV("XPTAB") == nil then
 					MAISV("XPTAB", {})
 				end
@@ -6970,23 +6975,29 @@ local function OnEventXP(sel, event, ...)
 					local PartyFrame = _G["PartyMemberFrame" .. i]
 					local PartyPortrait = _G["PartyMemberFrame" .. i .. "Portrait"]
 					local ManaBar = _G["PartyMemberFrame" .. i .. "ManaBar"]
-
 					if maidebugxpbar then
-						hooksecurefunc(PartyFrame, "Hide", function(self)
-							if sel.mahide then return end
-							self.mahide = true
-							self:Show()
-							self.mahide = false
-						end)
+						hooksecurefunc(
+							PartyFrame,
+							"Hide",
+							function(self)
+								if sel.mahide then return end
+								self.mahide = true
+								self:Show()
+								self.mahide = false
+							end
+						)
 
 						PartyFrame:Show()
-
-						hooksecurefunc(PartyFrame:GetParent(), "Hide", function(self)
-							if self.mahide then return end
-							self.mahide = true
-							self:Show()
-							self.mahide = false
-						end)
+						hooksecurefunc(
+							PartyFrame:GetParent(),
+							"Hide",
+							function(self)
+								if self.mahide then return end
+								self.mahide = true
+								self:Show()
+								self.mahide = false
+							end
+						)
 
 						PartyFrame:GetParent():Show()
 					end
@@ -6994,67 +7005,73 @@ local function OnEventXP(sel, event, ...)
 					for id = 1, 4 do
 						local debuff = _G["PartyMemberFrame" .. i .. "Debuff" .. id]
 						local parent = _G["PartyMemberFrame" .. i .. "Debuff" .. id - 1]
-
 						if parent == nil then
 							parent = PartyFrame
 						end
 
 						if debuff then
 							if maidebugxpbar then
-								hooksecurefunc(debuff, "Hide", function(self)
-									if self.mahide then return end
-									self.mahide = true
-									self:Show()
-									self.mahide = false
-								end)
+								hooksecurefunc(
+									debuff,
+									"Hide",
+									function(self)
+										if self.mahide then return end
+										self.mahide = true
+										self:Show()
+										self.mahide = false
+									end
+								)
 
 								debuff:Show()
-
 								if false then
 									local xpbar = _G["PartyFrameXPBar" .. id]
-
 									if xpbar then
-										hooksecurefunc(xpbar, "Hide", function(self)
-											if self.mahide then return end
-											self.mahide = true
-											self:Show()
-											self.mahide = false
-										end)
+										hooksecurefunc(
+											xpbar,
+											"Hide",
+											function(self)
+												if self.mahide then return end
+												self.mahide = true
+												self:Show()
+												self.mahide = false
+											end
+										)
 
 										xpbar:Show()
 									end
 								end
 							end
 
-							hooksecurefunc(debuff, "SetPoint", function(self)
-								if self.maisetpoint then return end
-								self.maisetpoint = true
-								local xpbar = _G["PartyFrameXPBar" .. i]
-								self:ClearAllPoints()
-
-								if parent == PartyFrame then
-									local pfy = 4
-
-									-- DUnitFrames
-									if DUFTAB then
-										pfy = -6
-
-										if xpbar and xpbar:IsVisible() then
-											pfy = -18
+							hooksecurefunc(
+								debuff,
+								"SetPoint",
+								function(self)
+									if self.maisetpoint then return end
+									self.maisetpoint = true
+									local xpbar = _G["PartyFrameXPBar" .. i]
+									self:ClearAllPoints()
+									if parent == PartyFrame then
+										local pfy = 4
+										-- DUnitFrames
+										if DUFTAB then
+											pfy = -6
+											if xpbar and xpbar:IsVisible() then
+												pfy = -18
+											end
+										else
+											if xpbar and xpbar:IsVisible() then
+												pfy = -8
+											end
 										end
+
+										self:SetPoint("BOTTOMLEFT", parent, "BOTTOMRIGHT", -80, pfy)
 									else
-										if xpbar and xpbar:IsVisible() then
-											pfy = -8
-										end
+										self:SetPoint("LEFT", parent, "RIGHT", 4, 0)
 									end
 
-									self:SetPoint("BOTTOMLEFT", parent, "BOTTOMRIGHT", -80, pfy)
-								else
-									self:SetPoint("LEFT", parent, "RIGHT", 4, 0)
+									self.maisetpoint = false
 								end
-
-								self.maisetpoint = false
-							end)
+							)
 
 							debuff:SetPoint("LEFT", parent, "RIGHT", 0, 0)
 						end
@@ -7108,7 +7125,6 @@ local function OnEventXP(sel, event, ...)
 						PartyFrameXPBar.levelText:SetText("" .. math.random(1, 59))
 						local c = GetQuestDifficultyColor(PartyFrameXPBar.levelText:GetText())
 						PartyFrameXPBar.levelText:SetTextColor(c.r, c.g, c.b, 1)
-
 						if MAIGV("nochanges") == nil then
 							MAISV("nochanges", false)
 						end
@@ -7121,11 +7137,9 @@ local function OnEventXP(sel, event, ...)
 								PartyFrameXPBar.levelText:SetTextColor(qdc.r, qdc.g, qdc.b, 1)
 								local xp = MAIUnitXP("PARTY" .. i, 0)
 								local xpmax = MAIUnitXPMax("PARTY" .. i, 1)
-
 								if (xp > 0 or xpmax > 1) and not MAIGV("nochanges") then
 									local per = xp / xpmax
 									PartyFrameXPBar.textureBar:SetWidth(per * PartyFrameXPBar:GetWidth() - 4)
-
 									if GetCVar("statusTextDisplay") == "PERCENT" then
 										PartyFrameXPBar.XPC:SetText(string.format("%.0f", xp / xpmax * 100) .. "%")
 										PartyFrameXPBar.XPL:SetText("")
@@ -7176,7 +7190,6 @@ local function OnEventXP(sel, event, ...)
 			end
 
 			local message = UnitXP("PLAYER") .. ";" .. UnitXPMax("PLAYER") -- send xp
-
 			if IsInRaid(LE_PARTY_CATEGORY_INSTANCE) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
 				C_ChatInfo.SendAddonMessage(XPPREFIX, message, "INSTANCE_CHAT")
 			elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
