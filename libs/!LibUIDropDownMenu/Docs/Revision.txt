@@ -1,11 +1,15 @@
-$Id: Revision.txt 125 2024-01-21 11:58:31Z arithmandar $
+$Id: Revision.txt 127 2024-01-22 13:09:05Z arithmandar $
 
 Revision History:
 =================
 
+v4.23.10020553007 (2024/01/22)
+------------------------------
+- Fixed issue with the compatibility with WoW 3.4.3 / 1.15.0
+
 v4.22.10020553007 (2024/01/21)
 ------------------------------
-- Toc update to support WoW 10.2.5 / 3.4.3 / 1.1.5
+- Toc update to support WoW 10.2.5 / 3.4.3 / 1.15.0
 - function sync with build 53007
 
 v4.21.10010550587 (2023/07/29)
