@@ -1,7 +1,12 @@
-$Id: Revision.txt 127 2024-01-22 13:09:05Z arithmandar $
+$Id: Revision.txt 129 2024-01-23 15:53:42Z arithmandar $
 
 Revision History:
 =================
+
+v4.24.10020553007 (2024/01/23)
+------------------------------
+- Fixed issue of version confliction when older version was loaded first and then newer version was to replace the library. 
+  What has been created won't have the "NewFeature" frame there.
 
 v4.23.10020553007 (2024/01/22)
 ------------------------------
