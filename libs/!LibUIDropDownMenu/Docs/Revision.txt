@@ -1,7 +1,12 @@
-$Id: Revision.txt 129 2024-01-23 15:53:42Z arithmandar $
+$Id: Revision.txt 133 2024-01-30 13:04:40Z arithmandar $
 
 Revision History:
 =================
+
+v4.25.10020553040 (2024/01/30)
+------------------------------
+- Enhanced frame or texture's creation to set the name as nil when parent frame name is also nil
+- Further error handling for NewFeature
 
 v4.24.10020553007 (2024/01/23)
 ------------------------------
