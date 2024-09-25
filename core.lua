@@ -1,6 +1,6 @@
 -- By D4KiR
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
-MAIVERSION = "1.3.56"
+MAIVERSION = "1.3.57"
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = {0.2, 0.2, 0.2, 0.7}
 local MAICOLORBACKGROUND = {0.0, 0.0, 0.0, 0.7}
@@ -44,9 +44,30 @@ function MAICopy_Table(orig)
 end
 
 function MAICreateSlider(parent, name, key, vval, x, y, vmin, vmax, steps, form, lstr)
-	local SL = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
-	SL:SetWidth(parent:GetWidth() - 30)
+	local SL = CreateFrame("Slider", nil, parent, "UISliderTemplate")
+	SL:SetSize(parent:GetWidth() - 30, 16)
 	SL:SetPoint("TOPLEFT", x + 5, y)
+	if SL.Low == nil then
+		SL.Low = SL:CreateFontString(nil, nil, "GameFontNormal")
+		SL.Low:SetPoint("BOTTOMLEFT", SL, "BOTTOMLEFT", 0, -12)
+		SL.Low:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
+		SL.Low:SetTextColor(1, 1, 1)
+	end
+
+	if SL.High == nil then
+		SL.High = SL:CreateFontString(nil, nil, "GameFontNormal")
+		SL.High:SetPoint("BOTTOMRIGHT", SL, "BOTTOMRIGHT", 0, -12)
+		SL.High:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
+		SL.High:SetTextColor(1, 1, 1)
+	end
+
+	if SL.Text == nil then
+		SL.Text = SL:CreateFontString(nil, nil, "GameFontNormal")
+		SL.Text:SetPoint("TOP", SL, "TOP", 0, 16)
+		SL.Text:SetFont(STANDARD_TEXT_FONT, 12, "THINOUTLINE")
+		SL.Text:SetTextColor(1, 1, 1)
+	end
+
 	SL.Low:SetText(vmin)
 	SL.High:SetText(vmax)
 	SL.Text:SetText(MAIGT(lstr) .. ": " .. MAIGV(name .. key, vval))
