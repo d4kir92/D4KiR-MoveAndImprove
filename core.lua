@@ -752,12 +752,6 @@ function MAIMoveFrames()
 					)
 
 					WorldMapFrame.BlackoutFrame:Hide()
-					WorldMapFrame.ScrollContainer.GetCursorPosition = function(f)
-						local x, y = MapCanvasScrollControllerMixin.GetCursorPosition(f)
-						local s = WorldMapFrame:GetScale()
-
-						return x / s, y / s
-					end
 
 					-- TBC, ERA
 					if MAIBUILD ~= "RETAIL" then
