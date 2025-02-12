@@ -1,7 +1,7 @@
 ## Interface-Classic: 11502
 ## Interface-BCC: 20504
 ## Interface-Wrath: 30403
-## Interface-Cata: 40401
+## Interface-Cata: 40401, 40402
 ## Interface: 100207
 
 ## Title: MoveAndImprove by |cff3FC7EBD4KiR |T132115:16:16:0:0|t 

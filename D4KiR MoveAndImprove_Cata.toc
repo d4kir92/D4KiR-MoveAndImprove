@@ -1,4 +1,4 @@
-## Interface: 40401
+## Interface: 40401, 40402
 
 ## Title: MoveAndImprove |T136222:16:16:0:0|t by |cff3FC7EBD4KiR |T132115:16:16:0:0|t 
 
