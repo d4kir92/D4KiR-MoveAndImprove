@@ -1,6 +1,6 @@
 -- By D4KiR
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
-MAIVERSION = "1.3.57"
+MAIVERSION = "1.3.58"
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = {0.2, 0.2, 0.2, 0.7}
 local MAICOLORBACKGROUND = {0.0, 0.0, 0.0, 0.7}
@@ -752,7 +752,6 @@ function MAIMoveFrames()
 					)
 
 					WorldMapFrame.BlackoutFrame:Hide()
-
 					-- TBC, ERA
 					if MAIBUILD ~= "RETAIL" then
 						WorldMapFrame.ScrollContainer:HookScript(
