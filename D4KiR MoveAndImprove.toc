@@ -6,11 +6,12 @@
 
 ## Title: MoveAndImprove by |cff3FC7EBD4KiR |T132115:16:16:0:0|t 
 
-## Version: 1.3.57
+## Version: 1.3.58
 ## X-License: GPL v3
 
 ## Notes: MAI
 ## Author: D4KiR
+## X-Category: D4KiR
 ## DefaultState: enabled
 ## SavedVariables: MAITAB
 ## SavedVariablesPerCharacter: MAITABPC
