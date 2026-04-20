@@ -8,28 +8,23 @@ FPSFrame.textfps:SetText("")
 FPSFrame.textfps:SetShadowOffset(1, -1)
 FPSFrame.textfps:SetPoint("CENTER", FPSFrame, "CENTER", 0, 0)
 local fpssetup = true
-
 function MAISetupFPSFrame()
 	function MAIFPSThink()
 		local mover = _G["FPSFrameMover"]
-
 		if mover then
 			local down, up, lagHome, lagWorld = GetNetStats()
-
 			if fpssetup then
 				fpssetup = false
-				_G["FPS_FORMAT"] = string.maireplace(_G["FPS_FORMAT"], " ", " |cff3FC7EB")
+				_G["FPS_FORMAT"] = string.maireplace(_G["FPS_FORMAT"], " ", " ")
 				_G["FPS_FORMAT"] = string.maireplace(_G["FPS_FORMAT"], "%d", "%3d")
 			end
 
 			FPSFrame.textfps:SetText(string.format(_G["FPS_FORMAT"], GetFramerate()))
 			local point, _, relativePoint = mover:GetPoint()
-
 			if FPSFrame.point ~= point then
 				FPSFrame.point = point
 				local dist = 10
 				FPSFrame.textfps:ClearAllPoints()
-
 				if string.find(point, "RIGHT") then
 					FPSFrame.textfps:SetPoint("RIGHT", FPSFrame, "RIGHT", -dist, 0)
 					FPSFrame.textfps:SetJustifyH("RIGHT")

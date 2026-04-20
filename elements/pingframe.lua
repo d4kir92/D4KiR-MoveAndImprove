@@ -13,28 +13,23 @@ PingFrame.pingworld:SetText("")
 PingFrame.pingworld:SetShadowOffset(1, -1)
 PingFrame.pinghome:SetPoint("CENTER", PingFrame, "CENTER", 0, 8)
 PingFrame.pingworld:SetPoint("CENTER", PingFrame, "CENTER", 0, -8)
-
 function MAISetupPingFrame()
 	function MAIPingThink()
 		local mover = _G["PingFrameMover"]
-
 		if mover then
 			local _, _, lagHome, lagWorld = GetNetStats()
-			PingFrame.pinghome:SetText(getglobal("SPELL_TARGET_TYPE6_DESC") .. ": " .. lagHome .. "|cff3FC7EBms")
-			PingFrame.pingworld:SetText(getglobal("WORLD") .. ": " .. lagWorld .. "|cff3FC7EBms")
+			PingFrame.pinghome:SetText(getglobal("SPELL_TARGET_TYPE6_DESC") .. ": " .. lagHome .. "ms")
+			PingFrame.pingworld:SetText(getglobal("WORLD") .. ": " .. lagWorld .. "ms")
 			local point, _, _ = mover:GetPoint()
-
 			if PingFrame.point ~= point then
 				PingFrame.point = point
 				local dist = 8
-
 				if MAIBUILD == "RETAIL" then
 					dist = 8
 				end
 
 				PingFrame.pinghome:ClearAllPoints()
 				PingFrame.pingworld:ClearAllPoints()
-
 				if string.find(point, "RIGHT") then
 					PingFrame.pinghome:SetPoint("RIGHT", PingFrame, "RIGHT", -dist, 8)
 					PingFrame.pingworld:SetPoint("RIGHT", PingFrame, "RIGHT", -dist, -8)

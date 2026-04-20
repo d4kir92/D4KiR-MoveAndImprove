@@ -1,6 +1,6 @@
 -- By D4KiR
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
-MAIVERSION = "1.3.58"
+MAIVERSION = "1.3.59"
 FLATBORDER = 0.068
 local MAICOLORBACKGROUNDHEADER = {0.2, 0.2, 0.2, 0.7}
 local MAICOLORBACKGROUND = {0.0, 0.0, 0.0, 0.7}
@@ -285,11 +285,11 @@ function MAIMSGS()
 end
 
 function MAIMSG(str, ...)
-	print("|cff3FC7EB[MAI] |r" .. tostring(str), ...)
+	print("[MAI] |r" .. tostring(str), ...)
 end
 
 function MAIERR(str, ...)
-	print("|cff3FC7EB[MAI v" .. MAIVERSION .. "-|cffff0000ERROR|cff3FC7EB] |cffff0000" .. tostring(str), ...)
+	print("[MAI v" .. MAIVERSION .. "-|cffff0000ERROR] |cffff0000" .. tostring(str), ...)
 end
 
 -- OUTPUT
