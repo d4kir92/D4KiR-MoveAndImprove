@@ -10,7 +10,17 @@
 ## Version: 1.3.61
 ## X-License: GPL v3
 
-## Notes: MAI
+## Notes: Moves and Improves Ui Elements
+## Notes-deDE: Bewegt und Verbessert Ui Elemente
+## Notes-esES: Mueve y mejora los elementos de la interfaz
+## Notes-esMX: Mueve y mejora los elementos de la interfaz
+## Notes-frFR: Déplace et améliore les éléments de l'interface
+## Notes-itIT: Sposta e migliora gli elementi dell'interfaccia
+## Notes-koKR: UI 요소를 이동하고 개선합니다
+## Notes-ptBR: Move e melhora os elementos da interface
+## Notes-ruRU: Перемещает и улучшает элементы интерфейса
+## Notes-zhCN: 移动并改进界面元素
+## Notes-zhTW: 移動並改善介面元素
 ## Author: D4KiR
 ## X-Category: D4KiR
 ## DefaultState: enabled
